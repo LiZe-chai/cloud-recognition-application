@@ -1,4 +1,5 @@
 import 'package:cloud_recognition/pages/signup.dart';
+import 'package:cloud_recognition/pages/forgotPassword.dart';
 import 'package:flutter/material.dart';
 import '../user_repository.dart';
 import '../generated/l10n.dart';
@@ -106,7 +107,10 @@ class _SignInPageState extends State<SignInPage> {
                   alignment: Alignment.centerRight,
                   child: TextButton(
                     onPressed: () {
-                      // TODO: Forgot password
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => forgotPasswordPage()),
+                      );
                     },
                     child: Text(S.of(context)!.forgotPassword,
                         style: TextStyle(color: Colors.blue)),

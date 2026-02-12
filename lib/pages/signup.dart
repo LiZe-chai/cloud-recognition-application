@@ -25,7 +25,6 @@ class _SignUpPageState extends State<SignUpPage> {
 
   @override
   Widget build(BuildContext context) {
-    // TODO: implement build
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.transparent,
@@ -73,8 +72,17 @@ class _SignUpPageState extends State<SignUpPage> {
                     obscureText: _obscurePassword,
                     decoration: InputDecoration(
                       hintText: S.of(context)!.passwordInstruction,
-                      border: OutlineInputBorder(
+                      enabledBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(8),
+                        borderSide: BorderSide(
+                          color: _passwordError ? Colors.red : Colors.grey,
+                        ),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(8),
+                        borderSide: BorderSide(
+                          color: _passwordError ? Colors.red : Colors.blue,
+                        ),
                       ),
                       suffixIcon: IconButton(
                         icon: Icon(
@@ -150,8 +158,8 @@ class _SignUpPageState extends State<SignUpPage> {
                       try {
                         final userExist = await _userRepo.mockUserExists(email);
                         if (!userExist){
-                          final passworValid = await _userRepo.isPasswordValid(password);
-                          if(passworValid){
+                          final passwordValid = await _userRepo.isPasswordValid(password);
+                          if(passwordValid){
                             if(password == confirmPassword){
                               ScaffoldMessenger.of(context).showSnackBar(
                                 const SnackBar(content: Text("✅ Create account successful!")),

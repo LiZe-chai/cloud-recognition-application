@@ -16,6 +16,7 @@
   "confirmPassword": "Confirm Password",
   "confirmPasswordInstruction": "Enter password again",
   "emailExist":"This email already registered, please login",
+  "emailNExist": "This email is not registered yet",
   "passwordNotMatch":"Password and Confirm Password must be the same.",
   "checkEmail": "Check your email",
   "@checkEmailInstruction": {
@@ -30,6 +31,11 @@
   "verifyCode": "Verify Code",
   "haventReceiveCode": "Haven’t received the code?",
   "resend":"Resend Code",
-  "incompleteCode": "Please enter a 6-digit code"
-
+  "incompleteCode": "Please enter a 6-digit code",
+  "forgotPasswordT": "Forgot password",
+  "emailInstructionFP": "Please enter your email to reset the password",
+  "verifyEmail": "Verify email",
+  "setNewPassword": "Set a new password",
+  "setNewPasswordInstruction": "Create a new password. Ensure it differs from\nprevious ones for security",
+  "resetPassword":  "Reset Password"
 }
