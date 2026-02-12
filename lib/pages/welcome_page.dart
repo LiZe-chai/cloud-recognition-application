@@ -42,7 +42,8 @@ class _WelcomePageState extends State<WelcomePage> {
       enableDrag: false,
       backgroundColor: Colors.transparent,
       builder: (context) {
-        return Container(
+        return SafeArea(
+          child:Container(
           height: height * 0.85,
           decoration: BoxDecoration(
             color: Colors.white,
@@ -141,6 +142,7 @@ class _WelcomePageState extends State<WelcomePage> {
               ),
             ],
           ),
+        ),
         );
       },
     );

@@ -31,7 +31,9 @@ class _HomePageState extends State<HomePage> {
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
       builder: (_) {
-        return FilterBottomSheet(
+        return SafeArea(
+          child:
+          FilterBottomSheet(
           initialCloudTypes: selectedCloudTypes,
           initialSortLatest: sortLatest,
           onApply: (cloudType, latest) {
@@ -40,6 +42,7 @@ class _HomePageState extends State<HomePage> {
               sortLatest = latest;
             });
           },
+        ),
         );
       },
     );

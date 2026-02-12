@@ -1,4 +1,5 @@
 import 'package:cloud_recognition/pages/saved_result_page.dart';
+import 'package:cloud_recognition/services/inference.dart';
 import 'package:flutter/material.dart';
 import 'dart:io';
 
@@ -68,7 +69,7 @@ class CloudCard extends StatelessWidget {
                   SizedBox(height: h * 0.01),
 
                   Text(
-                    '${result.date.year}-${result.date.month}-${result.date.day} · $result.cloudType · ${(result.confidence * 100).toStringAsFixed(0)}%',
+                    '${result.date.year}-${result.date.month}-${result.date.day} · ${result.cloudType.label(context)} · ${(result.confidence * 100).toStringAsFixed(0)}%',
                     style: TextStyle(
                       fontSize: 14,
                       color: Colors.grey.shade800,

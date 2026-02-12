@@ -90,7 +90,8 @@ class SettingsPage extends StatelessWidget {
                       ),
                     ),
                     builder: (context) {
-                      return Column(
+                      return SafeArea(
+                          child:Column(
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           _langItem(context, 'English', 'en',setLocale,currentLang),
@@ -98,6 +99,7 @@ class SettingsPage extends StatelessWidget {
                           _langItem(context, 'Bahasa Melayu', 'my',setLocale,currentLang),
                           //_langItem(context, 'Bahasa Melayu', 'ms',setLocale),
                         ],
+                      ),
                       );
                     },
                   );
