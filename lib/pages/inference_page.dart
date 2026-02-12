@@ -45,15 +45,15 @@ class _InferencePageState extends State<InferencePage> {
               width: w * 0.12,
               height: w * 0.12,
               child: const CircularProgressIndicator(
-                strokeWidth: 3,
+                strokeWidth: 8,
                 color: Colors.black87,
               ),
             ),
             const SizedBox(height: 20),
             Text(
               S.of(context)!.identifyingCloudType,
-              style: const TextStyle(
-                fontSize: 14,
+              style: TextStyle(
+                fontSize: Theme.of(context).textTheme.bodyMedium?.fontSize,
                 color: Colors.black54,
               ),
             ),

@@ -38,8 +38,8 @@ class PreviewPage extends StatelessWidget {
                   children: [
                     Text(
                       S.of(dialogContext)!.saveAs,
-                      style: const TextStyle(
-                        fontSize: 18,
+                      style: TextStyle(
+                        fontSize: Theme.of(context).textTheme.bodyLarge?.fontSize,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
@@ -54,7 +54,7 @@ class PreviewPage extends StatelessWidget {
 
                 Text(
                   S.of(dialogContext)!.fileName,
-                  style: const TextStyle(fontSize: 16),
+                  style: TextStyle(fontSize: Theme.of(context).textTheme.bodyMedium?.fontSize),
                 ),
 
                 const SizedBox(height: 10),
@@ -96,7 +96,7 @@ class PreviewPage extends StatelessWidget {
                       ),
                       backgroundColor: Colors.black,
                     ),
-                    child: Text(S.of(dialogContext)!.saveAction, style: const TextStyle(fontSize: 18, color: Colors.white)),
+                    child: Text(S.of(dialogContext)!.saveAction, style: TextStyle(fontSize: Theme.of(context).textTheme.bodyLarge?.fontSize, color: Colors.white)),
                   ),
                 ),
               ],
@@ -115,8 +115,7 @@ class PreviewPage extends StatelessWidget {
       await predictionDir.create(recursive: true);
     }
 
-    final fileName =
-        'cloud_${DateTime.now().millisecondsSinceEpoch}${p.extension(tempImage.path)}';
+    final fileName = 'cloud_${DateTime.now().millisecondsSinceEpoch}${p.extension(tempImage.path)}';
 
     final savedImage =
     await tempImage.copy('${predictionDir.path}/$fileName');
@@ -157,7 +156,7 @@ class PreviewPage extends StatelessWidget {
                       Text(
                         S.of(context)!.predictionResult,
                         style: TextStyle(
-                          fontSize: 18,
+                          fontSize: Theme.of(context).textTheme.bodyLarge?.fontSize,
                           fontWeight: FontWeight.bold,
                           color: Colors.white,
                         ),
@@ -175,15 +174,15 @@ class PreviewPage extends StatelessWidget {
                             Text(
                               S.of(context)!.predictedCloudType,
                               style: TextStyle(
-                                fontSize: 16,
+                                fontSize: Theme.of(context).textTheme.bodyMedium?.fontSize,
                                 color: Colors.white,
                               ),
                             ),
                             SizedBox(height: 4),
                             Text(
-                              cloudTypeToText(result.type),
+                              result.type.label,
                               style: TextStyle(
-                                fontSize: 16,
+                                fontSize: Theme.of(context).textTheme.bodyMedium?.fontSize,
                                 fontWeight: FontWeight.bold,
                                 color: Colors.white,
                               ),
@@ -192,7 +191,7 @@ class PreviewPage extends StatelessWidget {
                             Text(
                               S.of(context)!.predictionConfidence,
                               style: TextStyle(
-                                fontSize: 16,
+                                fontSize: Theme.of(context).textTheme.bodyMedium?.fontSize,
                                 color: Colors.white,
                               ),
                             ),
@@ -202,6 +201,7 @@ class PreviewPage extends StatelessWidget {
                               ,
                               style: TextStyle(
                                 fontWeight: FontWeight.bold,
+                                fontSize: Theme.of(context).textTheme.bodyMedium?.fontSize,
                                 color: Colors.white,
                               ),
                             ),

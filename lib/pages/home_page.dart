@@ -1,10 +1,12 @@
 import 'package:cloud_recognition/pages/setting_page.dart';
+import 'package:cloud_recognition/services/inference.dart';
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import '../generated/l10n.dart';
 import '../main.dart';
 import '../models/prediction_model.dart';
 import '../widgets/cloud_card.dart';
+import '../widgets/filter_bottom_sheet.dart';
 import 'camera_page.dart';
 
 class HomePage extends StatefulWidget {
@@ -16,6 +18,57 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  Set<CloudType> selectedCloudTypes = {};
+  bool sortLatest = true;
+  String searchQuery = '';
+
+
+  void _filterModal() {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (_) {
+        return FilterBottomSheet(
+          initialCloudTypes: selectedCloudTypes,
+          initialSortLatest: sortLatest,
+          onApply: (cloudType, latest) {
+            setState(() {
+              selectedCloudTypes = cloudType;
+              sortLatest = latest;
+            });
+          },
+        );
+      },
+    );
+  }
+  List<PredictionModel> _applyFilter(List<PredictionModel> list) {
+    var filtered = [...list];
+
+    if (selectedCloudTypes.isNotEmpty) {
+      filtered = filtered
+          .where((e) => selectedCloudTypes.contains(e.cloudType))
+          .toList();
+    }
+    if (searchQuery.isNotEmpty) {
+      filtered = filtered.where((e) {
+        return e.cloudType.name.toLowerCase().contains(searchQuery)
+            || e.name.toLowerCase().contains(searchQuery);
+      }).toList();
+    }
+
+    filtered.sort((a, b) {
+      return sortLatest
+          ? b.date.compareTo(a.date)
+          : a.date.compareTo(b.date);
+    });
+
+    return filtered;
+  }
+
+
   @override
   Widget build(BuildContext context) {
     final box = Hive.box<PredictionModel>('predictions');
@@ -32,7 +85,7 @@ class _HomePageState extends State<HomePage> {
               Text(
                 S.of(context)!.recentActivities,
                 style: TextStyle(
-                  fontSize: 24,
+                  fontSize: Theme.of(context).textTheme.titleLarge?.fontSize,
                   color: Colors.white,
                   fontWeight: FontWeight.bold,
                 ),
@@ -70,11 +123,27 @@ class _HomePageState extends State<HomePage> {
                       borderRadius: BorderRadius.circular(30),
                     ),
                   ),
+                  onChanged: (value) => {
+                    setState(() {
+                      searchQuery = value.trim().toLowerCase();
+                    }),
+                  },
+                  trailing: searchQuery.isNotEmpty
+                      ? [
+                    IconButton(
+                      icon: const Icon(Icons.close),
+                      onPressed: () {
+                        setState(() {
+                          searchQuery = '';
+                        });
+                      },
+                    )
+                  ] : null,
                 ),
               ),
               SizedBox(width: w * 0.02),
               IconButton(
-                onPressed: () {},
+                onPressed: _filterModal,
                 icon: Icon(Icons.filter_list),
                 iconSize: w * 0.1,
                 color: Colors.white,
@@ -86,21 +155,28 @@ class _HomePageState extends State<HomePage> {
               valueListenable: box.listenable(),
               builder: (context, Box<PredictionModel> box, _) {
                 if (box.isEmpty) {
-                  return const Center(
+                  return Center(
                     child: Text(
-                      'No cloud predictions yet ☁️',
-                      style: TextStyle(color: Colors.white),
+                      S.of(context)!.noCloudPredictions,
+                      style: TextStyle(color: Colors.white,fontSize: Theme.of(context).textTheme.bodyLarge?.fontSize),
+
                     ),
                   );
                 }
-
+                final filtered = _applyFilter(box.values.toList());
+                if (filtered.isEmpty) {
+                  return Center(
+                    child: Text(
+                      S.of(context)!.noResultMatchesFilter,
+                      style: TextStyle(color: Colors.white70, fontSize: Theme.of(context).textTheme.bodyLarge?.fontSize),
+                    ),
+                  );
+                }
                 return ListView.builder(
                   padding: const EdgeInsets.symmetric(vertical: 8),
-                  itemCount: box.length,
+                  itemCount: filtered.length,
                   itemBuilder: (context, index) {
-                    final prediction = box.getAt(index)!;
-
-                    return CloudCard(result: prediction);
+                    return CloudCard(result: filtered[index]);
                   },
                 );
               },

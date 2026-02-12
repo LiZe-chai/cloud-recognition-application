@@ -26,5 +26,17 @@
   "enterFileName": "Enter a name for this result",
   "name": "Name",
   "date": "Date",
-  "saveSuccessful": "Save successful"
+  "saveSuccessful": "Save successful",
+  "acceptAndContinue": "Accept & Continue",
+  "noCloudPredictions": "No cloud predictions yet",
+  "noResultMatchesFilter": "No result matches filter",
+  "captureTipsTitle": "Capture Tips",
+  "captureTip1": "Make sure the cloud is inside the square and fills most of the frame.",
+  "captureTip2": "Avoid taking photos in low-light or nighttime conditions.",
+  "captureTip3": "If no cloud is visible in the image, the result may be inaccurate.",
+  "correctCaptureExample": "Correct Capture Example",
+  "confirmPictureTitle": "Confirm Picture",
+  "confirmPictureMessage": "Do you want to use this picture?",
+  "cancel": "Cancel",
+  "confirm": "Confirm"
 }

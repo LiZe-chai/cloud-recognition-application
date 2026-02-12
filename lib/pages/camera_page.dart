@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:image/image.dart' as img;
 
+import '../generated/l10n.dart';
 import 'crop_page.dart';
 
 class CameraPage extends StatefulWidget {
@@ -153,7 +154,7 @@ class _CameraPageState extends State<CameraPage> {
       barrierDismissible: false,
       builder: (context) {
         return AlertDialog(
-          title: const Text('Confirm Picture'),
+          title: Text(S.of(context)!.confirmPictureTitle),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
@@ -166,17 +167,17 @@ class _CameraPageState extends State<CameraPage> {
                 ),
               ),
               const SizedBox(height: 12),
-              const Text('Do you want to use this picture?'),
+              Text(S.of(context)!.confirmPictureMessage),
             ],
           ),
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(context, false),
-              child: const Text('Cancel'),
+              child: Text(S.of(context)!.cancel),
             ),
             ElevatedButton(
               onPressed: () => Navigator.pop(context, true),
-              child: const Text('Confirm'),
+              child: Text(S.of(context)!.confirm),
             ),
           ],
         );
@@ -200,7 +201,7 @@ class _CameraPageState extends State<CameraPage> {
       backgroundColor: Colors.transparent,
       builder: (context) {
         return Container(
-          padding: const EdgeInsets.fromLTRB(20, 16, 20, 24),
+          padding: const EdgeInsets.fromLTRB(20, 0, 20, 24),
           decoration: const BoxDecoration(
             color: Colors.white,
             borderRadius: BorderRadius.vertical(
@@ -221,34 +222,33 @@ class _CameraPageState extends State<CameraPage> {
                     ),
                   ),
 
-                  const Center(
+                  Center(
                     child: Text(
-                      'Capture Tips',
+                      S.of(context)!.captureTipsTitle,
                       style: TextStyle(
-                        fontSize: 30,
+                        fontSize: Theme.of(context).textTheme.titleLarge?.fontSize,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
                   ),
                   const SizedBox(height: 30),
                   Text(
-                    '1. Make sure the cloud is inside the square and fills most of the frame.\n\n'
-                        '2. Avoid taking photos in low-light or night conditions.\n\n'
-                        '3. If no cloud is visible in the image, the result may not be accurate.',
-                    style: TextStyle(fontSize: 16),
-                  ),
-
-                  const SizedBox(height: 50),
-
-                  const Center(
-                    child: Text(
-                      'Correct Capture Example',
-                      style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
-                    ),
+                    '1. ${S.of(context)!.captureTip1}\n\n'
+                        '2. ${S.of(context)!.captureTip2}\n\n'
+                        '3. ${S.of(context)!.captureTip3}\n\n',
+                    style: TextStyle(fontSize: Theme.of(context).textTheme.bodyMedium?.fontSize),
                   ),
 
                   const SizedBox(height: 30),
 
+                  Center(
+                    child: Text(
+                      S.of(context)!.correctCaptureExample,
+                      style: TextStyle(fontWeight: FontWeight.bold, fontSize: Theme.of(context).textTheme.titleMedium?.fontSize),
+                    ),
+                  ),
+
+                  const SizedBox(height: 20),
                   ClipRRect(
                     child: Image.asset(
                       'assets/Ac-N004.jpg',
@@ -257,7 +257,7 @@ class _CameraPageState extends State<CameraPage> {
                       fit: BoxFit.cover,
                     ),
                   ),
-                  const SizedBox(height: 100),
+                  const SizedBox(height: 50),
                 ],
               ),
             ),

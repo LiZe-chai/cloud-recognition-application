@@ -1,6 +1,7 @@
 import 'package:cloud_recognition/pages/home_page.dart';
 import 'package:flutter/material.dart';
 import '../generated/l10n.dart';
+import '../widgets/clause.dart';
 
 class WelcomePage extends StatefulWidget {
   final void Function(Locale)? setLocale;
@@ -11,6 +12,28 @@ class WelcomePage extends StatefulWidget {
 }
 class _WelcomePageState extends State<WelcomePage> {
   bool _isChecked= false;
+
+  final List<Clause> clauses = [
+    Clause(
+      title: 'Clause 1',
+      body:
+      'Lorem ipsum dolor sit amet, consectetur adipiscing elit. '
+          'Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.',
+    ),
+    Clause(
+      title: 'Clause 2',
+      body:
+      'Ut enim ad minim veniam, quis nostrud exercitation ullamco '
+          'laboris nisi ut aliquip ex ea commodo consequat.',
+    ),
+    Clause(
+      title: 'Clause 3',
+      body:
+      'Duis aute irure dolor in reprehenderit in voluptate velit '
+          'esse cillum dolore eu fugiat nulla pariatur.',
+    ),
+  ];
+
 
   void showTermsModal(BuildContext context, double height,double width) {
     showModalBottomSheet(
@@ -27,7 +50,6 @@ class _WelcomePageState extends State<WelcomePage> {
           ),
           child: Column(
             children: [
-              // ---------- Header
               Padding(
                 padding: const EdgeInsets.fromLTRB(20, 20, 20, 0),
                 child: Row(
@@ -40,9 +62,9 @@ class _WelcomePageState extends State<WelcomePage> {
                         Text(
                           S.of(context)!.agreement,
                           style: TextStyle(
-                            fontSize: 12,
-                            color: Colors.grey,
-                            fontWeight: FontWeight.w500,
+                            fontSize: Theme.of(context).textTheme.titleMedium?.fontSize,
+                            color: Colors.grey[800],
+                            fontWeight: FontWeight.w900,
                             letterSpacing: 1,
                           ),
                         ),
@@ -50,7 +72,7 @@ class _WelcomePageState extends State<WelcomePage> {
                         Text(
                           S.of(context)!.termOfService,
                           style: TextStyle(
-                            fontSize: 22,
+                            fontSize: Theme.of(context).textTheme.titleLarge?.fontSize,
                             fontWeight: FontWeight.bold,
                           ),
                         ),
@@ -58,8 +80,8 @@ class _WelcomePageState extends State<WelcomePage> {
                         Text(
                           S.of(context)!.lastUpdatedDate("20/11/2025"),
                           style: TextStyle(
-                            fontSize: 12,
-                            color: Colors.grey,
+                            fontSize: Theme.of(context).textTheme.bodyMedium?.fontSize,
+                            color: Colors.grey[800],
                           ),
                         ),
                       ],
@@ -78,24 +100,13 @@ class _WelcomePageState extends State<WelcomePage> {
 
               // Content Scroll Area
               Expanded(
-                child: SingleChildScrollView(
-                  padding: EdgeInsets.symmetric(horizontal: 20),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      _clause("Clause 1"),
-                      _dummyText(),
-                      SizedBox(height: 20),
-
-                      _clause("Clause 2"),
-                      _dummyText(),
-                      SizedBox(height: 20),
-
-                      _clause("Clause 3"),
-                      _dummyText(),
-                      SizedBox(height: 40),
-                    ],
-                  ),
+                child:ListView.separated(
+                  padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+                  itemCount: clauses.length,
+                  separatorBuilder: (_, __) => const SizedBox(height: 24),
+                  itemBuilder: (context, index) {
+                    return ClauseItem(clause: clauses[index]);
+                  },
                 ),
               ),
 
@@ -119,7 +130,7 @@ class _WelcomePageState extends State<WelcomePage> {
                       });
                     },
                     child: Text(
-                      "Accept & Continue",
+                      S.of(context)!.acceptAndContinue,
                       style: TextStyle(
                           fontSize: 16,
                         color: Colors.white,
@@ -132,25 +143,6 @@ class _WelcomePageState extends State<WelcomePage> {
           ),
         );
       },
-    );
-  }
-
-  Widget _clause(String title) {
-    return Text(
-      title,
-      style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-    );
-  }
-
-  Widget _dummyText() {
-    return Text(
-      "Lorem ipsum dolor sit amet, consectetur adipiscing elit. "
-          "Viverra condimentum eget purus in. Consectetur eget id morbi amet amet.",
-      style: TextStyle(
-        fontSize: 15,
-        color: Colors.black87,
-        height: 1.5,
-      ),
     );
   }
 
@@ -177,6 +169,10 @@ class _WelcomePageState extends State<WelcomePage> {
               PopupMenuItem(
                 value: Locale('zh'),
                 child: Text('中文'),
+              ),
+              PopupMenuItem(
+                value: Locale('my'),
+                child: Text('Bahasa Melayu'),
               ),
             ],
           ),
@@ -217,47 +213,83 @@ class _WelcomePageState extends State<WelcomePage> {
                     ),
                   ),
                   SizedBox(height: h*0.01),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      Checkbox(
-                        value: _isChecked,
-                        onChanged: (value) {
-                          setState(() {
-                            _isChecked = value!;
-                          });
-                        },
+                  Center(
+                    child: ConstrainedBox(
+                      constraints: BoxConstraints(
+                        maxWidth: w * 0.95,
                       ),
-                      InkWell(
-                        onTap: () {
-                          showTermsModal(context,h,w);
-                        },
-                        child: RichText(
-                          text: TextSpan(
-                            text: S.of(context)!.readAndAgree + " ",
-                            style: TextStyle(color: Colors.white, fontSize: 14),
-                            children: [
-                              TextSpan(
-                                text: S.of(context)!.tAndC,
-                                style: TextStyle(
-                                  color: Colors.blue,
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                            ],
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Checkbox(
+                            value: _isChecked,
+                            onChanged: (value) {
+                              setState(() {
+                                _isChecked = value!;
+                              });
+                            },
                           ),
-                        ),
-                      )
-
-                    ],
+                          Flexible(
+                            child: Wrap(
+                              alignment: WrapAlignment.center,
+                              crossAxisAlignment: WrapCrossAlignment.center,
+                              children: [
+                                Text(
+                                  '${S.of(context)!.readAndAgree} ',
+                                  style: const TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 14,
+                                  ),
+                                ),
+                                InkWell(
+                                  onTap: () {
+                                    showTermsModal(context, h, w);
+                                  },
+                                  child: Text(
+                                    S.of(context)!.tAndC,
+                                    style: const TextStyle(
+                                      color: Colors.blue,
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.bold,
+                                      decoration: TextDecoration.underline,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
                   )
-
-                ],
+        ],
             )
       ),
 
+    );
+  }
+}
+class ClauseItem extends StatelessWidget {
+  final Clause clause;
+
+  const ClauseItem({super.key, required this.clause});
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          clause.title,
+          style: Theme.of(context).textTheme.titleMedium,
+        ),
+        const SizedBox(height: 8),
+        Text(
+          clause.body,
+          style: Theme.of(context).textTheme.bodyMedium,
+        ),
+      ],
     );
   }
 }

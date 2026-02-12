@@ -44,7 +44,7 @@ class SavedResultPage extends StatelessWidget {
                       Text(
                         S.of(context)!.predictionResult,
                         style: TextStyle(
-                          fontSize: 18,
+                          fontSize: Theme.of(context).textTheme.bodyLarge?.fontSize,
                           fontWeight: FontWeight.bold,
                           color: Colors.white,
                         ),
@@ -62,7 +62,7 @@ class SavedResultPage extends StatelessWidget {
                             Text(
                               S.of(context)!.name,
                               style: TextStyle(
-                                fontSize: 16,
+                                fontSize: Theme.of(context).textTheme.bodyMedium?.fontSize,
                                 color: Colors.white,
                               ),
                             ),
@@ -70,7 +70,7 @@ class SavedResultPage extends StatelessWidget {
                             Text(
                               result.name,
                               style: TextStyle(
-                                fontSize: 16,
+                                fontSize: Theme.of(context).textTheme.bodyMedium?.fontSize,
                                 color: Colors.white,
                               ),
                             ),
@@ -79,7 +79,7 @@ class SavedResultPage extends StatelessWidget {
                             Text(
                               S.of(context)!.date,
                               style: TextStyle(
-                                fontSize: 16,
+                                fontSize: Theme.of(context).textTheme.bodyMedium?.fontSize,
                                 color: Colors.white,
                               ),
                             ),
@@ -89,21 +89,22 @@ class SavedResultPage extends StatelessWidget {
                               style: TextStyle(
                                 fontWeight: FontWeight.bold,
                                 color: Colors.white,
+                                fontSize: Theme.of(context).textTheme.bodyMedium?.fontSize,
                               ),
                             ),
                             Divider(),
                             Text(
                               S.of(context)!.predictedCloudType,
                               style: TextStyle(
-                                fontSize: 16,
+                                fontSize: Theme.of(context).textTheme.bodyMedium?.fontSize,
                                 color: Colors.white,
                               ),
                             ),
                             SizedBox(height: 4),
                             Text(
-                              cloudTypeToText(result.cloudType),
+                              result.cloudType.label,
                               style: TextStyle(
-                                fontSize: 16,
+                                fontSize: Theme.of(context).textTheme.bodyMedium?.fontSize,
                                 fontWeight: FontWeight.bold,
                                 color: Colors.white,
                               ),
@@ -112,17 +113,17 @@ class SavedResultPage extends StatelessWidget {
                             Text(
                               S.of(context)!.predictionConfidence,
                               style: TextStyle(
-                                fontSize: 16,
+                                fontSize: Theme.of(context).textTheme.bodyMedium?.fontSize,
                                 color: Colors.white,
                               ),
                             ),
                             SizedBox(height: 4),
                             Text(
-                              '${(result.confidence * 100).toStringAsFixed(1)}%'
-                              ,
+                              '${(result.confidence * 100).toStringAsFixed(1)}%',
                               style: TextStyle(
                                 fontWeight: FontWeight.bold,
                                 color: Colors.white,
+                                fontSize: Theme.of(context).textTheme.bodyMedium?.fontSize,
                               ),
                             ),
                           ],

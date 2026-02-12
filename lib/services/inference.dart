@@ -2,11 +2,17 @@ import 'dart:math';
 
 enum CloudType {
   cirrus,
-  cumulus,
-  stratus,
-  cumulonimbus,
+  cirrostratus,
+  cirrocumulus,
   altostratus,
+  altocumulus,
+  stratus,
+  stratocumulus,
+  nimbostratus,
+  cumulus,
+  cumulonimbus,
 }
+
 
 class InferenceResult {
   final CloudType type;
@@ -31,17 +37,30 @@ Future<InferenceResult> fakeInferCloud() async {
   );
 }
 
-String cloudTypeToText(CloudType type) {
-  switch (type) {
-    case CloudType.cirrus:
-      return 'Cirrus';
-    case CloudType.cumulus:
-      return 'Cumulus';
-    case CloudType.stratus:
-      return 'Stratus';
-    case CloudType.cumulonimbus:
-      return 'Cumulonimbus';
-    case CloudType.altostratus:
-      return 'Altostratus';
+extension CloudTypeX on CloudType {
+  String get label {
+    switch (this) {
+      case CloudType.cirrus:
+        return 'Cirrus';
+      case CloudType.cirrostratus:
+        return 'Cirrostratus';
+      case CloudType.cirrocumulus:
+        return 'Cirrocumulus';
+      case CloudType.altostratus:
+        return 'Altostratus';
+      case CloudType.altocumulus:
+        return 'Altocumulus';
+      case CloudType.stratus:
+        return 'Stratus';
+      case CloudType.stratocumulus:
+        return 'Stratocumulus';
+      case CloudType.nimbostratus:
+        return 'Nimbostratus';
+      case CloudType.cumulus:
+        return 'Cumulus';
+      case CloudType.cumulonimbus:
+        return 'Cumulonimbus';
+    }
   }
 }
+

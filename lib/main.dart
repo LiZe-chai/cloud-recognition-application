@@ -45,6 +45,7 @@ class _MyAppState extends State<MyApp> {
       supportedLocales: const [
         Locale('en'),
         Locale('zh'),
+        Locale('my'),
       ],
       localizationsDelegates: const [
         S.delegate,
@@ -54,12 +55,12 @@ class _MyAppState extends State<MyApp> {
       ],
       theme: ThemeData(
         textTheme: const TextTheme(
-          bodyLarge: TextStyle(fontSize: 16),
-          bodyMedium: TextStyle(fontSize: 14),
-          bodySmall: TextStyle(fontSize: 12),
+          bodyLarge: TextStyle(fontSize: 18),
+          bodyMedium: TextStyle(fontSize: 16),
+          bodySmall: TextStyle(fontSize: 14),
 
-          titleLarge: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
-          titleMedium: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
+          titleLarge: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+          titleMedium: TextStyle(fontSize: 20, fontWeight: FontWeight.w600),
           titleSmall: TextStyle(fontSize: 16),
         ),
       ),
