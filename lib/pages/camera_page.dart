@@ -1,4 +1,5 @@
 import 'package:camera/camera.dart';
+import 'package:cloud_recognition/pages/preview_page.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 
@@ -16,6 +17,7 @@ class _CameraPageState extends State<CameraPage> {
   late CameraDescription _currentCamera;
   final ImagePicker _picker = ImagePicker();
   bool _isInitialized = false;
+  bool _isTakingPicture = false;
 
   @override
   void initState() {
@@ -49,12 +51,33 @@ class _CameraPageState extends State<CameraPage> {
     _initCamera();
   }
 
+
   Future<void> _takePicture() async {
+    if (_isTakingPicture) return;
     if (!_controller.value.isInitialized) return;
 
-    final XFile file = await _controller.takePicture();
-    debugPrint('Picture saved to: ${file.path}');
+    _isTakingPicture = true;
+
+    try {
+      await _controller.pausePreview();
+
+      final XFile image = await _controller.takePicture();
+
+      await Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (_) => PreviewPage(tempImagePath: image.path),
+        ),
+      );
+
+      await _controller.resumePreview();
+    } catch (e) {
+      debugPrint('Take picture error: $e');
+    } finally {
+      _isTakingPicture = false;
+    }
   }
+
 
   @override
   void dispose() {
