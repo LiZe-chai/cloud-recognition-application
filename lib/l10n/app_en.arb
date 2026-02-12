@@ -8,7 +8,28 @@
   "forgotPassword": "Forgot password?",
   "loginWithGoogle": "Login With Google",
   "dontHaveAnAccount": "Don't have an account?",
-  "signUp": "Sign up here",
+  "signUpNow": "Sign up here",
+  "signUp": "Sign up",
   "emailError": "This email hasn't registered",
-  "passwordError": "Password is wrong"
+  "passwordError": "Password is wrong",
+  "passwordRegex": "Password must be at least 8 characters, including an uppercase letter, a lowercase letter, a number, and a special character.",
+  "confirmPassword": "Confirm Password",
+  "confirmPasswordInstruction": "Enter password again",
+  "emailExist":"This email already registered, please login",
+  "passwordNotMatch":"Password and Confirm Password must be the same.",
+  "checkEmail": "Check your email",
+  "@checkEmailInstruction": {
+    "placeholders": {
+      "email": {
+        "type": "String",
+        "example": "example@gmail.com"
+      }
+    }
+  },
+  "checkEmailInstruction": "We sent a reset link to {email}\nEnter the 6 digit code mentioned in the email",
+  "verifyCode": "Verify Code",
+  "haventReceiveCode": "Haven’t received the code?",
+  "resend":"Resend Code",
+  "incompleteCode": "Please enter a 6-digit code"
+
 }

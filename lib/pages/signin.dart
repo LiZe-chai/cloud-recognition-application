@@ -138,7 +138,6 @@ class _SignInPageState extends State<SignInPage> {
                       if (user == null) {
                         setState(() {
                           _emailError = S.of(context)!.emailError;
-
                         });
                       } else if (user["password"] != password) {
                         setState(() {
@@ -234,7 +233,7 @@ class _SignInPageState extends State<SignInPage> {
                       child: Padding(
                         padding: EdgeInsets.all(4.0),
                         child: Text(
-                          S.of(context)!.signUp,
+                          S.of(context)!.signUpNow,
                           style: TextStyle(
                             color: Colors.blue,
                             fontWeight: FontWeight.w600,
