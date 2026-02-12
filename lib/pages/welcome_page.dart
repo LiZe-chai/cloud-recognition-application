@@ -1,4 +1,4 @@
-import 'package:cloud_recognition/pages/HomePage.dart';
+import 'package:cloud_recognition/pages/home_page.dart';
 import 'package:flutter/material.dart';
 import '../generated/l10n.dart';
 

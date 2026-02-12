@@ -1,15 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'generated/l10n.dart';
-import 'package:cloud_recognition/pages/welcomePage.dart';
+import 'package:cloud_recognition/pages/welcome_page.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:cloud_recognition/models/prediction_model.dart';
 
 
 void main() async{
   WidgetsFlutterBinding.ensureInitialized();
-
   await Hive.initFlutter();
-  await Hive.openBox('Inference Results');
+
+  Hive.registerAdapter(PredictionModelAdapter()); //
+  final box = await Hive.openBox<PredictionModel>('predictions');
+  await box.clear();
   runApp(const MyApp());
 }
 
