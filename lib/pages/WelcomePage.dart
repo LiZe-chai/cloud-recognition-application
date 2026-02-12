@@ -1,3 +1,4 @@
+import 'package:cloud_recognition/pages/HomePage.dart';
 import 'package:flutter/material.dart';
 import '../generated/l10n.dart';
 
@@ -153,8 +154,6 @@ class _WelcomePageState extends State<WelcomePage> {
     );
   }
 
-
-
   @override
   Widget build(BuildContext context) {
     final h = MediaQuery.of(context).size.height;
@@ -203,7 +202,10 @@ class _WelcomePageState extends State<WelcomePage> {
                         ),
                       ),
                       onPressed: () {
-                        //
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => HomePage()),
+                        );
                       },
                       child: Text(
                         S.of(context)!.getStarted,

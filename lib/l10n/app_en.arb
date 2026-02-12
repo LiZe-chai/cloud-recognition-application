@@ -48,5 +48,7 @@
   "termOfService": "Terms of Service",
   "lastUpdatedDate": "Last updated on {date}",
   "acceptAndContinue": "Accept & Continue",
-  "getStarted": "Get Started"
+  "getStarted": "Get Started",
+  "recentActivities": "Recent Activities",
+  "search": "Search"
 }
