@@ -62,6 +62,49 @@ class _HomePageState extends State<HomePage> {
             ),
           )
       ),
+      floatingActionButton: SizedBox(
+        width: w * 0.2,
+        height: w * 0.2,
+
+        child: FloatingActionButton(
+            onPressed: () {},
+            backgroundColor: Colors.white,
+            child: Icon(Icons.center_focus_strong, size: w*0.2, color: Colors.black),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(25),
+            ),
+        ),
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+      bottomNavigationBar: BottomAppBar(
+        height: h*0.1,
+        color: Colors.white24,
+        child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: [
+              Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(Icons.home, color: Colors.white,size: w*0.08,),
+                  Text(S.of(context)!.home,
+                    style: TextStyle(color: Colors.white,fontSize: w*0.04),
+                  ),
+                ],
+              ),
+              SizedBox(width: w*0.1),
+              Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(Icons.settings, color: Colors.white,size:w*0.08),
+                  Text(S.of(context)!.settings,
+                    style: TextStyle(color: Colors.white,fontSize: w*0.04),
+                  ),
+                ],
+              ),
+            ],
+          ),
+      ),
+
     );
   }
 

@@ -50,5 +50,7 @@
   "acceptAndContinue": "Accept & Continue",
   "getStarted": "Get Started",
   "recentActivities": "Recent Activities",
-  "search": "Search"
+  "search": "Search",
+  "home": "Home",
+  "settings": "Settings"
 }
