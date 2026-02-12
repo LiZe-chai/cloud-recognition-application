@@ -36,8 +36,6 @@ class _CameraPageState extends State<CameraPage> {
   bool _hasCameraPermission = false;
   bool _permissionChecked = false;
 
-
-
   @override
   void initState() {
     super.initState();
@@ -61,7 +59,6 @@ class _CameraPageState extends State<CameraPage> {
 
     await _initCamera();
   }
-
 
   Future<void> _initCamera() async {
     _controller = CameraController(
@@ -94,41 +91,67 @@ class _CameraPageState extends State<CameraPage> {
     await _initCamera();
   }
 
-
   void _onScaleStart(ScaleStartDetails details) {
     _baseZoom = _currentZoom;
   }
 
   void _onScaleUpdate(ScaleUpdateDetails details) async {
-    final zoom =
-    (_baseZoom * details.scale).clamp(_minZoom, _maxZoom);
+    final zoom = (_baseZoom * details.scale).clamp(_minZoom, _maxZoom);
 
     _currentZoom = zoom;
     await _controller.setZoomLevel(zoom);
   }
 
-
   Future<File> _cropCenterSquare(File file) async {
     final bytes = await file.readAsBytes();
-    final image = img.decodeImage(bytes)!;
+    var image = img.decodeImage(bytes)!;
+    image = img.bakeOrientation(image);
 
-    final size =
-    image.width < image.height ? image.width : image.height;
+    final previewSize = _controller.value.previewSize!;
+    final screenSize = MediaQuery.of(context).size;
 
-    final x = (image.width - size) ~/ 2;
-    final y = (image.height - size) ~/ 2;
+    final previewWidth = previewSize.height;
+    final previewHeight = previewSize.width;
+
+    final screenWidth = screenSize.width;
+    final screenHeight = screenSize.height;
+
+    final scale = (screenWidth / previewWidth)
+        .compareTo(screenHeight / previewHeight) > 0
+        ? screenWidth / previewWidth
+        : screenHeight / previewHeight;
+
+    final displayedWidth = previewWidth * scale;
+    final displayedHeight = previewHeight * scale;
+
+    final dx = (displayedWidth - screenWidth) / 2;
+    final dy = (displayedHeight - screenHeight) / 2;
+
+    final squareSize = screenWidth;
+    final squareLeft = 0.0;
+    final squareTop = (screenHeight - squareSize) / 2;
+
+    final previewX = (squareLeft + dx) / scale;
+    final previewY = (squareTop + dy) / scale;
+    final previewCropSize = squareSize / scale;
+
+    final imageScaleX = image.width / previewWidth;
+    final imageScaleY = image.height / previewHeight;
+
+    final cropX = previewX * imageScaleX;
+    final cropY = previewY * imageScaleY;
+    final cropSize = previewCropSize * imageScaleX;
 
     final square = img.copyCrop(
       image,
-      x: x,
-      y: y,
-      width: size,
-      height: size,
+      x: cropX.round(),
+      y: cropY.round(),
+      width: cropSize.round(),
+      height: cropSize.round(),
     );
 
-    final croppedFile = File(
-      file.path.replaceFirst('.jpg', '_square.jpg'),
-    );
+    final croppedFile =
+    File(file.path.replaceFirst('.jpg', '_square.jpg'));
 
     await croppedFile.writeAsBytes(
       img.encodeJpg(square, quality: 95),
@@ -136,6 +159,8 @@ class _CameraPageState extends State<CameraPage> {
 
     return croppedFile;
   }
+
+
 
   Future<void> _takePicture() async {
     if (_isTakingPicture || !_controller.value.isInitialized) return;
@@ -151,8 +176,7 @@ class _CameraPageState extends State<CameraPage> {
       await Navigator.push(
         context,
         MaterialPageRoute(
-          builder: (_) =>
-              InferencePage(tempImagePath: cropped.path),
+          builder: (_) => InferencePage(tempImagePath: cropped.path),
         ),
       );
 
@@ -259,12 +283,12 @@ class _CameraPageState extends State<CameraPage> {
                       onPressed: () => Navigator.pop(context),
                     ),
                   ),
-
                   Center(
                     child: Text(
                       S.of(context)!.captureTipsTitle,
                       style: TextStyle(
-                        fontSize: Theme.of(context).textTheme.titleLarge?.fontSize,
+                        fontSize:
+                            Theme.of(context).textTheme.titleLarge?.fontSize,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
@@ -272,20 +296,24 @@ class _CameraPageState extends State<CameraPage> {
                   const SizedBox(height: 30),
                   Text(
                     '1. ${S.of(context)!.captureTip1}\n\n'
-                        '2. ${S.of(context)!.captureTip2}\n\n'
-                        '3. ${S.of(context)!.captureTip3}\n\n',
-                    style: TextStyle(fontSize: Theme.of(context).textTheme.bodyMedium?.fontSize),
+                    '2. ${S.of(context)!.captureTip2}\n\n'
+                    '3. ${S.of(context)!.captureTip3}\n\n',
+                    style: TextStyle(
+                        fontSize:
+                            Theme.of(context).textTheme.bodyMedium?.fontSize),
                   ),
-
                   const SizedBox(height: 30),
-
                   Center(
                     child: Text(
                       S.of(context)!.correctCaptureExample,
-                      style: TextStyle(fontWeight: FontWeight.bold, fontSize: Theme.of(context).textTheme.titleMedium?.fontSize),
+                      style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: Theme.of(context)
+                              .textTheme
+                              .titleMedium
+                              ?.fontSize),
                     ),
                   ),
-
                   const SizedBox(height: 20),
                   ClipRRect(
                     child: Image.asset(
@@ -305,141 +333,133 @@ class _CameraPageState extends State<CameraPage> {
     );
   }
 
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.black,
-      body: _isInitialized
+      body: _permissionChecked
           ? SafeArea(
-        child: Stack(
-          children: [
-            Center(
-              child: _hasCameraPermission
-                  ? GestureDetector(
-                onScaleStart: _onScaleStart,
-                onScaleUpdate: _onScaleUpdate,
-                child: AspectRatio(
-                  aspectRatio: 1,
-                  child: ClipRect(
-                    child: OverflowBox(
-                      alignment: Alignment.center,
-                      child: CameraPreview(_controller),
-                    ),
-                  ),
-                ),
-              )
-                  : Column(
-                mainAxisAlignment: MainAxisAlignment.center,
+              child: Stack(
                 children: [
-                  const Icon(
-                    Icons.no_photography,
-                    color: Colors.white54,
-                    size: 64,
+                  Center(
+                    child: _hasCameraPermission
+                        ? (_isInitialized
+                            ? GestureDetector(
+                                onScaleStart: _onScaleStart,
+                                onScaleUpdate: _onScaleUpdate,
+                                child: SizedBox.expand(
+                                  child: FittedBox(
+                                    fit: BoxFit.cover,
+                                    child: SizedBox(
+                                      width:
+                                          _controller.value.previewSize!.height,
+                                      height:
+                                          _controller.value.previewSize!.width,
+                                      child: CameraPreview(_controller),
+                                    ),
+                                  ),
+                                ),
+                              )
+                            : const CircularProgressIndicator()) // Initializing hardware
+                        : Column(
+                            // Permission denied UI
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              const Icon(Icons.no_photography,
+                                  color: Colors.white54, size: 64),
+                              const SizedBox(height: 16),
+                              Text(
+                                S.of(context)!.cameraPermissionRequired,
+                                style: const TextStyle(color: Colors.white),
+                              ),
+                              const SizedBox(height: 20),
+                              ElevatedButton(
+                                onPressed: _initCameraWithPermission,
+                                // Reuse your init method
+                                child: Text(S.of(context)!.grantPermission),
+                              ),
+                            ],
+                          ),
                   ),
-                  const SizedBox(height: 16),
-                  Text(
-                    S.of(context)!.cameraPermissionRequired,
-                    style: TextStyle(color: Colors.white),
-                  ),
-                  const SizedBox(height: 20),
-                  ElevatedButton(
-                    onPressed: () async {
-                      final status =
-                      await Permission.camera.request();
-
-                      if (status.isGranted) {
-                        _hasCameraPermission = true;
-                        await _initCamera();
-                      } else if (status.isPermanentlyDenied) {
-                        await openAppSettings();
-                      }
-
-                      if (mounted) setState(() {});
-                    },
-                    child: Text(S.of(context)!.grantPermission),
-                  ),
-                ],
-              ),
-            ),
-
-
-            Positioned(
-              top: 0,
-              left: 0,
-              right: 0,
-              child: Container(
-                height: 60,
-                color: Colors.black54,
-                child: Row(
-                  children: [
-                    IconButton(
-                      icon: const Icon(Icons.close,
-                          color: Colors.white),
-                      onPressed: () =>
-                          Navigator.pop(context),
-                    ),
-                    const Spacer(),
-                    IconButton(
-                      icon: const Icon(Icons.info_outline,
-                          color: Colors.white),
-                      onPressed: () {
-                        showCaptureTipsBottomSheet(context);
-                      },
-                    ),
-                  ],
-                ),
-              ),
-            ),
-
-            Positioned(
-              bottom: 0,
-              left: 0,
-              right: 0,
-              child: Container(
-                padding:
-                const EdgeInsets.symmetric(vertical: 20),
-                color: Colors.black54,
-                child: Row(
-                  mainAxisAlignment:
-                  MainAxisAlignment.spaceEvenly,
-                  children: [
-                    IconButton(
-                      icon: const Icon(Icons.image,
-                          color: Colors.white, size: 28),
-                      onPressed: _pickFromGallery,
-                    ),
-                    GestureDetector(
-                      onTap: _takePicture,
-                      child: Container(
-                        width: 72,
-                        height: 72,
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          border: Border.all(
-                              color: Colors.white,
-                              width: 10),
+                  if (_hasCameraPermission && _isInitialized)
+                    Center(
+                      child: IgnorePointer(
+                        child: Container(
+                          width: MediaQuery.of(context).size.width,
+                          height: MediaQuery.of(context).size.width,
+                          decoration: BoxDecoration(
+                            border: Border.all(color: Colors.white, width: 3),
+                          ),
                         ),
                       ),
                     ),
-                    IconButton(
-                      icon: const Icon(Icons.cameraswitch,
-                          color: Colors.white, size: 28),
-                      onPressed: _switchCamera,
+                  Positioned(
+                    top: 0,
+                    left: 0,
+                    right: 0,
+                    child: Container(
+                      height: 60,
+                      color: Colors.black54,
+                      child: Row(
+                        children: [
+                          IconButton(
+                            icon: const Icon(Icons.close, color: Colors.white),
+                            onPressed: () => Navigator.pop(context),
+                          ),
+                          const Spacer(),
+                          IconButton(
+                            icon: const Icon(Icons.info_outline,
+                                color: Colors.white),
+                            onPressed: () {
+                              showCaptureTipsBottomSheet(context);
+                            },
+                          ),
+                        ],
+                      ),
                     ),
-                  ],
-                ),
+                  ),
+                  Positioned(
+                    bottom: 0,
+                    left: 0,
+                    right: 0,
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(vertical: 20),
+                      color: Colors.black54,
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: [
+                          IconButton(
+                            icon: const Icon(Icons.image,
+                                color: Colors.white, size: 28),
+                            onPressed: _pickFromGallery,
+                          ),
+                          GestureDetector(
+                            onTap: _takePicture,
+                            child: Container(
+                              width: 72,
+                              height: 72,
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                border:
+                                    Border.all(color: Colors.white, width: 10),
+                              ),
+                            ),
+                          ),
+                          IconButton(
+                            icon: const Icon(Icons.cameraswitch,
+                                color: Colors.white, size: 28),
+                            onPressed: _switchCamera,
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ],
               ),
-            ),
-          ],
-        ),
-      )
+            )
           : const Center(
-        child: CircularProgressIndicator(
-            color: Colors.white),
-      ),
+              child: CircularProgressIndicator(color: Colors.white),
+            ),
     );
-
   }
 }
-
