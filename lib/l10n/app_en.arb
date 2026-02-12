@@ -40,5 +40,13 @@
   "verifyEmail": "Verify email",
   "setNewPassword": "Set a new password",
   "setNewPasswordInstruction": "Create a new password. Ensure it differs from\nprevious ones for security",
-  "resetPassword":  "Reset Password"
+  "resetPassword":  "Reset Password",
+
+  "readAndAgree": "I have read and agree to the",
+  "tAndC": "Terms and Conditions.",
+  "agreement": "AGREEMENT",
+  "termOfService": "Terms of Service",
+  "lastUpdatedDate": "Last updated on {date}",
+  "acceptAndContinue": "Accept & Continue",
+  "getStarted": "Get Started"
 }

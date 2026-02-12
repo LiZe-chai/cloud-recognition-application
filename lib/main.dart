@@ -1,8 +1,7 @@
-import 'package:cloud_recognition/pages/signup.dart';
 import 'package:flutter/material.dart';
-import 'pages/signin.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'generated/l10n.dart';
+import 'package:cloud_recognition/pages/welcomePage.dart';
 
 void main() {
   runApp(const MyApp());
@@ -40,10 +39,9 @@ class _MyAppState extends State<MyApp> {
         GlobalCupertinoLocalizations.delegate,
       ],
       debugShowCheckedModeBanner: false,
-      initialRoute: '/signIn',
+      initialRoute: '/welcome',
       routes: {
-        '/signIn': (context) => SignInPage(setLocale: setLocale),
-        '/signUp': (context) => const SignUpPage(),
+        '/welcome': (context) => WelcomePage(setLocale: setLocale),
       },
     );
   }

@@ -40,7 +40,15 @@
   "verifyEmail": "验证邮箱",
   "setNewPassword": "设置新密码",
   "setNewPasswordInstruction": "创建一个新密码。请确保与之前的密码不同，以提高安全性",
-  "resetPassword": "重置密码"
+  "resetPassword": "重置密码",
+
+  "readAndAgree": "我已阅读并同意",
+  "tAndC": "《条款与条件》",
+  "agreement": "协议",
+  "termOfService": "服务条款",
+  "lastUpdatedDate": "最后更新于 {date}",
+  "acceptAndContinue": "接受并继续",
+  "getStarted": "开始使用"
 
 }
 
