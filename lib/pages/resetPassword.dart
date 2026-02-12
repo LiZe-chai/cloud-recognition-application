@@ -1,9 +1,11 @@
+import 'package:cloud_recognition/pages/signin.dart';
 import 'package:flutter/material.dart';
 import '../generated/l10n.dart';
 import '../user_repository.dart';
 
 class resetPasswordPage extends StatefulWidget {
-  const resetPasswordPage({super.key});
+  final String emailAddress;
+  const resetPasswordPage({super.key,required this.emailAddress});
 
   @override
   State<resetPasswordPage> createState() => _resetPasswordPageState();
@@ -136,21 +138,23 @@ class _resetPasswordPageState extends State<resetPasswordPage> {
                       _confirmPasswordError=null;
                     });
                     try {
-                      final passwordValid = await _userRepo.isPasswordValid(password);
-                      if(passwordValid){
-                        if(password == confirmPassword){
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(content: Text("✅ reset password successful!")),
-                          );
-                        }else{
-                          setState(() {
-                            _confirmPasswordError = S.of(context)!.passwordNotMatch;
-                          });
-                        }
-                      }else{
+                      final response = await _userRepo.resetPassword(widget.emailAddress,password,confirmPassword);
+                      if(response == "Invalid password"){
                         setState(() {
                           _passwordError = true;
                         });
+                      }else if(response == "Password not match"){
+                        setState(() {
+                          _confirmPasswordError = S.of(context)!.passwordNotMatch;
+                        });
+                      }else{
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(content: Text("reset password successful")),
+                        );
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => SignInPage()),
+                        );
                       }
                     } catch (e) {
                       ScaffoldMessenger.of(context).showSnackBar(

@@ -15,6 +15,21 @@ class UserRepository {
     return exists;
   }
   //backend function
+  Future<bool> isUserExist(String email) async {
+    final response = await http.post(
+      Uri.parse("http://10.0.2.2:8080/api/users/exist"),
+      body: {
+        'email': email,
+      },
+    );
+
+    if (response.statusCode == 200) {
+      return response.body.toLowerCase() == 'true'; //
+    } else {
+      throw Exception("Failed to login: ${response.statusCode}");
+    }
+  }
+
   Future<String> requestLogin(String email, String password) async {
     final response = await http.post(
       Uri.parse("http://10.0.2.2:8080/api/users/login"),
@@ -30,6 +45,24 @@ class UserRepository {
       throw Exception("Failed to login: ${response.statusCode}");
     }
   }
+
+  Future<String> resetPassword(String email, String password,String confirmPassword) async {
+    final response = await http.post(
+      Uri.parse("http://10.0.2.2:8080/api/users/resetPassword"),
+      body: {
+        'email': email,
+        'password': password,
+        'confirmPassword': confirmPassword,
+      },
+    );
+
+    if (response.statusCode == 200) {
+      return response.body; //
+    } else {
+      throw Exception("Failed to login: ${response.statusCode}");
+    }
+  }
+
   Future<String> requestRegistration(String email, String password,String confirmPassword) async {
     final response = await http.post(
       Uri.parse("http://10.0.2.2:8080/api/users/registration"),
@@ -60,6 +93,20 @@ class UserRepository {
       return response.body.toLowerCase() == 'true';
     } else {
       throw Exception("Failed to login: ${response.statusCode}");
+    }
+  }
+  Future<String?> loginWithGoogle(String idToken) async {
+    final response = await http.post(
+      Uri.parse("http://10.0.2.2:8080/api/auth/google"),
+      headers: {"Content-Type": "application/json"},
+      body: jsonEncode({"idToken": idToken}),
+    );
+
+    if (response.statusCode == 200) {
+      final data = jsonDecode(response.body);
+      return data["token"];
+    } else {
+      throw Exception("Login failed: ${response.body}");
     }
   }
 

@@ -1,6 +1,7 @@
 import 'package:cloud_recognition/pages/signup.dart';
 import 'package:cloud_recognition/pages/forgotPassword.dart';
 import 'package:flutter/material.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import '../user_repository.dart';
 import '../generated/l10n.dart';
 
@@ -15,6 +16,12 @@ class SignInPage extends StatefulWidget {
 
 class _SignInPageState extends State<SignInPage> {
   final UserRepository _userRepo = UserRepository();
+  final GoogleSignIn _googleSignIn = GoogleSignIn(
+    scopes: ['email', 'profile'],
+    serverClientId:"248671681961-btohhh0mk2qkdco18614q3gllgjuvdvn.apps.googleusercontent.com"
+  );
+
+  String? _jwt;
 
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
@@ -22,6 +29,49 @@ class _SignInPageState extends State<SignInPage> {
   String? _passwordError;
   bool _obscurePassword = true;
   bool _isLoading = false; //waiting api call
+
+  Future<void> _handleSignOut() async {
+    await _googleSignIn.signOut();
+    setState(() {
+      _jwt = null;
+    });
+  }
+
+  Future<void> _handleGoogleSignIn() async {
+    await _googleSignIn.signOut();
+    setState(() {
+      _isLoading = true;
+    });
+
+    try {
+      final googleUser = await _googleSignIn.signIn();
+      if (googleUser == null) return;
+
+      final googleAuth = await googleUser.authentication;
+      final idToken = googleAuth.idToken;
+
+      if (idToken != null) {
+        final jwt = await _userRepo.loginWithGoogle(idToken);
+        setState(() {
+          _jwt = jwt;
+        });
+        debugPrint("✅ Login successful，JWT: $_jwt");
+        if (jwt != null) {
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (_) => const SignInPage()),
+          );
+        }
+      }
+    } catch (e) {
+      debugPrint("❌ Google login failed: $e");
+      await _googleSignIn.signOut();
+    } finally {
+      setState(() {
+        _isLoading = false;
+      });
+    }
+  }
 
 
   @override
@@ -200,7 +250,7 @@ class _SignInPageState extends State<SignInPage> {
                 // Login with Google
                 OutlinedButton.icon(
                   onPressed: () {
-                    // TODO: Google login
+                    _handleGoogleSignIn();
                   },
                   style: OutlinedButton.styleFrom(
                     padding: const EdgeInsets.symmetric(vertical: 14),

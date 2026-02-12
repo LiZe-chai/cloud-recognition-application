@@ -1,4 +1,5 @@
 import 'package:cloud_recognition/pages/resetPassword.dart';
+import 'package:cloud_recognition/pages/verifyEmail.dart';
 import 'package:flutter/material.dart';
 import '../generated/l10n.dart';
 import '../user_repository.dart';
@@ -67,11 +68,11 @@ class _forgotPasswordPageState extends State<forgotPasswordPage> {
                       _emailError = null;
                     });
                     try {
-                      final userExist = await _userRepo.mockUserExists(email);
+                      final userExist = await _userRepo.isUserExist(email);
                       if (userExist){
                         Navigator.push(
                           context,
-                          MaterialPageRoute(builder: (context) => resetPasswordPage()),
+                          MaterialPageRoute(builder: (context) => verifyEmailPage(emailAddress: email, mode: 'reset password',)),
                         );
                       }else{
                         setState(() {

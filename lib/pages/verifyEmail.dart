@@ -101,7 +101,7 @@ class _verifyEmailPageState extends State<verifyEmailPage> {
                           }else{
                             Navigator.push(
                               context,
-                              MaterialPageRoute(builder: (context) => const resetPasswordPage()),
+                              MaterialPageRoute(builder: (context) => resetPasswordPage(emailAddress: widget.emailAddress,)),
                             );
                           }
                         }else{
