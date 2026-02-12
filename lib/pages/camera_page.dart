@@ -5,6 +5,7 @@ import 'package:cloud_recognition/pages/inference_page.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:image/image.dart' as img;
+import 'package:permission_handler/permission_handler.dart';
 
 import '../generated/l10n.dart';
 import 'crop_page.dart';
@@ -32,12 +33,35 @@ class _CameraPageState extends State<CameraPage> {
   double _currentZoom = 1.0;
   double _baseZoom = 1.0;
 
+  bool _hasCameraPermission = false;
+  bool _permissionChecked = false;
+
+
+
   @override
   void initState() {
     super.initState();
     _currentCamera = widget.cameras.first;
-    _initCamera();
+    _initCameraWithPermission();
   }
+
+  Future<void> _initCameraWithPermission() async {
+    final status = await Permission.camera.request();
+
+    if (!status.isGranted) {
+      setState(() {
+        _hasCameraPermission = false;
+        _permissionChecked = true;
+      });
+      return;
+    }
+
+    _hasCameraPermission = true;
+    _permissionChecked = true;
+
+    await _initCamera();
+  }
+
 
   Future<void> _initCamera() async {
     _controller = CameraController(
@@ -56,6 +80,8 @@ class _CameraPageState extends State<CameraPage> {
   }
 
   Future<void> _switchCamera() async {
+    if (!_hasCameraPermission) return;
+
     await _controller.dispose();
 
     _currentCamera = _currentCamera == widget.cameras.first
@@ -64,8 +90,11 @@ class _CameraPageState extends State<CameraPage> {
 
     _isInitialized = false;
     setState(() {});
+
     await _initCamera();
   }
+
+
   void _onScaleStart(ScaleStartDetails details) {
     _baseZoom = _currentZoom;
   }
@@ -142,6 +171,15 @@ class _CameraPageState extends State<CameraPage> {
   }
 
   Future<void> _pickFromGallery() async {
+    final status = await Permission.photos.request();
+
+    if (!status.isGranted) {
+      if (status.isPermanentlyDenied) {
+        await openAppSettings();
+      }
+      return;
+    }
+
     final XFile? image = await _picker.pickImage(
       source: ImageSource.gallery,
       imageQuality: 95,
@@ -277,7 +315,8 @@ class _CameraPageState extends State<CameraPage> {
         child: Stack(
           children: [
             Center(
-              child: GestureDetector(
+              child: _hasCameraPermission
+                  ? GestureDetector(
                 onScaleStart: _onScaleStart,
                 onScaleUpdate: _onScaleUpdate,
                 child: AspectRatio(
@@ -289,8 +328,41 @@ class _CameraPageState extends State<CameraPage> {
                     ),
                   ),
                 ),
+              )
+                  : Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Icon(
+                    Icons.no_photography,
+                    color: Colors.white54,
+                    size: 64,
+                  ),
+                  const SizedBox(height: 16),
+                  Text(
+                    S.of(context)!.cameraPermissionRequired,
+                    style: TextStyle(color: Colors.white),
+                  ),
+                  const SizedBox(height: 20),
+                  ElevatedButton(
+                    onPressed: () async {
+                      final status =
+                      await Permission.camera.request();
+
+                      if (status.isGranted) {
+                        _hasCameraPermission = true;
+                        await _initCamera();
+                      } else if (status.isPermanentlyDenied) {
+                        await openAppSettings();
+                      }
+
+                      if (mounted) setState(() {});
+                    },
+                    child: Text(S.of(context)!.grantPermission),
+                  ),
+                ],
               ),
             ),
+
 
             Positioned(
               top: 0,

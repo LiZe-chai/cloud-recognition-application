@@ -38,5 +38,7 @@
   "confirmPictureTitle": "Confirm Picture",
   "confirmPictureMessage": "Do you want to use this picture?",
   "cancel": "Cancel",
-  "confirm": "Confirm"
+  "confirm": "Confirm",
+  "cameraPermissionRequired": "Camera permission required",
+  "grantPermission": "Grant permission"
 }
