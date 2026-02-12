@@ -1,3 +1,4 @@
+import 'package:cloud_recognition/pages/signup.dart';
 import 'package:flutter/material.dart';
 import 'pages/signin.dart';
 
@@ -13,9 +14,10 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      initialRoute: '/signin',
+      initialRoute: '/signIn',
       routes: {
-        '/signin': (context) => const SignInPage(),
+        '/signIn': (context) => const SignInPage(),
+        '/signUp': (context) => const SignUpPage(),
       },
     );
   }

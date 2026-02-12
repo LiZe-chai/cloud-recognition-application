@@ -1,3 +1,4 @@
+import 'package:cloud_recognition/pages/signup.dart';
 import 'package:flutter/material.dart';
 
 class SignInPage extends StatefulWidget {
@@ -139,15 +140,26 @@ class _SignInPageState extends State<SignInPage> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     const Text("Don’t have an account? "),
-                    GestureDetector(
+                    InkWell(
                       onTap: () {
-                        // TODO: Sign up navigation
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => SignUpPage()),
+                        );
+
                       },
-                      child: const Text("Sign up",
+                      child: const Padding(
+                        padding: EdgeInsets.all(4.0),
+                        child: Text(
+                          "Sign up",
                           style: TextStyle(
-                              color: Colors.blue,
-                              fontWeight: FontWeight.w600)),
-                    ),
+                            color: Colors.blue,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ),
+                    )
+
                   ],
                 ),
               ],
