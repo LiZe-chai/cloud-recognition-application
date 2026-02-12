@@ -194,6 +194,81 @@ class _CameraPageState extends State<CameraPage> {
     );
   }
 
+  void showCaptureTipsBottomSheet(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) {
+        return Container(
+          padding: const EdgeInsets.fromLTRB(20, 16, 20, 24),
+          decoration: const BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.vertical(
+              top: Radius.circular(24),
+            ),
+          ),
+          child: SafeArea(
+            top: false,
+            child: SingleChildScrollView(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Align(
+                    alignment: Alignment.topRight,
+                    child: IconButton(
+                      icon: const Icon(Icons.close),
+                      onPressed: () => Navigator.pop(context),
+                    ),
+                  ),
+
+                  const Center(
+                    child: Text(
+                      'Capture Tips',
+                      style: TextStyle(
+                        fontSize: 30,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 30),
+                  Text(
+                    '1. Make sure the cloud is inside the square and fills most of the frame.\n\n'
+                        '2. Avoid taking photos in low-light or night conditions.\n\n'
+                        '3. If no cloud is visible in the image, the result may not be accurate.',
+                    style: TextStyle(fontSize: 16),
+                  ),
+
+                  const SizedBox(height: 50),
+
+                  const Center(
+                    child: Text(
+                      'Correct Capture Example',
+                      style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
+                    ),
+                  ),
+
+                  const SizedBox(height: 30),
+
+                  ClipRRect(
+                    child: Image.asset(
+                      'assets/Ac-N004.jpg',
+                      height: 300,
+                      width: 300,
+                      fit: BoxFit.cover,
+                    ),
+                  ),
+                  const SizedBox(height: 100),
+                ],
+              ),
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -237,7 +312,9 @@ class _CameraPageState extends State<CameraPage> {
                     IconButton(
                       icon: const Icon(Icons.info_outline,
                           color: Colors.white),
-                      onPressed: () {},
+                      onPressed: () {
+                        showCaptureTipsBottomSheet(context);
+                      },
                     ),
                   ],
                 ),

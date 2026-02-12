@@ -47,13 +47,33 @@ class _HomePageState extends State<HomePage> {
           child: Padding(
         padding: EdgeInsets.all(20),
         child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          Text(
-            S.of(context)!.recentActivities,
-            style: TextStyle(
-              fontSize: 24,
-              color: Colors.white,
-              fontWeight: FontWeight.bold,
-            ),
+          Row(
+            children: [
+              Text(
+                S.of(context)!.recentActivities,
+                style: TextStyle(
+                  fontSize: 24,
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              const Spacer(),
+              IconButton(
+                icon: Icon(
+                  Icons.settings,
+                  color: Colors.white,
+                  size: w * 0.08,
+                ),
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => SettingsPage(setLocale: widget.setLocale),
+                    ),
+                  );
+                },
+              ),
+            ],
           ),
           SizedBox(height: h * 0.02),
           Row(
@@ -128,60 +148,16 @@ class _HomePageState extends State<HomePage> {
           },
           backgroundColor: Colors.white,
           child: Icon(Icons.center_focus_strong,
-              size: w * 0.2, color: Colors.black),
+              size: w * 0.15, color: Colors.black),
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(25),
+            borderRadius: BorderRadius.circular(40),
           ),
         ),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       bottomNavigationBar: BottomAppBar(
-        height: h * 0.1,
+        height: h * 0.05,
         color: Colors.white24,
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
-          children: [
-            Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Icon(
-                  Icons.home,
-                  color: Colors.white,
-                  size: w * 0.08,
-                ),
-                Text(
-                  S.of(context)!.home,
-                  style: TextStyle(color: Colors.white, fontSize: w * 0.04),
-                ),
-              ],
-            ),
-            SizedBox(width: w * 0.1),
-            InkWell(
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (_) => SettingsPage(setLocale: widget.setLocale),
-                  ),
-                );
-              },
-              borderRadius: BorderRadius.circular(12),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Icon(Icons.settings, color: Colors.white, size: w * 0.08),
-                  Text(
-                    S.of(context)!.settings,
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: w * 0.04,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ],
-        ),
       ),
     );
   }

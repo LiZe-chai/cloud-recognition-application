@@ -20,12 +20,12 @@ class SettingsPage extends StatelessWidget {
       title: Text(
         text,
         style: TextStyle(
-          color: Colors.white,
+          color: Colors.black,
           fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
         ),
       ),
       trailing: isSelected
-          ? const Icon(Icons.check, color: Colors.white)
+          ? const Icon(Icons.check, color: Colors.black)
           : null,
       onTap: () {
         setLocale?.call(Locale(code));
@@ -80,7 +80,7 @@ class SettingsPage extends StatelessWidget {
                 onTap: () {
                   showModalBottomSheet(
                     context: context,
-                    backgroundColor: Colors.black,
+                    backgroundColor: Colors.white,
                     shape: const RoundedRectangleBorder(
                       borderRadius:
                           BorderRadius.vertical(top: Radius.circular(16)),
