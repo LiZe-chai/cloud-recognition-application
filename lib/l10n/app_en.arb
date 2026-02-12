@@ -32,6 +32,7 @@
   "haventReceiveCode": "Haven’t received the code?",
   "resend":"Resend Code",
   "incompleteCode": "Please enter a 6-digit code",
+  "incorrectCode": "Incorrect verification code",
   "forgotPasswordT": "Forgot password",
   "emailInstructionFP": "Please enter your email to reset the password",
   "verifyEmail": "Verify email",

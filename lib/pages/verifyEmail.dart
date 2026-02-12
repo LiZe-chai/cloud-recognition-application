@@ -1,3 +1,5 @@
+import 'package:cloud_recognition/pages/resetPassword.dart';
+import 'package:cloud_recognition/pages/signin.dart';
 import 'package:flutter/material.dart';
 import '../generated/l10n.dart';
 import '../user_repository.dart';
@@ -5,7 +7,8 @@ import '../widgets/code_input_field.dart';
 
 class verifyEmailPage extends StatefulWidget {
   final String emailAddress;
-  const verifyEmailPage({super.key,required this.emailAddress});
+  final String mode;
+  const verifyEmailPage({super.key,required this.emailAddress,required this.mode});
 
   @override
   State<verifyEmailPage> createState() => _verifyEmailPageState();
@@ -14,6 +17,8 @@ class _verifyEmailPageState extends State<verifyEmailPage> {
   bool _isLoading = false;
   late String _enteredCode;
   String? codeError;
+
+  final UserRepository _userRepo = UserRepository();
 
   @override
   Widget build(BuildContext context) {
@@ -82,10 +87,29 @@ class _verifyEmailPageState extends State<verifyEmailPage> {
                           });
                           return;
                         }
+                        final response = await _userRepo.verifyEmail(widget.emailAddress, _enteredCode,widget.mode);
+                        if(response){
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(content: Text("Verify Successful")),
+                          );
+                          if(widget.mode == "registration"){
+                            Navigator.pushAndRemoveUntil(
+                              context,
+                              MaterialPageRoute(builder: (context) => const SignInPage()),
+                                  (Route<dynamic> route) => false,
+                            );
+                          }else{
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(builder: (context) => const resetPasswordPage()),
+                            );
+                          }
+                        }else{
+                          setState(() {
+                            codeError = S.of(context)!.incorrectCode;
+                          });
+                        }
 
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(content: Text("Verify Successful")),
-                        );
                       } catch (e) {
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(content: Text("⚠️ Error: $e")),
@@ -138,7 +162,6 @@ class _verifyEmailPageState extends State<verifyEmailPage> {
                           ),
                         ),
                       )
-
                     ],
                   ),
                 ],

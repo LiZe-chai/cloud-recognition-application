@@ -32,6 +32,7 @@
   "haventReceiveCode": "没有收到验证码？",
   "resend": "重新发送验证码",
   "incompleteCode": "请输入 6 位验证码",
+  "incorrectCode": "验证码错误",
   "forgotPasswordT": "忘记密码",
   "emailInstructionFP": "请输入您的邮箱以重置密码",
   "verifyEmail": "验证邮箱",

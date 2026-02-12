@@ -30,6 +30,38 @@ class UserRepository {
       throw Exception("Failed to login: ${response.statusCode}");
     }
   }
+  Future<String> requestRegistration(String email, String password,String confirmPassword) async {
+    final response = await http.post(
+      Uri.parse("http://10.0.2.2:8080/api/users/registration"),
+      body: {
+        'email': email,
+        'password': password,
+        'confirmPassword': confirmPassword,
+      },
+    );
+
+    if (response.statusCode == 200) {
+      return response.body; //
+    } else {
+      throw Exception("Failed to login: ${response.statusCode}");
+    }
+  }
+
+  Future<bool> verifyEmail(String email, String code, String mode) async {
+    final response = await http.post(
+      Uri.parse("http://10.0.2.2:8080/api/verification/verify"),
+      body: {
+        'email': email,
+        'code' : code,
+        'mode' : mode,
+      },
+    );
+    if (response.statusCode == 200) {
+      return response.body.toLowerCase() == 'true';
+    } else {
+      throw Exception("Failed to login: ${response.statusCode}");
+    }
+  }
 
   Future<bool> userExists(String email) async {
     final response = await http.get(

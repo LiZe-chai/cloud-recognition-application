@@ -156,32 +156,35 @@ class _SignUpPageState extends State<SignUpPage> {
                         _confirmPasswordError = null;
                       });
                       try {
-                        final userExist = await _userRepo.mockUserExists(email);
-                        if (!userExist){
-                          final passwordValid = await _userRepo.isPasswordValid(password);
-                          if(passwordValid){
-                            if(password == confirmPassword){
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(content: Text("✅ Create account successful!")),
-                              );
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(builder: (context) => verifyEmailPage(emailAddress: email)),
-                              );
-                            }else{
-                              setState(() {
-                                _confirmPasswordError = S.of(context)!.passwordNotMatch;
-                              });
-                            }
-                          }else{
-                            setState(() {
-                              _passwordError = true;
-                            });
-                          }
-                        }else{
+                        final response = await _userRepo.requestRegistration(email, password,confirmPassword);
+                        if (response == "Email already registered") {
                           setState(() {
                             _emailError = S.of(context)!.emailExist;
                           });
+                        } else if (response == "Invalid password") {
+                          setState(() {
+                            _passwordError = true;
+                          });
+                        } else if (response == "Password not match") {
+                          setState(() {
+                            _confirmPasswordError = S.of(context)!.passwordNotMatch;
+                          });
+                        } else if(response == "Account is pending please verify your email"){
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(content: Text("Verify email address")),
+                          );
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (context) => verifyEmailPage(emailAddress: email,mode: 'registration')),
+                          );
+                        }else{
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(content: Text("Verify email address")),
+                          );
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (context) => verifyEmailPage(emailAddress: email,mode: 'registration')),
+                          );
                         }
                       } catch (e) {
                         ScaffoldMessenger.of(context).showSnackBar(
