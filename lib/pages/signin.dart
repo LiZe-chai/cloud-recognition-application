@@ -1,48 +1,81 @@
 import 'package:cloud_recognition/pages/signup.dart';
 import 'package:flutter/material.dart';
+import '../user_repository.dart';
+import '../generated/l10n.dart';
+
 
 class SignInPage extends StatefulWidget {
-  const SignInPage({super.key});
+  final void Function(Locale)? setLocale;
+  const SignInPage({super.key,this.setLocale});
 
   @override
   State<SignInPage> createState() => _SignInPageState();
 }
 
 class _SignInPageState extends State<SignInPage> {
+  final UserRepository _userRepo = UserRepository();
+
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
+  String? _emailError;
+  String? _passwordError;
   bool _obscurePassword = true;
+  bool _isLoading = false; //waiting api call
+
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        actions: [
+          PopupMenuButton<Locale>(
+            icon: const Icon(Icons.language, color: Colors.black),
+            onSelected: (Locale locale) {
+              widget.setLocale?.call(locale);
+            },
+            itemBuilder: (context) => const [
+              PopupMenuItem(
+                value: Locale('en'),
+                child: Text('English'),
+              ),
+              PopupMenuItem(
+                value: Locale('zh'),
+                child: Text('中文'),
+              ),
+            ],
+          ),
+        ],
+      ),
       body: SafeArea(
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 50, vertical: 119),
+          padding: const EdgeInsets.symmetric(horizontal: 50, vertical: 40),
           child: SingleChildScrollView(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                const SizedBox(height: 40),
+                const SizedBox(height: 80),
 
                 // Email
-                const Text("Email",
+                Text(S.of(context)!.email,
                     style:
                     TextStyle(fontSize: 16, fontWeight: FontWeight.w500)),
                 const SizedBox(height: 8),
                 TextField(
                   controller: _emailController,
                   decoration: InputDecoration(
-                    hintText: "Enter your email address",
+                    hintText: S.of(context)!.emailInstruction,
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(8),
                     ),
+                    errorText: _emailError,
                   ),
                 ),
                 const SizedBox(height: 20),
 
                 // Password
-                const Text("Password",
+                Text(S.of(context)!.password,
                     style:
                     TextStyle(fontSize: 16, fontWeight: FontWeight.w500)),
                 const SizedBox(height: 8),
@@ -50,7 +83,7 @@ class _SignInPageState extends State<SignInPage> {
                   controller: _passwordController,
                   obscureText: _obscurePassword,
                   decoration: InputDecoration(
-                    hintText: "Enter your password",
+                    hintText: S.of(context)!.passwordInstruction,
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(8),
                     ),
@@ -66,6 +99,7 @@ class _SignInPageState extends State<SignInPage> {
                         });
                       },
                     ),
+                    errorText: _passwordError,
                   ),
                 ),
                 Align(
@@ -74,7 +108,7 @@ class _SignInPageState extends State<SignInPage> {
                     onPressed: () {
                       // TODO: Forgot password
                     },
-                    child: const Text("Forgot password?",
+                    child: Text(S.of(context)!.forgotPassword,
                         style: TextStyle(color: Colors.blue)),
                   ),
                 ),
@@ -83,8 +117,47 @@ class _SignInPageState extends State<SignInPage> {
 
                 // Continue button
                 ElevatedButton(
-                  onPressed: () {
-                    // TODO: Login logic
+                  onPressed: _isLoading ? null : () async {
+                    String email = _emailController.text.trim();
+                    String password = _passwordController.text.trim();
+
+                    setState(() {
+                      _isLoading = true;
+                      _emailError = null;
+                      _passwordError = null;
+                    });
+                    await Future.delayed(const Duration(seconds: 2));
+                    try {
+                      final users = await _userRepo.loadMockUsers();
+
+                      final user = users.firstWhere(
+                            (u) => u["email"] == email,
+                        orElse: () => null,
+                      );
+
+                      if (user == null) {
+                        setState(() {
+                          _emailError = S.of(context)!.emailError;
+
+                        });
+                      } else if (user["password"] != password) {
+                        setState(() {
+                          _passwordError = S.of(context)!.passwordError;
+                        });
+                      } else {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(content: Text("✅ Login successful!")),
+                        );
+                      }
+                    } catch (e) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(content: Text("⚠️ Error: $e")),
+                      );
+                    } finally {
+                      setState(() {
+                        _isLoading = false; // finish loading
+                      });
+                    }
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: const Color(0xFF4A4CE0),
@@ -94,9 +167,19 @@ class _SignInPageState extends State<SignInPage> {
                       borderRadius: BorderRadius.circular(8),
                     ),
                   ),
-                  child: const Text("Login",
-                      style:
-                      TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
+                  child: _isLoading
+                      ? const SizedBox(
+                    width: 24,
+                    height: 24,
+                    child: CircularProgressIndicator(
+                      color: Colors.white,
+                      strokeWidth: 2,
+                    ),
+                  )
+                      : Text(
+                    S.of(context)!.login,
+                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+                  ),
                 ),
 
                 const SizedBox(height: 24),
@@ -128,7 +211,7 @@ class _SignInPageState extends State<SignInPage> {
                     ),
                   ),
                   icon: Image.asset("assets/google.png", height: 20), // Google logo
-                  label: const Text("Login with Google",
+                  label: Text(S.of(context)!.loginWithGoogle,
                       style:
                       TextStyle(fontSize: 16, fontWeight: FontWeight.w500)),
                 ),
@@ -139,7 +222,7 @@ class _SignInPageState extends State<SignInPage> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    const Text("Don’t have an account? "),
+                    Text(S.of(context)!.dontHaveAnAccount),
                     InkWell(
                       onTap: () {
                         Navigator.push(
@@ -148,10 +231,10 @@ class _SignInPageState extends State<SignInPage> {
                         );
 
                       },
-                      child: const Padding(
+                      child: Padding(
                         padding: EdgeInsets.all(4.0),
                         child: Text(
-                          "Sign up",
+                          S.of(context)!.signUp,
                           style: TextStyle(
                             color: Colors.blue,
                             fontWeight: FontWeight.w600,

@@ -1,0 +1,15 @@
+{
+  "@@locale": "zh",
+  "login": "登录",
+  "email": "邮箱",
+  "password": "密码",
+  "emailInstruction": "请输入你的邮箱地址",
+  "passwordInstruction": "请输入你的密码",
+  "forgotPassword": "忘记密码?",
+  "loginWithGoogle": "使用 Google 登录",
+  "dontHaveAnAccount": "还没注册账号?",
+  "signUp": "在这注册",
+  "emailError": "该邮箱未注册",
+  "passwordError": "密码错误"
+}
+

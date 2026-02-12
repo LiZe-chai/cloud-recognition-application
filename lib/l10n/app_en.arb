@@ -1,0 +1,14 @@
+{
+  "@@locale": "en",
+  "login": "Login",
+  "email": "Email",
+  "password": "Password",
+  "emailInstruction": "Enter your email address",
+  "passwordInstruction": "Enter your password",
+  "forgotPassword": "Forgot password?",
+  "loginWithGoogle": "Login With Google",
+  "dontHaveAnAccount": "Don't have an account?",
+  "signUp": "Sign up here",
+  "emailError": "This email hasn't registered",
+  "passwordError": "Password is wrong"
+}
