@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import '../generated/l10n.dart';
+import '../main.dart';
 import '../models/prediction_model.dart';
 import '../widgets/cloud_card.dart';
+import 'camera_page.dart';
 
 class HomePage extends StatefulWidget {
   final void Function(Locale)? setLocale;
@@ -115,7 +117,14 @@ class _HomePageState extends State<HomePage> {
         width: w * 0.2,
         height: w * 0.2,
         child: FloatingActionButton(
-          onPressed: () {},
+          onPressed: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (_) => CameraPage(cameras: cameras),
+              ),
+            );
+          },
           backgroundColor: Colors.white,
           child: Icon(Icons.center_focus_strong,
               size: w * 0.2, color: Colors.black),

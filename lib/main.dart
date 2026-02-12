@@ -1,3 +1,4 @@
+import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'generated/l10n.dart';
@@ -5,6 +6,7 @@ import 'package:cloud_recognition/pages/welcome_page.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:cloud_recognition/models/prediction_model.dart';
 
+late List<CameraDescription> cameras;
 
 void main() async{
   WidgetsFlutterBinding.ensureInitialized();
@@ -12,6 +14,7 @@ void main() async{
 
   Hive.registerAdapter(PredictionModelAdapter()); //
   final box = await Hive.openBox<PredictionModel>('predictions');
+  cameras = await availableCameras();
   await box.clear();
   runApp(const MyApp());
 }
