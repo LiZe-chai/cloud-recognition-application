@@ -102,7 +102,7 @@ class SavedResultPage extends StatelessWidget {
                             ),
                             SizedBox(height: 4),
                             Text(
-                              result.cloudType.label,
+                              result.cloudType.label(context),
                               style: TextStyle(
                                 fontSize: Theme.of(context).textTheme.bodyMedium?.fontSize,
                                 fontWeight: FontWeight.bold,

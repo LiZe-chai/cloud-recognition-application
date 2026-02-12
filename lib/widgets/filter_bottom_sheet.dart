@@ -1,6 +1,8 @@
 import 'package:cloud_recognition/services/inference.dart';
 import 'package:flutter/material.dart';
 
+import '../generated/l10n.dart';
+
 class FilterBottomSheet extends StatefulWidget {
   final Set<CloudType> initialCloudTypes;
   final bool initialSortLatest;
@@ -48,9 +50,9 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               const SizedBox(width: 24),
-              const Text(
-                'Filter',
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              Text(
+                S.of(context)!.filter,
+                style: TextStyle(fontSize: Theme.of(context).textTheme.titleMedium?.fontSize, fontWeight: FontWeight.bold),
               ),
               IconButton(
                 icon: const Icon(Icons.close),
@@ -60,14 +62,13 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
           ),
 
           const SizedBox(height: 12),
-          const Text('Specific cloud type:',
-              style: TextStyle(fontWeight: FontWeight.w600)),
-
-          // ===== Multiple select =====
+          Text(S.of(context)!.specificCloudType,
+              style: TextStyle(fontWeight: FontWeight.w600,fontSize: Theme.of(context).textTheme.bodyLarge?.fontSize)),
+          SizedBox(height: 10),
           ...cloudTypes.map(
                 (type) => CheckboxListTile(
               dense: true,
-              title: Text(type.label),
+              title: Text(type.label(context),style: TextStyle(fontSize: Theme.of(context).textTheme.bodyMedium?.fontSize)),
               value: selectedTypes.contains(type),
               onChanged: (checked) {
                 setState(() {
@@ -82,14 +83,15 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
           ),
 
           const SizedBox(height: 12),
-          const Text('Sort by Time',
-              style: TextStyle(fontWeight: FontWeight.w600)),
+          Text(S.of(context)!.sortByTime,
+              style: TextStyle(fontWeight: FontWeight.w600,fontSize: Theme.of(context).textTheme.bodyLarge?.fontSize,)),
+          SizedBox(height: 10),
 
           DropdownButtonFormField<bool>(
             initialValue: latest,
-            items: const [
-              DropdownMenuItem(value: true, child: Text('Latest')),
-              DropdownMenuItem(value: false, child: Text('Oldest')),
+            items: [
+              DropdownMenuItem(value: true, child: Text(S.of(context)!.latest,style: TextStyle(fontSize: Theme.of(context).textTheme.bodyMedium?.fontSize))),
+              DropdownMenuItem(value: false, child: Text(S.of(context)!.oldest,style: TextStyle(fontSize: Theme.of(context).textTheme.bodyMedium?.fontSize))),
             ],
             onChanged: (v) => setState(() => latest = v!),
             decoration: const InputDecoration(
@@ -97,7 +99,7 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
             ),
           ),
 
-          const SizedBox(height: 16),
+          const SizedBox(height: 20),
 
           SizedBox(
             width: double.infinity,
@@ -108,7 +110,7 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
                 widget.onApply(selectedTypes, latest);
                 Navigator.pop(context);
               },
-              child: const Text('Apply filter'),
+              child: Text(S.of(context)!.applyFilter, style: TextStyle(fontSize: Theme.of(context).textTheme.bodyLarge?.fontSize, color: Colors.white)),
             ),
           ),
         ],

@@ -84,7 +84,7 @@ class SettingsPage extends StatelessWidget {
                     shape: const RoundedRectangleBorder(
                       borderRadius:
                           BorderRadius.vertical(top: Radius.circular(16)),
-                      side: const BorderSide(
+                      side: BorderSide(
                         color: Colors.white,
                         width: 1,
                       ),
@@ -95,6 +95,7 @@ class SettingsPage extends StatelessWidget {
                         children: [
                           _langItem(context, 'English', 'en',setLocale,currentLang),
                           _langItem(context, '中文', 'zh',setLocale,currentLang),
+                          _langItem(context, 'Bahasa Melayu', 'my',setLocale,currentLang),
                           //_langItem(context, 'Bahasa Melayu', 'ms',setLocale),
                         ],
                       );

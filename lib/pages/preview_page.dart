@@ -180,7 +180,7 @@ class PreviewPage extends StatelessWidget {
                             ),
                             SizedBox(height: 4),
                             Text(
-                              result.type.label,
+                              result.type.label(context),
                               style: TextStyle(
                                 fontSize: Theme.of(context).textTheme.bodyMedium?.fontSize,
                                 fontWeight: FontWeight.bold,

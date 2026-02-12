@@ -40,5 +40,23 @@
   "cancel": "Cancel",
   "confirm": "Confirm",
   "cameraPermissionRequired": "Camera permission required",
-  "grantPermission": "Grant permission"
+  "grantPermission": "Grant permission",
+  "filter": "Filter",
+  "specificCloudType": "Filter by cloud type:",
+  "sortByTime": "Sort by time",
+  "latest": "Latest",
+  "oldest": "Oldest",
+  "applyFilter": "Apply filter",
+  "cloudTypeCirrus": "Cirrus",
+  "cloudTypeCirrostratus": "Cirrostratus",
+  "cloudTypeCirrocumulus": "Cirrocumulus",
+  "cloudTypeAltostratus": "Altostratus",
+  "cloudTypeAltocumulus": "Altocumulus",
+  "cloudTypeStratus": "Stratus",
+  "cloudTypeStratocumulus": "Stratocumulus",
+  "cloudTypeNimbostratus": "Nimbostratus",
+  "cloudTypeCumulus": "Cumulus",
+  "cloudTypeCumulonimbus": "Cumulonimbus"
+
+
 }

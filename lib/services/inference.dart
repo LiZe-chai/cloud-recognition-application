@@ -1,5 +1,9 @@
 import 'dart:math';
 
+import 'package:flutter/material.dart';
+
+import '../generated/l10n.dart';
+
 enum CloudType {
   cirrus,
   cirrostratus,
@@ -38,29 +42,22 @@ Future<InferenceResult> fakeInferCloud() async {
 }
 
 extension CloudTypeX on CloudType {
-  String get label {
-    switch (this) {
-      case CloudType.cirrus:
-        return 'Cirrus';
-      case CloudType.cirrostratus:
-        return 'Cirrostratus';
-      case CloudType.cirrocumulus:
-        return 'Cirrocumulus';
-      case CloudType.altostratus:
-        return 'Altostratus';
-      case CloudType.altocumulus:
-        return 'Altocumulus';
-      case CloudType.stratus:
-        return 'Stratus';
-      case CloudType.stratocumulus:
-        return 'Stratocumulus';
-      case CloudType.nimbostratus:
-        return 'Nimbostratus';
-      case CloudType.cumulus:
-        return 'Cumulus';
-      case CloudType.cumulonimbus:
-        return 'Cumulonimbus';
-    }
+  String label(BuildContext context) {
+    final s = S.of(context)!;
+
+    return {
+      CloudType.cirrus: s.cloudTypeCirrus,
+      CloudType.cirrostratus: s.cloudTypeCirrostratus,
+      CloudType.cirrocumulus: s.cloudTypeCirrocumulus,
+      CloudType.altostratus: s.cloudTypeAltostratus,
+      CloudType.altocumulus: s.cloudTypeAltocumulus,
+      CloudType.stratus: s.cloudTypeStratus,
+      CloudType.stratocumulus: s.cloudTypeStratocumulus,
+      CloudType.nimbostratus: s.cloudTypeNimbostratus,
+      CloudType.cumulus: s.cloudTypeCumulus,
+      CloudType.cumulonimbus: s.cloudTypeCumulonimbus,
+    }[this]!;
   }
 }
+
 
