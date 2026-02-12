@@ -1,7 +1,11 @@
+import 'dart:io';
+
 import 'package:camera/camera.dart';
 import 'package:cloud_recognition/pages/preview_page.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+
+import 'crop_page.dart';
 
 class CameraPage extends StatefulWidget {
   final List<CameraDescription> cameras;
@@ -93,8 +97,49 @@ class _CameraPageState extends State<CameraPage> {
 
     if (image == null) return;
 
-    debugPrint('Selected image path: ${image.path}');
+    final bool? confirm = await showDialog<bool>(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text('Confirm Picture'),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              ClipRRect(
+                borderRadius: BorderRadius.circular(8),
+                child: Image.file(
+                  File(image.path),
+                  height: 200,
+                  fit: BoxFit.cover,
+                ),
+              ),
+              const SizedBox(height: 12),
+              const Text('Do you want to use this picture?'),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context, false),
+              child: const Text('Cancel'),
+            ),
+            ElevatedButton(
+              onPressed: () => Navigator.pop(context, true),
+              child: const Text('Confirm'),
+            ),
+          ],
+        );
+      },
+    );
+    if (confirm != true) return;
+    await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => CropPage(imagePath: image.path),
+      ),
+    );
   }
+
 
 
   @override
