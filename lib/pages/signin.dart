@@ -121,6 +121,7 @@ class _SignInPageState extends State<SignInPage> {
                       borderRadius: BorderRadius.circular(8),
                     ),
                     errorText: _emailError,
+                    errorMaxLines: 3,
                   ),
                 ),
                 const SizedBox(height: 20),
@@ -192,7 +193,11 @@ class _SignInPageState extends State<SignInPage> {
                         setState(() {
                           _passwordError = S.of(context)!.passwordError;
                         });
-                      } else {
+                      } else if (response =="This account is registered via google, please log in with google"){
+                        setState(() {
+                          _emailError = S.of(context)!.emailExistByGoogle;
+                        });
+                      }else{
                         ScaffoldMessenger.of(context).showSnackBar(
                           const SnackBar(content: Text("✅ Login successful!")),
                         );
@@ -260,6 +265,22 @@ class _SignInPageState extends State<SignInPage> {
                   ),
                   icon: Image.asset("assets/google.png", height: 20), // Google logo
                   label: Text(S.of(context)!.loginWithGoogle,
+                      style:
+                      TextStyle(fontSize: 16, fontWeight: FontWeight.w500)),
+                ),
+
+                const SizedBox(height: 24),
+                OutlinedButton.icon(
+                  onPressed: () {
+                    _handleGoogleSignIn();
+                  },
+                  style: OutlinedButton.styleFrom(
+                    padding: const EdgeInsets.symmetric(vertical: 14),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                  ),
+                  label: Text(S.of(context)!.loginAsGuest,
                       style:
                       TextStyle(fontSize: 16, fontWeight: FontWeight.w500)),
                 ),

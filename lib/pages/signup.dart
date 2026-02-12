@@ -157,11 +157,15 @@ class _SignUpPageState extends State<SignUpPage> {
                       });
                       try {
                         final response = await _userRepo.requestRegistration(email, password,confirmPassword);
-                        if (response == "Email already registered") {
+                        if (response == "Email already in use") {
                           setState(() {
                             _emailError = S.of(context)!.emailExist;
                           });
-                        } else if (response == "Invalid password") {
+                        }else if(response == "Email already in use by google"){
+                          setState(() {
+                            _emailError = S.of(context)!.emailExistByGoogle;
+                          });
+                        }else if (response == "Invalid password") {
                           setState(() {
                             _passwordError = true;
                           });
