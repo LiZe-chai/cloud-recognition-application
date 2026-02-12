@@ -1,7 +1,7 @@
 import 'dart:io';
 
 import 'package:camera/camera.dart';
-import 'package:cloud_recognition/pages/preview_page.dart';
+import 'package:cloud_recognition/pages/inference_page.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:image/image.dart' as img;
@@ -123,7 +123,7 @@ class _CameraPageState extends State<CameraPage> {
         context,
         MaterialPageRoute(
           builder: (_) =>
-              PreviewPage(tempImagePath: cropped.path),
+              InferencePage(tempImagePath: cropped.path),
         ),
       );
 

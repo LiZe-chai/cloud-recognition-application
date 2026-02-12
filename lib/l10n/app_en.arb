@@ -1,47 +1,5 @@
 {
   "@@locale": "en",
-  "login": "Login",
-  "email": "Email",
-  "password": "Password",
-  "emailInstruction": "Enter your email address",
-  "passwordInstruction": "Enter your password",
-  "forgotPassword": "Forgot password?",
-  "loginWithGoogle": "Login With Google",
-  "loginAsGuest": "Login as Guest",
-  "dontHaveAnAccount": "Don't have an account?",
-  "signUpNow": "Sign up here",
-  "signUp": "Sign up",
-  "emailError": "This email hasn't registered",
-  "passwordError": "Password is wrong",
-  "passwordRegex": "Password must be at least 8 characters, including an uppercase letter, a lowercase letter, a number, and a special character.",
-  "confirmPassword": "Confirm Password",
-  "confirmPasswordInstruction": "Enter password again",
-  "emailExist":"This email already registered, please login",
-  "emailExistByGoogle": "This email is already registered with Google. Please log in via Google.",
-  "emailNExist": "This email is not registered yet",
-  "passwordNotMatch":"Password and Confirm Password must be the same.",
-  "checkEmail": "Check your email",
-  "@checkEmailInstruction": {
-    "placeholders": {
-      "email": {
-        "type": "String",
-        "example": "example@gmail.com"
-      }
-    }
-  },
-  "checkEmailInstruction": "We sent a reset link to {email}\nEnter the 6 digit code mentioned in the email",
-  "verifyCode": "Verify Code",
-  "haventReceiveCode": "Haven’t received the code?",
-  "resend":"Resend Code",
-  "incompleteCode": "Please enter a 6-digit code",
-  "incorrectCode": "Incorrect verification code",
-  "forgotPasswordT": "Forgot password",
-  "emailInstructionFP": "Please enter your email to reset the password",
-  "verifyEmail": "Verify email",
-  "setNewPassword": "Set a new password",
-  "setNewPasswordInstruction": "Create a new password. Ensure it differs from\nprevious ones for security",
-  "resetPassword":  "Reset Password",
-
   "readAndAgree": "I have read and agree to the",
   "tAndC": "Terms and Conditions.",
   "agreement": "AGREEMENT",
@@ -56,5 +14,14 @@
   "generalSettings": "General Settings",
   "language": "language",
   "aboutThisApp": "About this app",
-  "appInfo": "App Info"
+  "appInfo": "App Info",
+  "identifyingCloudType": "Identifying cloud type...",
+  "predictionResult": "Prediction Result",
+  "predictedCloudType": "Predicted Cloud Type",
+  "predictionConfidence": "Prediction Confidence",
+  "newAction": "New",
+  "saveAction": "Save",
+  "saveAs": "Save As",
+  "fileName": "File Name",
+  "enterFileName": "Enter a name for this result"
 }

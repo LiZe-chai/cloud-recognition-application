@@ -1,54 +1,28 @@
 {
   "@@locale": "zh",
-  "login": "登录",
-  "email": "邮箱",
-  "password": "密码",
-  "emailInstruction": "请输入你的邮箱地址",
-  "passwordInstruction": "请输入你的密码",
-  "forgotPassword": "忘记密码?",
-  "loginWithGoogle": "使用 Google 登录",
-  "loginAsGuest": "访客登录",
-  "dontHaveAnAccount": "还没注册账号?",
-  "signUpNow": "在这注册",
-  "signUp": "注册",
-  "emailError": "该邮箱未注册",
-  "emailExistByGoogle": "该邮箱已通过 Google 注册，请使用 Google 登录",
-  "emailNExist": "该邮箱尚未注册",
-  "passwordError": "密码错误",
-  "passwordRegex": "密码至少需 8 个字符，且包含大写字母、小写字母、数字和特殊字符。",
-  "confirmPassword": "确认密码",
-  "confirmPasswordInstruction": "请再次输入密码",
-  "emailExist": "该邮箱已注册，请登录。",
-  "passwordNotMatch": "密码与确认密码必须一致。",
-  "checkEmail": "检查你的邮箱",
-  "@checkEmailInstruction": {
-    "placeholders": {
-      "email": {
-        "type": "String",
-        "example": "example@gmail.com"
-      }
-    }
-  },
-  "checkEmailInstruction": "我们已发送重置链接到 {email}\n请输入邮件中提到的 6 位验证码",
-  "verifyCode": "验证验证码",
-  "haventReceiveCode": "没有收到验证码？",
-  "resend": "重新发送验证码",
-  "incompleteCode": "请输入 6 位验证码",
-  "incorrectCode": "验证码错误",
-  "forgotPasswordT": "忘记密码",
-  "emailInstructionFP": "请输入您的邮箱以重置密码",
-  "verifyEmail": "验证邮箱",
-  "setNewPassword": "设置新密码",
-  "setNewPasswordInstruction": "创建一个新密码。请确保与之前的密码不同，以提高安全性",
-  "resetPassword": "重置密码",
-
   "readAndAgree": "我已阅读并同意",
-  "tAndC": "《条款与条件》",
+  "tAndC": "条款与条件。",
   "agreement": "协议",
   "termOfService": "服务条款",
   "lastUpdatedDate": "最后更新于 {date}",
   "acceptAndContinue": "接受并继续",
-  "getStarted": "开始使用"
-
+  "getStarted": "开始使用",
+  "recentActivities": "最近活动",
+  "search": "搜索",
+  "home": "主页",
+  "settings": "设置",
+  "generalSettings": "常规设置",
+  "language": "语言",
+  "aboutThisApp": "关于此应用",
+  "appInfo": "应用信息",
+  "identifyingCloudType": "正在识别云类型…",
+  "predictionResult": "预测结果",
+  "predictedCloudType": "预测的云类型",
+  "predictionConfidence": "预测置信度",
+  "newAction": "新建",
+  "saveAction": "保存",
+  "saveAs": "另存为",
+  "fileName": "文件名",
+  "enterFileName": "请输入该结果的名称"
 }
 
