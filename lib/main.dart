@@ -52,6 +52,17 @@ class _MyAppState extends State<MyApp> {
         GlobalWidgetsLocalizations.delegate,
         GlobalCupertinoLocalizations.delegate,
       ],
+      theme: ThemeData(
+        textTheme: const TextTheme(
+          bodyLarge: TextStyle(fontSize: 16),
+          bodyMedium: TextStyle(fontSize: 14),
+          bodySmall: TextStyle(fontSize: 12),
+
+          titleLarge: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+          titleMedium: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
+          titleSmall: TextStyle(fontSize: 16),
+        ),
+      ),
       scaffoldMessengerKey: messengerKey,
       debugShowCheckedModeBanner: false,
       initialRoute: '/welcome',

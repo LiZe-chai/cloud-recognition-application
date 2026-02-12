@@ -3,7 +3,9 @@ import 'dart:io';
 import 'package:cloud_recognition/services/inference.dart';
 import 'package:flutter/material.dart';
 import '../generated/l10n.dart';
+import '../main.dart';
 import '../models/prediction_model.dart';
+import 'camera_page.dart';
 
 class SavedResultPage extends StatelessWidget {
   final PredictionModel result;
@@ -83,7 +85,7 @@ class SavedResultPage extends StatelessWidget {
                             ),
                             SizedBox(height: 4),
                             Text(
-                              result.date as String,
+                              '${result.date.year}-${result.date.month}-${result.date.day}',
                               style: TextStyle(
                                 fontWeight: FontWeight.bold,
                                 color: Colors.white,
@@ -163,7 +165,12 @@ class SavedResultPage extends StatelessWidget {
                           color: Colors.white,
                           iconSize: 28,
                           onPressed: () {
-                            Navigator.pop(context, false);
+                            Navigator.pushReplacement(
+                              context,
+                              MaterialPageRoute(
+                                builder: (_) => CameraPage(cameras: cameras),
+                              ),
+                            );
                           },
                         ),
                         Text(

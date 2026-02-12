@@ -9,8 +9,6 @@ import '../generated/l10n.dart';
 import '../models/prediction_model.dart';
 import 'package:cloud_recognition/main.dart';
 
-
-
 class PreviewPage extends StatelessWidget {
   final InferenceResult result;
   final String tempImagePath;

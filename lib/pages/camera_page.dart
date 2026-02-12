@@ -115,8 +115,7 @@ class _CameraPageState extends State<CameraPage> {
       await _controller.pausePreview();
 
       final XFile raw = await _controller.takePicture();
-      final File cropped =
-      await _cropCenterSquare(File(raw.path));
+      final File cropped = await _cropCenterSquare(File(raw.path));
 
       if (!mounted) return;
       await Navigator.push(
