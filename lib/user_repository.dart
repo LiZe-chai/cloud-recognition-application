@@ -15,17 +15,22 @@ class UserRepository {
     return exists;
   }
   //backend function
-  Future<List<dynamic>> loadUsersFromApi() async {
-    final response = await http.get(
-      Uri.parse("https://your-api.com/users"),
+  Future<String> requestLogin(String email, String password) async {
+    final response = await http.post(
+      Uri.parse("http://10.0.2.2:8080/api/users/login"),
+      body: {
+        'email': email,
+        'password': password,
+      },
     );
 
     if (response.statusCode == 200) {
-      return json.decode(response.body);
+      return response.body; //
     } else {
-      throw Exception("Failed to load users from API");
+      throw Exception("Failed to login: ${response.statusCode}");
     }
   }
+
   Future<bool> userExists(String email) async {
     final response = await http.get(
       Uri.parse("http://your-backend.com/api/users/exists?email=$email"),

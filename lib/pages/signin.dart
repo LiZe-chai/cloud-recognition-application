@@ -132,18 +132,13 @@ class _SignInPageState extends State<SignInPage> {
                     });
                     await Future.delayed(const Duration(seconds: 2));
                     try {
-                      final users = await _userRepo.loadMockUsers();
+                      final response = await _userRepo.requestLogin(email, password);
 
-                      final user = users.firstWhere(
-                            (u) => u["email"] == email,
-                        orElse: () => null,
-                      );
-
-                      if (user == null) {
+                      if (response == "User not found") {
                         setState(() {
                           _emailError = S.of(context)!.emailError;
                         });
-                      } else if (user["password"] != password) {
+                      } else if (response == "Wrong password") {
                         setState(() {
                           _passwordError = S.of(context)!.passwordError;
                         });
