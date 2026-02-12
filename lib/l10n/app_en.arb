@@ -23,5 +23,8 @@
   "saveAction": "Save",
   "saveAs": "Save As",
   "fileName": "File Name",
-  "enterFileName": "Enter a name for this result"
+  "enterFileName": "Enter a name for this result",
+  "name": "Name",
+  "date": "Date",
+  "saveSuccessful": "Save successful"
 }

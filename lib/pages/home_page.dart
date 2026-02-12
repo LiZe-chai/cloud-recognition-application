@@ -9,7 +9,6 @@ import 'camera_page.dart';
 
 class HomePage extends StatefulWidget {
   final void Function(Locale)? setLocale;
-
   const HomePage({super.key, this.setLocale});
 
   @override
@@ -17,25 +16,6 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  @override
-  void initState() {
-    super.initState();
-
-    final box = Hive.box<PredictionModel>('predictions');
-
-    if (box.isEmpty) {
-      box.add(
-        PredictionModel(
-          imagePath: 'assets/Ac-N004.jpg',
-          name: 'Cloud 1',
-          date: DateTime.now(),
-          cloudType: 'Cumulus',
-          confidence: 0.92,
-        ),
-      );
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     final box = Hive.box<PredictionModel>('predictions');
@@ -120,13 +100,7 @@ class _HomePageState extends State<HomePage> {
                   itemBuilder: (context, index) {
                     final prediction = box.getAt(index)!;
 
-                    return CloudCard(
-                      imagePath: prediction.imagePath,
-                      name: prediction.name,
-                      date: prediction.date,
-                      cloudType: prediction.cloudType,
-                      confidence: prediction.confidence,
-                    );
+                    return CloudCard(result: prediction);
                   },
                 );
               },

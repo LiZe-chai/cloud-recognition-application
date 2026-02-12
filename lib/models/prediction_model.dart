@@ -1,3 +1,4 @@
+import 'package:cloud_recognition/services/inference.dart';
 import 'package:hive/hive.dart';
 part 'prediction_model.g.dart';
 
@@ -13,7 +14,7 @@ class PredictionModel extends HiveObject {
   DateTime date;
 
   @HiveField(3)
-  String cloudType;
+  CloudType cloudType;
 
   @HiveField(4)
   double confidence;
@@ -22,7 +23,7 @@ class PredictionModel extends HiveObject {
     this.imagePath = '',
     this.name = '',
     DateTime? date,
-    this.cloudType = '',
+    this.cloudType = CloudType.cumulus,
     this.confidence = 0.0,
   }) : date = date ?? DateTime.now();
 }

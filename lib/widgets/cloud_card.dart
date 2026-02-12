@@ -1,21 +1,17 @@
+import 'package:cloud_recognition/pages/saved_result_page.dart';
 import 'package:flutter/material.dart';
+import 'dart:io';
+
+import '../models/prediction_model.dart';
 
 class CloudCard extends StatelessWidget {
-  final String imagePath;
-  final String name;
-  final DateTime date;
-  final String cloudType;
-  final double confidence;
   final VoidCallback? onPressed;
+  final PredictionModel result;
 
   const CloudCard({
     super.key,
-    required this.imagePath,
-    required this.name,
-    required this.date,
-    required this.cloudType,
-    required this.confidence,
     this.onPressed,
+    required this.result,
   });
 
   @override
@@ -32,8 +28,12 @@ class CloudCard extends StatelessWidget {
       child: InkWell(
         borderRadius: BorderRadius.circular(16),
         onTap: onPressed ?? () {
-          // TODO: handle card pressed
-          debugPrint('CloudCard pressed');
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (_) => SavedResultPage(result: result),
+            ),
+          );
         },
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -43,8 +43,8 @@ class CloudCard extends StatelessWidget {
               borderRadius: const BorderRadius.vertical(
                 top: Radius.circular(16),
               ),
-              child: Image.asset(
-                imagePath,
+              child: Image.file(
+                File(result.imagePath),
                 height: h * 0.2,
                 width: double.infinity,
                 fit: BoxFit.cover,
@@ -58,7 +58,7 @@ class CloudCard extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    name,
+                    result.name,
                     style: const TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
@@ -68,7 +68,7 @@ class CloudCard extends StatelessWidget {
                   SizedBox(height: h * 0.01),
 
                   Text(
-                    '${date.year}-${date.month}-${date.day} · $cloudType · ${(confidence * 100).toStringAsFixed(0)}%',
+                    '${result.date.year}-${result.date.month}-${result.date.day} · $result.cloudType · ${(result.confidence * 100).toStringAsFixed(0)}%',
                     style: TextStyle(
                       fontSize: 14,
                       color: Colors.grey.shade800,

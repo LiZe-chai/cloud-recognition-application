@@ -1,4 +1,5 @@
 import 'package:camera/camera.dart';
+import 'package:cloud_recognition/pages/home_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'generated/l10n.dart';
@@ -7,6 +8,7 @@ import 'package:hive_flutter/hive_flutter.dart';
 import 'package:cloud_recognition/models/prediction_model.dart';
 
 late List<CameraDescription> cameras;
+final GlobalKey<ScaffoldMessengerState> messengerKey = GlobalKey<ScaffoldMessengerState>();
 
 void main() async{
   WidgetsFlutterBinding.ensureInitialized();
@@ -50,10 +52,12 @@ class _MyAppState extends State<MyApp> {
         GlobalWidgetsLocalizations.delegate,
         GlobalCupertinoLocalizations.delegate,
       ],
+      scaffoldMessengerKey: messengerKey,
       debugShowCheckedModeBanner: false,
       initialRoute: '/welcome',
       routes: {
         '/welcome': (context) => WelcomePage(setLocale: setLocale),
+        '/home': (_) => HomePage(setLocale: setLocale),
       },
     );
   }

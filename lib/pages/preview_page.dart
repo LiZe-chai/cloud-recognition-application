@@ -2,8 +2,14 @@ import 'dart:io';
 
 import 'package:cloud_recognition/services/inference.dart';
 import 'package:flutter/material.dart';
-
+import 'package:hive_flutter/adapters.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:path/path.dart' as p;
 import '../generated/l10n.dart';
+import '../models/prediction_model.dart';
+import 'package:cloud_recognition/main.dart';
+
+
 
 class PreviewPage extends StatelessWidget {
   final InferenceResult result;
@@ -11,13 +17,14 @@ class PreviewPage extends StatelessWidget {
 
   const PreviewPage({super.key, required this.tempImagePath, required this.result});
 
-  Future<void> showSaveAsDialog(BuildContext context) async {
+  Future<bool?> showSaveAsDialog(BuildContext context) async {
     final controller = TextEditingController();
+    final box = Hive.box<PredictionModel>('predictions');
 
-    await showDialog(
+    return await showDialog(
       context: context,
       barrierDismissible: true,
-      builder: (context) {
+      builder: (dialogContext) {
         return Dialog(
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(16),
@@ -32,7 +39,7 @@ class PreviewPage extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text(
-                      S.of(context)!.saveAs,
+                      S.of(dialogContext)!.saveAs,
                       style: const TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
@@ -40,7 +47,7 @@ class PreviewPage extends StatelessWidget {
                     ),
                     IconButton(
                       icon: const Icon(Icons.close),
-                      onPressed: () => Navigator.pop(context),
+                      onPressed: () => Navigator.pop(dialogContext,false),
                     ),
                   ],
                 ),
@@ -48,7 +55,7 @@ class PreviewPage extends StatelessWidget {
                 const SizedBox(height: 12),
 
                 Text(
-                  S.of(context)!.fileName,
+                  S.of(dialogContext)!.fileName,
                   style: const TextStyle(fontSize: 16),
                 ),
 
@@ -57,7 +64,7 @@ class PreviewPage extends StatelessWidget {
                 TextField(
                   controller: controller,
                   decoration: InputDecoration(
-                    hintText: S.of(context)!.enterFileName,
+                    hintText: S.of(dialogContext)!.enterFileName,
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(10),
                     ),
@@ -70,12 +77,20 @@ class PreviewPage extends StatelessWidget {
                   width: double.infinity,
                   height: 44,
                   child: ElevatedButton(
-                    onPressed: () {
+                    onPressed: () async {
                       final name = controller.text.trim();
                       if (name.isEmpty) return;
-
-                      // TODO: 保存逻辑
-                      Navigator.pop(context, name);
+                      final savedImagePath = await saveImageToAppDir(File(tempImagePath));
+                      box.add(
+                        PredictionModel(
+                          imagePath: savedImagePath,
+                          name: name,
+                          date: DateTime.now(),
+                          cloudType: result.type,
+                          confidence: result.confidence,
+                        ),
+                      );
+                      Navigator.pop(dialogContext,true);
                     },
                     style: ElevatedButton.styleFrom(
                       shape: RoundedRectangleBorder(
@@ -83,7 +98,7 @@ class PreviewPage extends StatelessWidget {
                       ),
                       backgroundColor: Colors.black,
                     ),
-                    child: Text(S.of(context)!.saveAction, style: const TextStyle(fontSize: 18, color: Colors.white)),
+                    child: Text(S.of(dialogContext)!.saveAction, style: const TextStyle(fontSize: 18, color: Colors.white)),
                   ),
                 ),
               ],
@@ -92,6 +107,23 @@ class PreviewPage extends StatelessWidget {
         );
       },
     );
+  }
+
+  Future<String> saveImageToAppDir(File tempImage) async {
+    final dir = await getApplicationDocumentsDirectory();
+
+    final predictionDir = Directory('${dir.path}/predictions');
+    if (!await predictionDir.exists()) {
+      await predictionDir.create(recursive: true);
+    }
+
+    final fileName =
+        'cloud_${DateTime.now().millisecondsSinceEpoch}${p.extension(tempImage.path)}';
+
+    final savedImage =
+    await tempImage.copy('${predictionDir.path}/$fileName');
+
+    return savedImage.path;
   }
 
 
@@ -231,8 +263,20 @@ class PreviewPage extends StatelessWidget {
                           icon: const Icon(Icons.save),
                           color: Colors.white,
                           iconSize: 28,
-                          onPressed: () {
-                            showSaveAsDialog(context);
+                          onPressed: () async {
+                            final bool? saved = await showSaveAsDialog(context);
+                            print(saved);
+                            if (saved != true) return;
+                            Navigator.pop(context);
+                            Navigator.pop(context);
+                            WidgetsBinding.instance.addPostFrameCallback((_) {
+                              messengerKey.currentState?.showSnackBar(
+                                SnackBar(
+                                  content: Text(S.of(context)!.saveSuccessful),
+                                  behavior: SnackBarBehavior.floating,
+                                ),
+                              );
+                            });
                           },
                         ),
                         Text(
