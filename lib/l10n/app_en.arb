@@ -52,5 +52,9 @@
   "recentActivities": "Recent Activities",
   "search": "Search",
   "home": "Home",
-  "settings": "Settings"
+  "settings": "Settings",
+  "generalSettings": "General Settings",
+  "language": "language",
+  "aboutThisApp": "About this app",
+  "appInfo": "App Info"
 }

@@ -1,3 +1,4 @@
+import 'package:cloud_recognition/pages/setting_page.dart';
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import '../generated/l10n.dart';
@@ -155,15 +156,29 @@ class _HomePageState extends State<HomePage> {
               ],
             ),
             SizedBox(width: w * 0.1),
-            Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Icon(Icons.settings, color: Colors.white, size: w * 0.08),
-                Text(
-                  S.of(context)!.settings,
-                  style: TextStyle(color: Colors.white, fontSize: w * 0.04),
-                ),
-              ],
+            InkWell(
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => SettingsPage(setLocale: widget.setLocale),
+                  ),
+                );
+              },
+              borderRadius: BorderRadius.circular(12),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(Icons.settings, color: Colors.white, size: w * 0.08),
+                  Text(
+                    S.of(context)!.settings,
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: w * 0.04,
+                    ),
+                  ),
+                ],
+              ),
             ),
           ],
         ),

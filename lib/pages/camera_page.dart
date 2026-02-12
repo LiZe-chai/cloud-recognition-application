@@ -4,6 +4,7 @@ import 'package:camera/camera.dart';
 import 'package:cloud_recognition/pages/preview_page.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:image/image.dart' as img;
 
 import 'crop_page.dart';
 
@@ -19,9 +20,16 @@ class CameraPage extends StatefulWidget {
 class _CameraPageState extends State<CameraPage> {
   late CameraController _controller;
   late CameraDescription _currentCamera;
+
   final ImagePicker _picker = ImagePicker();
+
   bool _isInitialized = false;
   bool _isTakingPicture = false;
+
+  double _minZoom = 1.0;
+  double _maxZoom = 1.0;
+  double _currentZoom = 1.0;
+  double _baseZoom = 1.0;
 
   @override
   void initState() {
@@ -38,39 +46,84 @@ class _CameraPageState extends State<CameraPage> {
     );
 
     await _controller.initialize();
-    if (!mounted) return;
 
-    setState(() {
-      _isInitialized = true;
-    });
+    _minZoom = await _controller.getMinZoomLevel();
+    _maxZoom = await _controller.getMaxZoomLevel();
+
+    if (!mounted) return;
+    setState(() => _isInitialized = true);
   }
 
   Future<void> _switchCamera() async {
-    final newCamera = _currentCamera == widget.cameras.first
+    await _controller.dispose();
+
+    _currentCamera = _currentCamera == widget.cameras.first
         ? widget.cameras.last
         : widget.cameras.first;
 
-    await _controller.dispose();
-    _currentCamera = newCamera;
-    _initCamera();
+    _isInitialized = false;
+    setState(() {});
+    await _initCamera();
+  }
+  void _onScaleStart(ScaleStartDetails details) {
+    _baseZoom = _currentZoom;
+  }
+
+  void _onScaleUpdate(ScaleUpdateDetails details) async {
+    final zoom =
+    (_baseZoom * details.scale).clamp(_minZoom, _maxZoom);
+
+    _currentZoom = zoom;
+    await _controller.setZoomLevel(zoom);
   }
 
 
-  Future<void> _takePicture() async {
-    if (_isTakingPicture) return;
-    if (!_controller.value.isInitialized) return;
+  Future<File> _cropCenterSquare(File file) async {
+    final bytes = await file.readAsBytes();
+    final image = img.decodeImage(bytes)!;
 
+    final size =
+    image.width < image.height ? image.width : image.height;
+
+    final x = (image.width - size) ~/ 2;
+    final y = (image.height - size) ~/ 2;
+
+    final square = img.copyCrop(
+      image,
+      x: x,
+      y: y,
+      width: size,
+      height: size,
+    );
+
+    final croppedFile = File(
+      file.path.replaceFirst('.jpg', '_square.jpg'),
+    );
+
+    await croppedFile.writeAsBytes(
+      img.encodeJpg(square, quality: 95),
+    );
+
+    return croppedFile;
+  }
+
+  Future<void> _takePicture() async {
+    if (_isTakingPicture || !_controller.value.isInitialized) return;
     _isTakingPicture = true;
 
     try {
       await _controller.pausePreview();
 
-      final XFile image = await _controller.takePicture();
+      final XFile raw = await _controller.takePicture();
+      final File cropped =
+      await _cropCenterSquare(File(raw.path));
 
+      if (!mounted) return;
       await Navigator.push(
         context,
         MaterialPageRoute(
-          builder: (_) => PreviewPage(tempImagePath: image.path),
+          builder: (_) =>
+              PreviewPage(tempImagePath: cropped.path),
         ),
       );
 
@@ -81,7 +134,6 @@ class _CameraPageState extends State<CameraPage> {
       _isTakingPicture = false;
     }
   }
-
 
   @override
   void dispose() {
@@ -131,7 +183,9 @@ class _CameraPageState extends State<CameraPage> {
         );
       },
     );
+
     if (confirm != true) return;
+
     await Navigator.push(
       context,
       MaterialPageRoute(
@@ -140,100 +194,104 @@ class _CameraPageState extends State<CameraPage> {
     );
   }
 
-
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.black,
       body: _isInitialized
-          ? Stack(
-        children: [
-          /// Camera Preview
-          Center(
-            child: AspectRatio(
-              aspectRatio: 1,
-              child: CameraPreview(_controller),
+          ? SafeArea(
+        child: Stack(
+          children: [
+            Center(
+              child: GestureDetector(
+                onScaleStart: _onScaleStart,
+                onScaleUpdate: _onScaleUpdate,
+                child: AspectRatio(
+                  aspectRatio: 1,
+                  child: ClipRect(
+                    child: OverflowBox(
+                      alignment: Alignment.center,
+                      child: CameraPreview(_controller),
+                    ),
+                  ),
+                ),
+              ),
             ),
-          ),
 
-          /// Top Bar
-          Positioned(
-            top: 0,
-            left: 0,
-            right: 0,
-            child: Container(
-              height: 60,
-              color: Colors.black54,
-              child: SafeArea(
-                bottom: false,
+            Positioned(
+              top: 0,
+              left: 0,
+              right: 0,
+              child: Container(
+                height: 60,
+                color: Colors.black54,
                 child: Row(
                   children: [
                     IconButton(
                       icon: const Icon(Icons.close,
                           color: Colors.white),
-                      onPressed: () => Navigator.pop(context),
+                      onPressed: () =>
+                          Navigator.pop(context),
                     ),
                     const Spacer(),
                     IconButton(
-                      icon: const Icon(Icons.info_outline, color: Colors.white),
-                      onPressed: () {
-                        // TODO: hint action
-                      },
+                      icon: const Icon(Icons.info_outline,
+                          color: Colors.white),
+                      onPressed: () {},
                     ),
                   ],
                 ),
               ),
             ),
-          ),
 
-          /// Bottom Controls
-          Positioned(
-            bottom: 0,
-            left: 0,
-            right: 0,
-            child: Container(
-              padding: const EdgeInsets.symmetric(vertical: 20),
-              color: Colors.black54,
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  /// Gallery
-                  IconButton(
-                    icon: const Icon(Icons.image,
-                        color: Colors.white, size: 28),
-                        onPressed: _pickFromGallery,
-                  ),
-
-                  /// Shutter
-                  GestureDetector(
-                    onTap: _takePicture,
-                    child: Container(
-                      width: 72,
-                      height: 72,
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        border: Border.all(
-                            color: Colors.white, width: 10),
+            Positioned(
+              bottom: 0,
+              left: 0,
+              right: 0,
+              child: Container(
+                padding:
+                const EdgeInsets.symmetric(vertical: 20),
+                color: Colors.black54,
+                child: Row(
+                  mainAxisAlignment:
+                  MainAxisAlignment.spaceEvenly,
+                  children: [
+                    IconButton(
+                      icon: const Icon(Icons.image,
+                          color: Colors.white, size: 28),
+                      onPressed: _pickFromGallery,
+                    ),
+                    GestureDetector(
+                      onTap: _takePicture,
+                      child: Container(
+                        width: 72,
+                        height: 72,
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          border: Border.all(
+                              color: Colors.white,
+                              width: 10),
+                        ),
                       ),
                     ),
-                  ),
-
-                  /// Switch Camera
-                  IconButton(
-                    icon: const Icon(Icons.cameraswitch,
-                        color: Colors.white, size: 28),
-                    onPressed: _switchCamera,
-                  ),
-                ],
+                    IconButton(
+                      icon: const Icon(Icons.cameraswitch,
+                          color: Colors.white, size: 28),
+                      onPressed: _switchCamera,
+                    ),
+                  ],
+                ),
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       )
           : const Center(
-        child: CircularProgressIndicator(color: Colors.white),
+        child: CircularProgressIndicator(
+            color: Colors.white),
       ),
     );
+
   }
 }
+

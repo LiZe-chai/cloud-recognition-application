@@ -1,48 +1,58 @@
+
 import 'dart:io';
+import 'dart:typed_data';
 import 'package:flutter/material.dart';
-import 'package:image_cropper/image_cropper.dart';
+import 'package:crop_your_image/crop_your_image.dart';
 
-class CropPage extends StatelessWidget {
+class CropPage extends StatefulWidget {
   final String imagePath;
-
   const CropPage({super.key, required this.imagePath});
 
-  Future<void> _crop(BuildContext context) async {
-    final croppedFile = await ImageCropper().cropImage(
-      sourcePath: imagePath,
-      aspectRatio: const CropAspectRatio(ratioX: 1, ratioY: 1),
-      uiSettings: [
-        AndroidUiSettings(
-          toolbarTitle: 'Crop Image',
-          lockAspectRatio: true,
-          hideBottomControls: true,
-        ),
-        IOSUiSettings(
-          title: 'Crop Image',
-          aspectRatioLockEnabled: true,
-        ),
-      ],
-    );
+  @override
+  State<CropPage> createState() => _CropPageState();
+}
 
-    if (croppedFile == null) return;
+class _CropPageState extends State<CropPage> {
+  final CropController _controller = CropController();
+  late Uint8List _imageData;
+  bool _ready = false;
 
-    Navigator.pop(context, croppedFile.path);
+  @override
+  void initState() {
+    super.initState();
+    _loadImage();
+  }
+
+  Future<void> _loadImage() async {
+    _imageData = await File(widget.imagePath).readAsBytes();
+    setState(() => _ready = true);
+  }
+
+  void _crop() {
+    _controller.crop();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Crop Uploaded Image'),
+        title: const Text('Crop Image'),
         actions: [
           IconButton(
             icon: const Icon(Icons.check),
-            onPressed: () => _crop(context),
+            onPressed: _crop,
           ),
         ],
       ),
-      body: Center(
-        child: Image.file(File(imagePath)),
+      body: !_ready
+          ? const Center(child: CircularProgressIndicator())
+          : Crop(
+        controller: _controller,
+        image: _imageData,
+        aspectRatio: 1,
+        onCropped: (CropResult result) {
+          Navigator.pop(context, result);
+        },
       ),
     );
   }

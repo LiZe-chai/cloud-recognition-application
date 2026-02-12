@@ -204,7 +204,7 @@ class _WelcomePageState extends State<WelcomePage> {
                       onPressed: () {
                         Navigator.push(
                           context,
-                          MaterialPageRoute(builder: (context) => HomePage()),
+                          MaterialPageRoute(builder: (context) => HomePage(setLocale:widget.setLocale,)),
                         );
                       },
                       child: Text(
