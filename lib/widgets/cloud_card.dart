@@ -46,9 +46,8 @@ class CloudCard extends StatelessWidget {
               ),
               child: Image.file(
                 File(result.imagePath),
-                height: h * 0.2,
                 width: double.infinity,
-                fit: BoxFit.cover,
+                  fit: BoxFit.fitWidth,
               ),
             ),
 

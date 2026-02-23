@@ -1,5 +1,6 @@
 import 'package:cloud_recognition/pages/home_page.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_native_splash/flutter_native_splash.dart';
 import '../generated/l10n.dart';
 import '../widgets/clause.dart';
 
@@ -33,6 +34,16 @@ class _WelcomePageState extends State<WelcomePage> {
           'esse cillum dolore eu fugiat nulla pariatur.',
     ),
   ];
+  @override
+  void initState() {
+    super.initState();
+    initialization();
+  }
+
+  void initialization() async {
+    await Future.delayed(const Duration(seconds: 3));
+    FlutterNativeSplash.remove();
+  }
 
 
   void showTermsModal(BuildContext context, double height,double width) {
@@ -186,25 +197,28 @@ class _WelcomePageState extends State<WelcomePage> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  SizedBox(height: h*0.3),
-                  Image.asset("assets/google.png", height: 50),
-                  SizedBox(height: h*0.3),
+                  SizedBox(height: h*0.25),
+                  Image.asset("assets/logo.png", height: 200),
+                  SizedBox(height: h*0.25),
                   SizedBox(
                     width: w * 0.7,
                     height: h * 0.06,
                     child: ElevatedButton(
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.white,
+                        disabledBackgroundColor: Colors.grey[800],
+                        foregroundColor: Colors.black,
+                        disabledForegroundColor: Colors.black38,
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(20),
                         ),
                       ),
-                      onPressed: () {
+                      onPressed: _isChecked ? () {
                         Navigator.push(
                           context,
                           MaterialPageRoute(builder: (context) => HomePage(setLocale:widget.setLocale,)),
                         );
-                      },
+                      } : null,
                       child: Text(
                         S.of(context)!.getStarted,
                         style: TextStyle(
