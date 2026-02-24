@@ -55,6 +55,7 @@ extension CloudTypeX on CloudType {
       CloudType.nimbostratus: s.cloudTypeNimbostratus,
       CloudType.cumulus: s.cloudTypeCumulus,
       CloudType.cumulonimbus: s.cloudTypeCumulonimbus,
+      CloudType.contrail: s.cloudTypeContrail
     }[this]!;
   }
 }

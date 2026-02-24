@@ -192,81 +192,78 @@ class _WelcomePageState extends State<WelcomePage> {
         ],
       ),
       body: SafeArea(
-          child:
-            Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  SizedBox(height: h*0.25),
-                  Image.asset("assets/logo.png", height: 200),
-                  SizedBox(height: h*0.2),
-                  SizedBox(
-                    width: w * 0.7,
-                    height: h * 0.06,
-                    child: ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.white,
-                        disabledBackgroundColor: Colors.grey[800],
-                        foregroundColor: Colors.black,
-                        disabledForegroundColor: Colors.black38,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(20),
+        child: Stack(
+          children: [
+            Center(
+              child: Image.asset(
+                "assets/logo.png",
+                height: 200,
+                fit: BoxFit.contain,
+              ),
+            ),
+
+            Align(
+              alignment: Alignment.bottomCenter,
+              child: Padding(
+                padding: EdgeInsets.symmetric(horizontal: w * 0.05, vertical: 20),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    SizedBox(
+                      width: w * 0.7,
+                      height: 55,
+                      child: ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.white,
+                          disabledBackgroundColor: Colors.grey[800],
+                          foregroundColor: Colors.black,
+                          disabledForegroundColor: Colors.black38,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(20),
+                          ),
                         ),
-                      ),
-                      onPressed: _isChecked ? () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(builder: (context) => HomePage(setLocale:widget.setLocale,)),
-                        );
-                      } : null,
-                      child: Text(
-                        S.of(context)!.getStarted,
-                        style: TextStyle(
-                          fontSize: 16,
-                          color: Colors.black,
+                        onPressed: _isChecked ? () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (context) => HomePage(setLocale: widget.setLocale)),
+                          );
+                        } : null,
+                        child: Text(
+                          S.of(context)!.getStarted,
+                          style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                         ),
                       ),
                     ),
-                  ),
-                  SizedBox(height: h*0.01),
-                  Center(
-                    child: ConstrainedBox(
-                      constraints: BoxConstraints(
-                        maxWidth: w * 0.95,
-                      ),
+
+                    const SizedBox(height: 15),
+                    Container(
+                      constraints: BoxConstraints(maxWidth: w * 0.9),
                       child: Row(
                         mainAxisSize: MainAxisSize.min,
+                        mainAxisAlignment: MainAxisAlignment.center,
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
                           Checkbox(
+                            activeColor: Colors.blue,
                             value: _isChecked,
-                            onChanged: (value) {
-                              setState(() {
-                                _isChecked = value!;
-                              });
-                            },
+                            onChanged: (value) => setState(() => _isChecked = value!),
                           ),
-                          Flexible(
+                          Expanded(
                             child: Wrap(
-                              alignment: WrapAlignment.center,
+                              alignment: WrapAlignment.start,
                               crossAxisAlignment: WrapCrossAlignment.center,
                               children: [
                                 Text(
                                   '${S.of(context)!.readAndAgree} ',
-                                  style: const TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 14,
-                                  ),
+                                  style: const TextStyle(color: Colors.white, fontSize: 13),
                                 ),
-                                InkWell(
-                                  onTap: () {
-                                    showTermsModal(context, h, w);
-                                  },
+                                GestureDetector(
+                                  onTap: () => showTermsModal(context, h, w),
                                   child: Text(
                                     S.of(context)!.tAndC,
                                     style: const TextStyle(
                                       color: Colors.blue,
-                                      fontSize: 14,
+                                      fontSize: 13,
                                       fontWeight: FontWeight.bold,
                                       decoration: TextDecoration.underline,
                                     ),
@@ -278,9 +275,12 @@ class _WelcomePageState extends State<WelcomePage> {
                         ],
                       ),
                     ),
-                  )
-        ],
-            )
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
 
     );

@@ -56,5 +56,10 @@
   "cloudTypeStratocumulus": "Stratocumulus",
   "cloudTypeNimbostratus": "Nimbostratus",
   "cloudTypeCumulus": "Cumulus",
-  "cloudTypeCumulonimbus": "Cumulonimbus"
+  "cloudTypeCumulonimbus": "Cumulonimbus",
+  "cloudTypeContrail": "Contrail",
+  "appName": "Cloud Vision",
+  "appVersion": "Version 1.0.0",
+  "appDescription": "Cloud Vision is a mobile application designed for cloud type classification. It runs a locally deployed AI model to analyze cloud images directly on your device, ensuring complete privacy with no data leakage. All inference results are stored in a locally managed database, allowing the app to function fully offline. Experience flexible and convenient cloud type prediction anytime, anywhere."
+
 }

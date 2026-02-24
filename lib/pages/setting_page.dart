@@ -33,6 +33,94 @@ class SettingsPage extends StatelessWidget {
       },
     );
   }
+  void _showAppInfoModal(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      enableDrag: false,
+      backgroundColor: Colors.transparent,
+      builder: (BuildContext context) {
+        return Stack(
+          children: [
+            Container(
+              decoration: const BoxDecoration(
+                color: Color(0xFF1E1E1E),
+                borderRadius: BorderRadius.vertical(top: Radius.circular(25)),
+              ),
+              padding: const EdgeInsets.fromLTRB(24, 12, 24, 24),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+
+                  Container(
+                    width: 40,
+                    height: 4,
+                    decoration: BoxDecoration(
+                      color: Colors.grey[600],
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                  ),
+                  const SizedBox(height: 20),
+
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(15),
+                    child: Image.asset("assets/logo.png", height: 180),
+                  ),
+                  const SizedBox(height: 16),
+
+                  Text(
+                    S.of(context)!.appName,
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: Theme.of(context).textTheme.titleLarge?.fontSize,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    S.of(context)!.appVersion,
+                    style: TextStyle(color: Colors.grey[400], fontSize: Theme.of(context).textTheme.bodySmall?.fontSize),
+                  ),
+
+                  const SizedBox(height: 24),
+                  const Divider(color: Colors.white10),
+                  const SizedBox(height: 20),
+
+                  Container(
+                    width: double.infinity,
+                    padding: const EdgeInsets.all(20),
+                    decoration: BoxDecoration(
+                      color: Colors.blueAccent.withOpacity(0.1),
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(color: Colors.blueAccent.withOpacity(0.3)),
+                    ),
+                    child: Text(
+                      S.of(context)!.appDescription,
+                      textAlign: TextAlign.justify,
+                      style: TextStyle(
+                        fontSize: Theme.of(context).textTheme.bodyMedium?.fontSize,
+                        color: Colors.white,
+                        height: 1.5,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+
+            Positioned(
+              right: 10,
+              top: 10,
+              child: InkWell(
+                onTap: () => Navigator.pop(context),
+                child: Icon(Icons.close, size:30,color: Colors.white),
+              )
+            ),
+          ],
+        );
+      },
+    );
+  }
 
 
 
@@ -117,7 +205,7 @@ class SettingsPage extends StatelessWidget {
               _SettingsTile(
                 icon: Icons.info,
                 title: S.of(context)!.appInfo,
-                onTap: () {},
+                onTap: () => _showAppInfoModal(context),
               ),
             ],
           ),
