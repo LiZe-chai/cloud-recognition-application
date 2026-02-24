@@ -2,9 +2,21 @@ import 'dart:typed_data';
 import 'package:tflite_flutter/tflite_flutter.dart';
 import 'package:image/image.dart' as img;
 
+import 'inference.dart';
+
 class CloudTypeClassifier {
   late Interpreter _interpreter;
-  final List<String> _labels = ['Ac', 'As', 'Cb', 'Cc', 'Ci', 'Cs', 'Ct', 'Cu', 'Ns', 'Sc', 'St'];
+  final List<CloudType> _cloudTypes
+    = [CloudType.altocumulus,
+      CloudType.altostratus,
+      CloudType.cumulonimbus,
+      CloudType.cirrocumulus,
+      CloudType.cirrus,
+      CloudType.cirrostratus,
+      CloudType.cumulus,
+      CloudType.nimbostratus,
+      CloudType.stratocumulus,
+      CloudType.stratus];
 
   Future<void> loadModel() async {
     try {
@@ -15,7 +27,7 @@ class CloudTypeClassifier {
     }
   }
 
-  (String, double)? predict(img.Image imageInput) {
+  (CloudType, double)? predict(img.Image imageInput) {
     img.Image resizedImage = img.copyResize(imageInput, width: 224, height: 224);
     var input = imageToByteListFloat32(resizedImage, 224);
 
@@ -33,13 +45,11 @@ class CloudTypeClassifier {
         predIndex = i;
       }
     }
-    if (predIndex != -1 && predIndex < _labels.length) {
-      String className = _labels[predIndex];
+    if (predIndex != -1 && predIndex < _cloudTypes.length) {
+      CloudType type = _cloudTypes[predIndex];
       double confidence = maxProb * 100;
 
-      print("Recognition Result: $className");
-      print("Confidence: ${confidence.toStringAsFixed(2)}%");
-      return (className, confidence);
+      return (type, confidence);
     } else {
       print("No valid category detected");
       return null;

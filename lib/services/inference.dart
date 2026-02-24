@@ -1,8 +1,9 @@
 import 'dart:math';
 
+import 'package:cloud_recognition/services/cloud_type_classifier.dart';
 import 'package:flutter/material.dart';
-
 import '../generated/l10n.dart';
+import 'package:image/image.dart' as img;
 
 enum CloudType {
   cirrus,
@@ -15,6 +16,7 @@ enum CloudType {
   nimbostratus,
   cumulus,
   cumulonimbus,
+  contrail,
 }
 
 
@@ -28,18 +30,15 @@ class InferenceResult {
   });
 }
 
-Future<InferenceResult> fakeInferCloud() async {
-  await Future.delayed(const Duration(seconds: 2));
-
-  final rand = Random();
-  final type = CloudType.values[rand.nextInt(CloudType.values.length)];
-  final confidence = 0.7 + rand.nextDouble() * 0.3; // 70% - 100%
+InferenceResult InferCloud(CloudTypeClassifier classifier, img.Image imageInput) {
+  final result = classifier.predict(imageInput);
 
   return InferenceResult(
-    type: type,
-    confidence: double.parse(confidence.toStringAsFixed(2)),
+    type: result!.$1,
+    confidence: result.$2,
   );
 }
+
 
 extension CloudTypeX on CloudType {
   String label(BuildContext context) {

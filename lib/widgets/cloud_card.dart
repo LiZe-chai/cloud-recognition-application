@@ -68,7 +68,7 @@ class CloudCard extends StatelessWidget {
                   SizedBox(height: h * 0.01),
 
                   Text(
-                    '${result.date.year}-${result.date.month}-${result.date.day} · ${result.cloudType.label(context)} · ${(result.confidence * 100).toStringAsFixed(0)}%',
+                    '${result.date.year}-${result.date.month}-${result.date.day} · ${result.cloudType.label(context)} · ${(result.confidence).toStringAsFixed(0)}%',
                     style: TextStyle(
                       fontSize: 14,
                       color: Colors.grey.shade800,

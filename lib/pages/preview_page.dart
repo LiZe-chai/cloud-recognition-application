@@ -197,7 +197,7 @@ class PreviewPage extends StatelessWidget {
                             ),
                             SizedBox(height: 4),
                             Text(
-                              '${(result.confidence * 100).toStringAsFixed(1)}%'
+                              '${(result.confidence).toStringAsFixed(1)}%'
                               ,
                               style: TextStyle(
                                 fontWeight: FontWeight.bold,

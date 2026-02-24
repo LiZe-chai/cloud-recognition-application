@@ -199,7 +199,7 @@ class _WelcomePageState extends State<WelcomePage> {
                 children: [
                   SizedBox(height: h*0.25),
                   Image.asset("assets/logo.png", height: 200),
-                  SizedBox(height: h*0.25),
+                  SizedBox(height: h*0.2),
                   SizedBox(
                     width: w * 0.7,
                     height: h * 0.06,

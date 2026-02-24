@@ -200,11 +200,11 @@ class _HomePageState extends State<HomePage> {
             );
           },
           backgroundColor: Colors.white,
-          child: Icon(Icons.center_focus_strong,
-              size: w * 0.15, color: Colors.black),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(40),
           ),
+          child: Icon(Icons.center_focus_strong,
+              size: w * 0.15, color: Colors.black),
         ),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
