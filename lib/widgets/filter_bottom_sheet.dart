@@ -60,7 +60,6 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
               ),
             ],
           ),
-
           const SizedBox(height: 12),
           Text(S.of(context)!.specificCloudType,
               style: TextStyle(fontWeight: FontWeight.w600,fontSize: Theme.of(context).textTheme.bodyLarge?.fontSize)),
@@ -78,11 +77,12 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
                     selectedTypes.remove(type);
                   }
                 });
+                widget.onApply(selectedTypes, latest);
               },
             ),
           ),
 
-          const SizedBox(height: 12),
+          const SizedBox(height: 10),
           Text(S.of(context)!.sortByTime,
               style: TextStyle(fontWeight: FontWeight.w600,fontSize: Theme.of(context).textTheme.bodyLarge?.fontSize,)),
           SizedBox(height: 10),
@@ -93,26 +93,18 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
               DropdownMenuItem(value: true, child: Text(S.of(context)!.latest,style: TextStyle(fontSize: Theme.of(context).textTheme.bodyMedium?.fontSize))),
               DropdownMenuItem(value: false, child: Text(S.of(context)!.oldest,style: TextStyle(fontSize: Theme.of(context).textTheme.bodyMedium?.fontSize))),
             ],
-            onChanged: (v) => setState(() => latest = v!),
+            onChanged: (v) {
+              setState(() {
+                latest = v!;
+              });
+              widget.onApply(selectedTypes, latest);
+            },
+
             decoration: const InputDecoration(
               border: OutlineInputBorder(),
             ),
           ),
 
-          const SizedBox(height: 20),
-
-          SizedBox(
-            width: double.infinity,
-            height: 48,
-            child: ElevatedButton(
-              style: ElevatedButton.styleFrom(backgroundColor: Colors.black),
-              onPressed: () {
-                widget.onApply(selectedTypes, latest);
-                Navigator.pop(context);
-              },
-              child: Text(S.of(context)!.applyFilter, style: TextStyle(fontSize: Theme.of(context).textTheme.bodyLarge?.fontSize, color: Colors.white)),
-            ),
-          ),
         ],
       ),
     );

@@ -40,7 +40,8 @@ class SettingsPage extends StatelessWidget {
       enableDrag: false,
       backgroundColor: Colors.transparent,
       builder: (BuildContext context) {
-        return Stack(
+        return SafeArea(
+            child: Stack(
           children: [
             Container(
               decoration: const BoxDecoration(
@@ -117,6 +118,7 @@ class SettingsPage extends StatelessWidget {
               )
             ),
           ],
+        ),
         );
       },
     );

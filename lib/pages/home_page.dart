@@ -22,7 +22,6 @@ class _HomePageState extends State<HomePage> {
   bool sortLatest = true;
   String searchQuery = '';
 
-
   void _filterModal() {
     showModalBottomSheet(
       context: context,
