@@ -51,6 +51,7 @@ dependencies:
   permission_handler: ^12.0.1
   tflite_flutter: ^0.12.1
   flutter_native_splash: ^2.4.7
+  onnxruntime: ^1.4.1
 
 dev_dependencies:
   flutter_test:

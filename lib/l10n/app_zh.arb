@@ -55,6 +55,18 @@
   "cloudTypeStratocumulus": "层积云",
   "cloudTypeNimbostratus": "雨层云",
   "cloudTypeCumulus": "积云",
-  "cloudTypeCumulonimbus": "积雨云"
+  "cloudTypeCumulonimbus": "积雨云",
+  "appVersion": "版本 1.0.0",
+  "appDescription": "Cloud Vision 是一款用于云类型分类的移动应用程序。该应用在您的设备上运行本地部署的人工智能模型，对云图像进行分析，确保数据隐私，不会发生数据泄露。所有推理结果均存储在本地管理的数据库中，使应用能够完全离线运行。随时随地体验灵活便捷的云类型预测。",
+  "terms_clause1_title": "1. 介绍",
+  "terms_clause1_body": "欢迎使用 Cloud Vision（以下简称“本应用”）。本条款和条件规范您对本应用的访问和使用。通过访问或使用本应用，即表示您同意受本条款和条件的约束。如您不同意本条款的任何内容，请勿使用本应用。",
+  "terms_clause2_title": "2. 应用说明",
+  "terms_clause2_body": "Cloud Vision 是一款移动应用程序，使用本地部署的人工智能（AI）模型进行云层检测与分类。所有处理和数据存储均在用户设备本地完成。",
+  "terms_clause3_title": "3. AI 结果免责声明",
+  "terms_clause3_body": "云层检测与分类结果由人工智能模型生成。尽管已采取合理措施提高准确性，但结果可能并非完全准确、完整或可靠。本应用不应被用于专业、科学或安全关键决策。",
+  "terms_clause4_title": "4. 隐私与数据处理",
+  "terms_clause4_body": "所有图像均在用户设备本地处理。本应用不会上传、传输或在外部服务器存储用户图像或个人数据。",
+  "terms_clause5_title": "5. 责任限制",
+  "terms_clause5_body": "在法律允许的最大范围内，开发者不对因使用或无法使用本应用而产生的任何直接、间接、附带或后果性损害承担责任。"
 }
 

@@ -14,24 +14,26 @@ class WelcomePage extends StatefulWidget {
 class _WelcomePageState extends State<WelcomePage> {
   bool _isChecked= false;
 
-  final List<Clause> clauses = [
+  late final List<Clause> clauses = [
     Clause(
-      title: 'Clause 1',
-      body:
-      'Lorem ipsum dolor sit amet, consectetur adipiscing elit. '
-          'Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.',
+      title: S.of(context)!.terms_clause1_title,
+      body:S.of(context)!.terms_clause1_body,
     ),
     Clause(
-      title: 'Clause 2',
-      body:
-      'Ut enim ad minim veniam, quis nostrud exercitation ullamco '
-          'laboris nisi ut aliquip ex ea commodo consequat.',
+      title: S.of(context)!.terms_clause2_title,
+      body:S.of(context)!.terms_clause2_body,
     ),
     Clause(
-      title: 'Clause 3',
-      body:
-      'Duis aute irure dolor in reprehenderit in voluptate velit '
-          'esse cillum dolore eu fugiat nulla pariatur.',
+      title: S.of(context)!.terms_clause3_title,
+      body:S.of(context)!.terms_clause3_body,
+    ),
+    Clause(
+      title: S.of(context)!.terms_clause4_title,
+      body:S.of(context)!.terms_clause4_body,
+    ),
+    Clause(
+      title: S.of(context)!.terms_clause5_title,
+      body:S.of(context)!.terms_clause5_body,
     ),
   ];
   @override
@@ -304,6 +306,7 @@ class ClauseItem extends StatelessWidget {
         Text(
           clause.body,
           style: Theme.of(context).textTheme.bodyMedium,
+          textAlign: TextAlign.justify,
         ),
       ],
     );

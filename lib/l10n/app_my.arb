@@ -55,5 +55,17 @@
   "cloudTypeStratocumulus": "Awan Stratocumulus",
   "cloudTypeNimbostratus": "Awan Nimbostratus",
   "cloudTypeCumulus": "Awan Cumulus",
-  "cloudTypeCumulonimbus": "Awan Cumulonimbus"
+  "cloudTypeCumulonimbus": "Awan Cumulonimbus",
+  "appVersion": "Versi 1.0.0",
+  "appDescription": "Cloud Vision ialah aplikasi mudah alih yang direka untuk pengelasan jenis awan. Aplikasi ini menjalankan model kecerdasan buatan (AI) yang digunakan secara tempatan untuk menganalisis imej awan terus pada peranti anda, memastikan privasi sepenuhnya tanpa kebocoran data. Semua hasil inferens disimpan dalam pangkalan data yang diurus secara tempatan, membolehkan aplikasi berfungsi sepenuhnya secara luar talian. Nikmati ramalan jenis awan yang fleksibel dan mudah pada bila-bila masa dan di mana sahaja.",
+  "terms_clause1_title": "1. Pengenalan",
+  "terms_clause1_body": "Selamat datang ke Cloud Vision (\"Aplikasi\"). Terma dan Syarat ini mengawal akses dan penggunaan anda terhadap Aplikasi. Dengan mengakses atau menggunakan Aplikasi, anda bersetuju untuk terikat dengan Terma dan Syarat ini. Jika anda tidak bersetuju dengan mana-mana bahagian Terma ini, anda tidak dibenarkan menggunakan Aplikasi.",
+  "terms_clause2_title": "2. Perihal Aplikasi",
+  "terms_clause2_body": "Cloud Vision ialah aplikasi mudah alih yang menggunakan model kecerdasan buatan (AI) yang digunakan secara tempatan untuk melakukan pengesanan dan pengelasan awan. Semua pemprosesan dan penyimpanan data dilakukan secara tempatan pada peranti pengguna.",
+  "terms_clause3_title": "3. Penafian Keputusan Berasaskan AI",
+  "terms_clause3_body": "Keputusan pengesanan dan pengelasan awan dijana oleh model kecerdasan buatan. Walaupun usaha munasabah telah diambil untuk meningkatkan ketepatan, keputusan mungkin tidak sentiasa tepat, lengkap, atau boleh dipercayai. Aplikasi ini tidak boleh digunakan sebagai asas untuk keputusan profesional, saintifik, atau yang melibatkan keselamatan.",
+  "terms_clause4_title": "4. Privasi dan Pemprosesan Data",
+  "terms_clause4_body": "Semua imej diproses secara tempatan pada peranti pengguna. Aplikasi ini tidak memuat naik, menghantar, atau menyimpan imej pengguna atau data peribadi pada pelayan luaran.",
+  "terms_clause5_title": "5. Had Liabiliti",
+  "terms_clause5_body": "Setakat yang dibenarkan oleh undang-undang, pembangun tidak akan bertanggungjawab terhadap sebarang kerugian langsung, tidak langsung, sampingan, atau berbangkit yang timbul daripada penggunaan atau ketidakupayaan untuk menggunakan Aplikasi."
 }
