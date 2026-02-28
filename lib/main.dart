@@ -1,5 +1,6 @@
 import 'package:camera/camera.dart';
 import 'package:cloud_recognition/pages/home_page.dart';
+import 'package:cloud_recognition/services/inference.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
@@ -19,6 +20,31 @@ void main() async{
   final box = await Hive.openBox<PredictionModel>('predictions');
   cameras = await availableCameras();
   await box.clear();
+  if (box.isEmpty) {
+    final testData = PredictionModel(
+      name: "test",
+      imagePath: "assets/Ac-N004.jpg",
+      date: DateTime.now(),
+      detections: [
+        CloudDetection(
+          cloudType: CloudType.cumulus,
+          confidence: 0.95,
+          xMin: 0.1, yMin: 0.1, width: 0.3, height: 0.3,
+        ),
+        CloudDetection(
+          cloudType: CloudType.cirrus,
+          confidence: 0.72,
+          xMin: 0.5, yMin: 0.1, width: 0.2, height: 0.2,
+        ),
+        CloudDetection(
+          cloudType: CloudType.cumulonimbus,
+          confidence: 0.88,
+          xMin: 0.2, yMin: 0.5, width: 0.6, height: 0.4,
+        ),
+      ],
+    );
+    await box.add(testData);
+  }
 
 
   runApp(const MyApp());

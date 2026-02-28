@@ -1,4 +1,3 @@
-import 'dart:math';
 
 import 'package:cloud_recognition/services/cloud_type_classifier.dart';
 import 'package:flutter/material.dart';
@@ -58,6 +57,37 @@ extension CloudTypeX on CloudType {
       CloudType.contrail: s.cloudTypeContrail
     }[this]!;
   }
+}
+
+extension CloudTypeTheme on CloudType {
+  Color get color {
+    switch (this) {
+      case CloudType.cirrus:
+        return const Color(0xFF7B1FA2);
+      case CloudType.cirrostratus:
+        return const Color(0xFF512DA8);
+      case CloudType.cirrocumulus:
+        return const Color(0xFF303F9F);
+      case CloudType.altostratus:
+        return const Color(0xFF00796B);
+      case CloudType.altocumulus:
+        return const Color(0xFF388E3C);
+      case CloudType.stratus:
+        return const Color(0xFF455A64);
+      case CloudType.stratocumulus:
+        return const Color(0xFF263238);
+      case CloudType.cumulus:
+        return const Color(0xFF0288D1);
+      case CloudType.nimbostratus:
+        return const Color(0xFF121212);
+      case CloudType.cumulonimbus:
+        return const Color(0xFFC2185B);
+      case CloudType.contrail:
+        return const Color(0xFFE65100);
+    }
+  }
+
+  Color get borderColor => Colors.black.withOpacity(0.5);
 }
 
 

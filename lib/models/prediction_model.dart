@@ -13,17 +13,43 @@ class PredictionModel extends HiveObject {
   @HiveField(2)
   DateTime date;
 
+  // Replaced single type/confidence with a list of detections
   @HiveField(3)
-  CloudType cloudType;
-
-  @HiveField(4)
-  double confidence;
+  List<CloudDetection> detections;
 
   PredictionModel({
     this.imagePath = '',
     this.name = '',
     DateTime? date,
-    this.cloudType = CloudType.cumulus,
-    this.confidence = 0.0,
+    this.detections = const [], // Default to an empty list
   }) : date = date ?? DateTime.now();
+}
+@HiveType(typeId: 1) // Make sure this ID is unique across your app
+class CloudDetection extends HiveObject {
+  @HiveField(0)
+  CloudType cloudType;
+
+  @HiveField(1)
+  double confidence;
+
+  @HiveField(2)
+  double xMin;
+
+  @HiveField(3)
+  double yMin;
+
+  @HiveField(4)
+  double width;
+
+  @HiveField(5)
+  double height;
+
+  CloudDetection({
+    required this.cloudType,
+    required this.confidence,
+    required this.xMin,
+    required this.yMin,
+    required this.width,
+    required this.height,
+  });
 }

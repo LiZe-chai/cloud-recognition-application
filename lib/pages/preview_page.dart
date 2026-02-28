@@ -79,15 +79,15 @@ class PreviewPage extends StatelessWidget {
                       final name = controller.text.trim();
                       if (name.isEmpty) return;
                       final savedImagePath = await saveImageToAppDir(File(tempImagePath));
-                      box.add(
-                        PredictionModel(
-                          imagePath: savedImagePath,
-                          name: name,
-                          date: DateTime.now(),
-                          cloudType: result.type,
-                          confidence: result.confidence,
-                        ),
-                      );
+                      // box.add(
+                      //   PredictionModel(
+                      //     imagePath: savedImagePath,
+                      //     name: name,
+                      //     date: DateTime.now(),
+                      //     cloudType: result.type,
+                      //     confidence: result.confidence,
+                      //   ),
+                      // );
                       Navigator.pop(dialogContext,true);
                     },
                     style: ElevatedButton.styleFrom(
