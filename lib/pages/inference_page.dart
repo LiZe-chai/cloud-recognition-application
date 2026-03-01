@@ -1,10 +1,12 @@
 import 'dart:io';
+import 'dart:math';
 
 import 'package:cloud_recognition/pages/preview_page.dart';
 import 'package:cloud_recognition/services/cloud_type_classifier.dart';
 import 'package:flutter/material.dart';
 import 'package:image/image.dart' as img;
 import '../generated/l10n.dart';
+import '../services/cloud_detector.dart';
 import '/services/inference.dart';
 
 class InferencePage extends StatefulWidget {
@@ -17,25 +19,66 @@ class InferencePage extends StatefulWidget {
 
 class _InferencePageState extends State<InferencePage> {
   final classifier = CloudTypeClassifier();
+  final CloudDetector detector = CloudDetector();
   @override
   void initState() {
     super.initState();
     classifier.loadModel();
+    detector.loadModel();
     _runInference();
+
   }
 
   Future<void> _runInference() async {
     final file = File(widget.tempImagePath);
     final bytes = await file.readAsBytes();
     final inputImage = img.decodeImage(bytes);
-    final result = await InferCloud(classifier,inputImage!);
+
+
+    final mask = await detector.predict(inputImage!);
+    final boxes = await CloudPostProcessor.processMask(mask!, 512, 512,);
+    List<DetectionResult> results = [];
+    for (var box in boxes) {
+      int x = box['x'];
+      int y = box['y'];
+      int w = box['w'];
+      int h = box['h'];
+
+      double scaleX = inputImage.width / 512;
+      double scaleY = inputImage.height / 512;
+
+      int realX = (x * scaleX).toInt();
+      int realY = (y * scaleY).toInt();
+      int realW = (w * scaleX).toInt();
+      int realH = (h * scaleY).toInt();
+
+      realX = max(0, realX);
+      realY = max(0, realY);
+      realW = min(inputImage.width - realX, realW);
+      realH = min(inputImage.height - realY, realH);
+
+      final cropped = img.copyCrop(
+        inputImage,
+        x: realX,
+        y: realY,
+        width: realW,
+        height: realH,
+      );
+      final classification = await InferCloud(classifier,cropped!);
+      results.add(
+        DetectionResult(
+          box: box,
+          classification: classification,
+        ),
+      );
+    }
 
     if (!mounted) return;
 
     Navigator.pushReplacement(
       context,
       MaterialPageRoute(
-        builder: (_) => PreviewPage(result: result, tempImagePath: widget.tempImagePath,),
+        builder: (_) => PreviewPage(results: results, tempImagePath: widget.tempImagePath,),
       ),
     );
   }

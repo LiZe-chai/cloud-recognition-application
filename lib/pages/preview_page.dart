@@ -9,11 +9,13 @@ import '../generated/l10n.dart';
 import '../models/prediction_model.dart';
 import 'package:cloud_recognition/main.dart';
 
+import '../widgets/bounding_box_painter.dart';
+
 class PreviewPage extends StatelessWidget {
-  final InferenceResult result;
+  final List<DetectionResult> results;
   final String tempImagePath;
 
-  const PreviewPage({super.key, required this.tempImagePath, required this.result});
+  const PreviewPage({super.key, required this.tempImagePath, required this.results});
 
   Future<bool?> showSaveAsDialog(BuildContext context) async {
     final controller = TextEditingController();
@@ -79,15 +81,28 @@ class PreviewPage extends StatelessWidget {
                       final name = controller.text.trim();
                       if (name.isEmpty) return;
                       final savedImagePath = await saveImageToAppDir(File(tempImagePath));
-                      // box.add(
-                      //   PredictionModel(
-                      //     imagePath: savedImagePath,
-                      //     name: name,
-                      //     date: DateTime.now(),
-                      //     cloudType: result.type,
-                      //     confidence: result.confidence,
-                      //   ),
-                      // );
+                      final hiveDetections = results.map((r) {
+                        final box = r.box;
+                        final cls = r.classification;
+
+                        return CloudDetection(
+                          cloudType: cls.type,
+                          confidence: cls.confidence,
+                          xMin: box['x']!.toDouble(),
+                          yMin: box['y']!.toDouble(),
+                          width: box['w']!.toDouble(),
+                          height: box['h']!.toDouble(),
+                        );
+                      }).toList();
+
+                      final prediction = PredictionModel(
+                        imagePath: savedImagePath,
+                        name: name,
+                        date: DateTime.now(),
+                        detections: hiveDetections,
+                      );
+
+                      box.add(prediction);
                       Navigator.pop(dialogContext,true);
                     },
                     style: ElevatedButton.styleFrom(
@@ -131,87 +146,162 @@ class PreviewPage extends StatelessWidget {
       body: SafeArea(
         child: Stack(
           children: [
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                SizedBox(height: 70),
-                Container(
-                  height: 260,
-                  color: Colors.grey[300],
-                  alignment: Alignment.center,
-                  child: Image.file(
-                    File(tempImagePath),
-                    fit: BoxFit.cover,
-                  ),
-                ),
-
-                const SizedBox(height: 24),
-
-                // Prediction Result
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 24),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        S.of(context)!.predictionResult,
-                        style: TextStyle(
-                          fontSize: Theme.of(context).textTheme.bodyLarge?.fontSize,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white,
-                        ),
+            SingleChildScrollView(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  AspectRatio(
+                    aspectRatio: 1.0,
+                    child: Container(
+                      width: double.infinity,
+                      color: Colors.grey[900],
+                      child: Stack(
+                        fit: StackFit.expand,
+                        children: [
+                          Image.file(
+                            File(tempImagePath),
+                            fit: BoxFit.cover,
+                          ),
+                          CustomPaint(
+                            painter: BoundingBoxPainter(results),
+                          ),
+                        ],
                       ),
-                      const SizedBox(height: 12),
-                      Container(
-                        padding: const EdgeInsets.all(16),
-                        decoration: BoxDecoration(
-                          color: Colors.grey[800],
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              S.of(context)!.predictedCloudType,
-                              style: TextStyle(
-                                fontSize: Theme.of(context).textTheme.bodyMedium?.fontSize,
-                                color: Colors.white,
-                              ),
-                            ),
-                            SizedBox(height: 4),
-                            Text(
-                              result.type.label(context),
-                              style: TextStyle(
-                                fontSize: Theme.of(context).textTheme.bodyMedium?.fontSize,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.white,
-                              ),
-                            ),
-                            Divider(),
-                            Text(
-                              S.of(context)!.predictionConfidence,
-                              style: TextStyle(
-                                fontSize: Theme.of(context).textTheme.bodyMedium?.fontSize,
-                                color: Colors.white,
-                              ),
-                            ),
-                            SizedBox(height: 4),
-                            Text(
-                              '${(result.confidence).toStringAsFixed(1)}%'
-                              ,
-                              style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                                fontSize: Theme.of(context).textTheme.bodyMedium?.fontSize,
-                                color: Colors.white,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
+                    ),
                   ),
-                ),
-              ],
+
+                  const SizedBox(height: 24),
+
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 24),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          '${S.of(context)!.predictionResult} (${results.length})',
+                          style: TextStyle(
+                            fontSize: Theme.of(context).textTheme.bodyLarge?.fontSize,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white,
+                          ),
+                        ),
+                        const SizedBox(height: 12),
+                        Container(
+                          decoration: BoxDecoration(
+                            color: Colors.grey[800],
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: Column(
+                            children: results
+                                .asMap()
+                                .entries
+                                .map<Widget>((entry) {
+                              int index = entry.key;
+                              final detection = entry.value;
+                              final cloudColor = detection.classification.type.color;
+                              bool isLast = index == results.length - 1;
+                              return Column(
+                                children: [
+                                  Padding(
+                                    padding: const EdgeInsets.all(16.0),
+                                    child: Column(
+                                      children: [
+                                        Row(
+                                          children: [
+                                            Container(
+                                              width: 26,
+                                              height: 26,
+                                              decoration: BoxDecoration(
+                                                color: cloudColor.withOpacity(
+                                                    0.2),
+                                                shape: BoxShape.circle,
+                                              ),
+                                              alignment: Alignment.center,
+                                              child: Text(
+                                                '${index + 1}',
+                                                style: TextStyle(
+                                                  color: cloudColor,
+                                                  fontWeight: FontWeight.bold,
+                                                  fontSize: Theme.of(context).textTheme.bodyMedium?.fontSize,
+                                                ),
+                                              ),
+                                            ),
+                                            const SizedBox(width: 12),
+                                            Text(
+                                              detection.classification.type.label(context),
+                                              style: TextStyle(
+                                                color: Colors.white,
+                                                fontSize: Theme.of(context).textTheme.bodyMedium?.fontSize,
+                                                fontWeight: FontWeight.w500,
+                                              ),
+                                            ),
+                                            const Spacer(),
+                                            Text(
+                                              '${(detection.classification.confidence).toStringAsFixed(0)}%',
+                                              style: TextStyle(
+                                                color: Colors.white,
+                                                fontSize: Theme.of(context).textTheme.bodyMedium?.fontSize,
+                                                fontWeight: FontWeight.bold,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                        const SizedBox(height: 12),
+                                        Stack(
+                                          children: [
+                                            Container(
+                                              height: 6,
+                                              width: double.infinity,
+                                              decoration: BoxDecoration(
+                                                color: Colors.black26,
+                                                borderRadius: BorderRadius
+                                                    .circular(3),
+                                              ),
+                                            ),
+                                            FractionallySizedBox(
+                                              widthFactor: detection.classification.confidence
+                                                  .clamp(0.0, 1.0),
+                                              child: Container(
+                                                height: 6,
+                                                decoration: BoxDecoration(
+                                                  color: cloudColor,
+                                                  borderRadius: BorderRadius
+                                                      .circular(3),
+                                                  boxShadow: [
+                                                    BoxShadow(
+                                                      color: cloudColor
+                                                          .withOpacity(0.3),
+                                                      blurRadius: 4,
+                                                      offset: const Offset(
+                                                          0, 2),
+                                                    ),
+                                                  ],
+                                                ),
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                  if (!isLast)
+                                    Divider(
+                                      height: 1,
+                                      thickness: 1,
+                                      color: Colors.white.withOpacity(0.05),
+                                      indent: 16,
+                                      endIndent: 16,
+                                    ),
+                                ],
+                              );
+                            }).toList(),
+                          ),
+                        ),
+                      ],
+                    ),
+                  )
+                ],
+              ),
             ),
 
             Positioned(

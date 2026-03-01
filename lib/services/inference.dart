@@ -28,6 +28,16 @@ class InferenceResult {
     required this.confidence,
   });
 }
+class DetectionResult {
+  final Map<String, int> box;
+  final InferenceResult classification;
+
+  DetectionResult({
+    required this.box,
+    required this.classification,
+  });
+}
+
 
 InferenceResult InferCloud(CloudTypeClassifier classifier, img.Image imageInput) {
   final result = classifier.predict(imageInput);
