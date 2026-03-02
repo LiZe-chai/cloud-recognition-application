@@ -17,7 +17,8 @@ class SavedResultPage extends StatelessWidget {
     return Scaffold(
       backgroundColor: Colors.black,
       body: SafeArea(
-        child: Stack(
+        child:
+          Stack(
           children: [
             SingleChildScrollView(
               child: Column(

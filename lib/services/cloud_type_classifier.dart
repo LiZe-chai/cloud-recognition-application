@@ -72,4 +72,7 @@ class CloudTypeClassifier {
     }
     return convertedBytes.buffer.asUint8List();
   }
+  void close() {
+    _interpreter.close();
+  }
 }

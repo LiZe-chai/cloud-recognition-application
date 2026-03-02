@@ -84,10 +84,8 @@ class CloudDetector {
     return buffer;
   }
 
-  void dispose() {
+  void close() {
     _interpreter?.close();
-    _interpreter = null;
-    _isInitialized = false;
   }
 }
 class CloudPostProcessor {

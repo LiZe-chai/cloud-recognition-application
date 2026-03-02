@@ -25,8 +25,9 @@ class _InferencePageState extends State<InferencePage> {
   @override
   void initState() {
     super.initState();
-    _runInference();
-
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _runInference();
+    });
   }
 
   Future<void> _runInference() async {
@@ -96,9 +97,17 @@ class _InferencePageState extends State<InferencePage> {
           ],
         ),
       );
-
       return;
     }
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(
+        builder: (_) => PreviewPage(
+          tempImagePath: widget.tempImagePath,
+          results: results,
+        ),
+      ),
+    );
   }
 
   @override

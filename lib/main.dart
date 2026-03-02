@@ -1,6 +1,5 @@
 import 'package:camera/camera.dart';
 import 'package:cloud_recognition/pages/home_page.dart';
-import 'package:cloud_recognition/services/inference.dart';
 import 'package:cloud_recognition/services/model_manager.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';

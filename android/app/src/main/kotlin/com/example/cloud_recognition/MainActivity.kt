@@ -94,7 +94,7 @@ class MainActivity: FlutterActivity() {
 
             val area = stats.get(i, Imgproc.CC_STAT_AREA)[0]
 
-            if (area < 100) continue
+            if (area < 500) continue
 
             val x = stats.get(i, Imgproc.CC_STAT_LEFT)[0].toInt()
             val y = stats.get(i, Imgproc.CC_STAT_TOP)[0].toInt()

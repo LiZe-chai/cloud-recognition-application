@@ -15,7 +15,8 @@ class PreviewPage extends StatelessWidget {
   final List<DetectionResult> results;
   final String tempImagePath;
 
-  const PreviewPage({super.key, required this.tempImagePath, required this.results});
+  const PreviewPage(
+      {super.key, required this.tempImagePath, required this.results});
 
   Future<bool?> showSaveAsDialog(BuildContext context) async {
     final controller = TextEditingController();
@@ -41,26 +42,25 @@ class PreviewPage extends StatelessWidget {
                     Text(
                       S.of(dialogContext)!.saveAs,
                       style: TextStyle(
-                        fontSize: Theme.of(context).textTheme.bodyLarge?.fontSize,
+                        fontSize:
+                            Theme.of(context).textTheme.bodyLarge?.fontSize,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
                     IconButton(
                       icon: const Icon(Icons.close),
-                      onPressed: () => Navigator.pop(dialogContext,false),
+                      onPressed: () => Navigator.pop(dialogContext, false),
                     ),
                   ],
                 ),
-
                 const SizedBox(height: 12),
-
                 Text(
                   S.of(dialogContext)!.fileName,
-                  style: TextStyle(fontSize: Theme.of(context).textTheme.bodyMedium?.fontSize),
+                  style: TextStyle(
+                      fontSize:
+                          Theme.of(context).textTheme.bodyMedium?.fontSize),
                 ),
-
                 const SizedBox(height: 10),
-
                 TextField(
                   controller: controller,
                   decoration: InputDecoration(
@@ -70,9 +70,7 @@ class PreviewPage extends StatelessWidget {
                     ),
                   ),
                 ),
-
                 const SizedBox(height: 20),
-
                 SizedBox(
                   width: double.infinity,
                   height: 44,
@@ -80,7 +78,8 @@ class PreviewPage extends StatelessWidget {
                     onPressed: () async {
                       final name = controller.text.trim();
                       if (name.isEmpty) return;
-                      final savedImagePath = await saveImageToAppDir(File(tempImagePath));
+                      final savedImagePath =
+                          await saveImageToAppDir(File(tempImagePath));
                       final hiveDetections = results.map((r) {
                         final box = r.box;
                         final cls = r.classification;
@@ -103,7 +102,7 @@ class PreviewPage extends StatelessWidget {
                       );
 
                       box.add(prediction);
-                      Navigator.pop(dialogContext,true);
+                      Navigator.pop(dialogContext, true);
                     },
                     style: ElevatedButton.styleFrom(
                       shape: RoundedRectangleBorder(
@@ -111,7 +110,11 @@ class PreviewPage extends StatelessWidget {
                       ),
                       backgroundColor: Colors.black,
                     ),
-                    child: Text(S.of(dialogContext)!.saveAction, style: TextStyle(fontSize: Theme.of(context).textTheme.bodyLarge?.fontSize, color: Colors.white)),
+                    child: Text(S.of(dialogContext)!.saveAction,
+                        style: TextStyle(
+                            fontSize:
+                                Theme.of(context).textTheme.bodyLarge?.fontSize,
+                            color: Colors.white)),
                   ),
                 ),
               ],
@@ -130,57 +133,65 @@ class PreviewPage extends StatelessWidget {
       await predictionDir.create(recursive: true);
     }
 
-    final fileName = 'cloud_${DateTime.now().millisecondsSinceEpoch}${p.extension(tempImage.path)}';
+    final fileName =
+        'cloud_${DateTime.now().millisecondsSinceEpoch}${p.extension(tempImage.path)}';
 
-    final savedImage =
-    await tempImage.copy('${predictionDir.path}/$fileName');
+    final savedImage = await tempImage.copy('${predictionDir.path}/$fileName');
 
     return savedImage.path;
   }
-
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.black,
-      body: SafeArea(
+      body:
+        SafeArea(
         child: Stack(
-          children: [
-            SingleChildScrollView(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  AspectRatio(
-                    aspectRatio: 1.0,
-                    child: Container(
-                      width: double.infinity,
-                      color: Colors.grey[900],
-                      child: Stack(
-                        fit: StackFit.expand,
-                        children: [
-                          Image.file(
-                            File(tempImagePath),
-                            fit: BoxFit.cover,
-                          ),
-                          CustomPaint(
-                            painter: BoundingBoxPainter(results),
-                          ),
-                        ],
-                      ),
+        children: [
+          SafeArea(
+            bottom: false,
+            child: Column(
+              children: [
+                Align(
+                  alignment: Alignment.topLeft,
+                  child: IconButton(
+                    icon: const Icon(Icons.arrow_back),
+                    onPressed: () => Navigator.pop(context),
+                    color: Colors.white,
+                  ),
+                ),
+                AspectRatio(
+                  aspectRatio: 1.0,
+                  child: Container(
+                    width: double.infinity,
+                    color: Colors.grey[900],
+                    child: Stack(
+                      fit: StackFit.expand,
+                      children: [
+                        Image.file(
+                          File(tempImagePath),
+                          fit: BoxFit.cover,
+                        ),
+                        CustomPaint(
+                          painter: BoundingBoxPainter(results),
+                        ),
+                      ],
                     ),
                   ),
-
-                  const SizedBox(height: 24),
-
-                  Padding(
+                ),
+                Expanded(
+                  child: SingleChildScrollView(
                     padding: const EdgeInsets.symmetric(horizontal: 24),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
+                        const SizedBox(height: 24),
                         Text(
                           '${S.of(context)!.predictionResult} (${results.length})',
                           style: TextStyle(
-                            fontSize: Theme.of(context).textTheme.bodyLarge?.fontSize,
+                            fontSize:
+                                Theme.of(context).textTheme.bodyLarge?.fontSize,
                             fontWeight: FontWeight.bold,
                             color: Colors.white,
                           ),
@@ -192,14 +203,14 @@ class PreviewPage extends StatelessWidget {
                             borderRadius: BorderRadius.circular(12),
                           ),
                           child: Column(
-                            children: results
-                                .asMap()
-                                .entries
-                                .map<Widget>((entry) {
+                            children:
+                                results.asMap().entries.map<Widget>((entry) {
                               int index = entry.key;
                               final detection = entry.value;
-                              final cloudColor = detection.classification.type.color;
+                              final cloudColor =
+                                  detection.classification.type.color;
                               bool isLast = index == results.length - 1;
+
                               return Column(
                                 children: [
                                   Padding(
@@ -212,8 +223,8 @@ class PreviewPage extends StatelessWidget {
                                               width: 26,
                                               height: 26,
                                               decoration: BoxDecoration(
-                                                color: cloudColor.withOpacity(
-                                                    0.2),
+                                                color:
+                                                    cloudColor.withOpacity(0.2),
                                                 shape: BoxShape.circle,
                                               ),
                                               alignment: Alignment.center,
@@ -222,16 +233,23 @@ class PreviewPage extends StatelessWidget {
                                                 style: TextStyle(
                                                   color: cloudColor,
                                                   fontWeight: FontWeight.bold,
-                                                  fontSize: Theme.of(context).textTheme.bodyMedium?.fontSize,
+                                                  fontSize: Theme.of(context)
+                                                      .textTheme
+                                                      .bodyMedium
+                                                      ?.fontSize,
                                                 ),
                                               ),
                                             ),
                                             const SizedBox(width: 12),
                                             Text(
-                                              detection.classification.type.label(context),
+                                              detection.classification.type
+                                                  .label(context),
                                               style: TextStyle(
                                                 color: Colors.white,
-                                                fontSize: Theme.of(context).textTheme.bodyMedium?.fontSize,
+                                                fontSize: Theme.of(context)
+                                                    .textTheme
+                                                    .bodyMedium
+                                                    ?.fontSize,
                                                 fontWeight: FontWeight.w500,
                                               ),
                                             ),
@@ -240,7 +258,10 @@ class PreviewPage extends StatelessWidget {
                                               '${(detection.classification.confidence).toStringAsFixed(0)}%',
                                               style: TextStyle(
                                                 color: Colors.white,
-                                                fontSize: Theme.of(context).textTheme.bodyMedium?.fontSize,
+                                                fontSize: Theme.of(context)
+                                                    .textTheme
+                                                    .bodyMedium
+                                                    ?.fontSize,
                                                 fontWeight: FontWeight.bold,
                                               ),
                                             ),
@@ -254,28 +275,20 @@ class PreviewPage extends StatelessWidget {
                                               width: double.infinity,
                                               decoration: BoxDecoration(
                                                 color: Colors.black26,
-                                                borderRadius: BorderRadius
-                                                    .circular(3),
+                                                borderRadius:
+                                                    BorderRadius.circular(3),
                                               ),
                                             ),
                                             FractionallySizedBox(
-                                              widthFactor: detection.classification.confidence
+                                              widthFactor: detection
+                                                  .classification.confidence
                                                   .clamp(0.0, 1.0),
                                               child: Container(
                                                 height: 6,
                                                 decoration: BoxDecoration(
                                                   color: cloudColor,
-                                                  borderRadius: BorderRadius
-                                                      .circular(3),
-                                                  boxShadow: [
-                                                    BoxShadow(
-                                                      color: cloudColor
-                                                          .withOpacity(0.3),
-                                                      blurRadius: 4,
-                                                      offset: const Offset(
-                                                          0, 2),
-                                                    ),
-                                                  ],
+                                                  borderRadius:
+                                                      BorderRadius.circular(3),
                                                 ),
                                               ),
                                             ),
@@ -297,89 +310,66 @@ class PreviewPage extends StatelessWidget {
                             }).toList(),
                           ),
                         ),
+                        const SizedBox(height: 120),
                       ],
                     ),
-                  )
+                  ),
+                ),
+              ],
+            ),
+          ),
+          Positioned(
+            left: 0,
+            right: 0,
+            bottom: 0,
+            child: Container(
+              height: 72,
+              color: const Color(0xFF2E2E2E),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      IconButton(
+                        icon: const Icon(Icons.camera_alt),
+                        color: Colors.white,
+                        onPressed: () {
+                          Navigator.pop(context, false);
+                        },
+                      ),
+                      Text(
+                        S.of(context)!.newAction,
+                        style: const TextStyle(color: Colors.white),
+                      ),
+                    ],
+                  ),
+                  Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      IconButton(
+                        icon: const Icon(Icons.save),
+                        color: Colors.white,
+                        onPressed: () async {
+                          final bool? saved = await showSaveAsDialog(context);
+                          if (saved != true) return;
+                          Navigator.pop(context);
+                          Navigator.pop(context);
+                        },
+                      ),
+                      Text(
+                        S.of(context)!.saveAction,
+                        style: const TextStyle(color: Colors.white),
+                      ),
+                    ],
+                  ),
                 ],
               ),
             ),
-
-            Positioned(
-              top: 8,
-              left: 8,
-              child: IconButton(
-                icon: const Icon(Icons.arrow_back),
-                iconSize: 28,
-                onPressed: () => Navigator.pop(context),
-                color: Colors.white,
-              ),
-            ),
-
-            Positioned(
-              left: 0,
-              right: 0,
-              bottom: 0,
-              child: Container(
-                height: 72,
-                decoration: const BoxDecoration(
-                  color: Color(0xFF2E2E2E),
-                ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: [
-                    Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        IconButton(
-                          icon: const Icon(Icons.camera_alt),
-                          color: Colors.white,
-                          iconSize: 28,
-                          onPressed: () {
-                            Navigator.pop(context, false);
-                          },
-                        ),
-                        Text(
-                          S.of(context)!.newAction,
-                          style: TextStyle(color: Colors.white),
-                        ),
-                      ],
-                    ),
-                    Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        IconButton(
-                          icon: const Icon(Icons.save),
-                          color: Colors.white,
-                          iconSize: 28,
-                          onPressed: () async {
-                            final bool? saved = await showSaveAsDialog(context);
-                            print(saved);
-                            if (saved != true) return;
-                            Navigator.pop(context);
-                            Navigator.pop(context);
-                            WidgetsBinding.instance.addPostFrameCallback((_) {
-                              messengerKey.currentState?.showSnackBar(
-                                SnackBar(
-                                  content: Text(S.of(context)!.saveSuccessful),
-                                  behavior: SnackBarBehavior.floating,
-                                ),
-                              );
-                            });
-                          },
-                        ),
-                        Text(
-                          S.of(context)!.saveAction,
-                          style: TextStyle(color: Colors.white),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ],
-        ),
+          ),
+        ],
       ),
+    ),
     );
   }
 }
