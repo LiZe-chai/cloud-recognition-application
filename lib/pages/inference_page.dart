@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:image/image.dart' as img;
 import '../generated/l10n.dart';
 import '../services/cloud_detector.dart';
+import '../services/model_manager.dart';
 import '/services/inference.dart';
 
 class InferencePage extends StatefulWidget {
@@ -18,13 +19,12 @@ class InferencePage extends StatefulWidget {
 }
 
 class _InferencePageState extends State<InferencePage> {
-  final classifier = CloudTypeClassifier();
-  final CloudDetector detector = CloudDetector();
+  final classifier = ModelManager.instance.classifier;
+  final detector = ModelManager.instance.detector;
+
   @override
   void initState() {
     super.initState();
-    classifier.loadModel();
-    detector.loadModel();
     _runInference();
 
   }
@@ -39,10 +39,12 @@ class _InferencePageState extends State<InferencePage> {
     final boxes = await CloudPostProcessor.processMask(mask!, 512, 512,);
     List<DetectionResult> results = [];
     for (var box in boxes) {
-      int x = box['x'];
-      int y = box['y'];
-      int w = box['w'];
-      int h = box['h'];
+      final map = Map<String, dynamic>.from(box);
+
+      int x = map['x'];
+      int y = map['y'];
+      int w = map['w'];
+      int h = map['h'];
 
       double scaleX = inputImage.width / 512;
       double scaleY = inputImage.height / 512;
@@ -67,20 +69,36 @@ class _InferencePageState extends State<InferencePage> {
       final classification = await InferCloud(classifier,cropped!);
       results.add(
         DetectionResult(
-          box: box,
+          box: map.cast<String, int>(),
           classification: classification,
         ),
       );
     }
 
-    if (!mounted) return;
+    if (results.isEmpty) {
+      if (!mounted) return;
+      showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: const Text("No Cloud Detected"),
+          content: const Text(
+            "Couldn't detect any clouds in this image.\n\n"
+                "Try capturing more sky area or ensure the clouds are clearly visible.",
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.pop(context);
+                Navigator.pop(context);
+              },
+              child: const Text("Try Again"),
+            ),
+          ],
+        ),
+      );
 
-    Navigator.pushReplacement(
-      context,
-      MaterialPageRoute(
-        builder: (_) => PreviewPage(results: results, tempImagePath: widget.tempImagePath,),
-      ),
-    );
+      return;
+    }
   }
 
   @override

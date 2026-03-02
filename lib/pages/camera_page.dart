@@ -192,65 +192,6 @@ class _CameraPageState extends State<CameraPage> {
     await _controller.setZoomLevel(zoom);
   }
 
-  Future<File> _cropCenterSquare(File file) async {
-    final bytes = await file.readAsBytes();
-    var image = img.decodeImage(bytes)!;
-    image = img.bakeOrientation(image);
-
-    final previewSize = _controller.value.previewSize!;
-    final screenSize = MediaQuery
-        .of(context)
-        .size;
-
-    final previewWidth = previewSize.height;
-    final previewHeight = previewSize.width;
-
-    final screenWidth = screenSize.width;
-    final screenHeight = screenSize.height;
-
-    final scale = (screenWidth / previewWidth)
-        .compareTo(screenHeight / previewHeight) > 0
-        ? screenWidth / previewWidth
-        : screenHeight / previewHeight;
-
-    final displayedWidth = previewWidth * scale;
-    final displayedHeight = previewHeight * scale;
-
-    final dx = (displayedWidth - screenWidth) / 2;
-    final dy = (displayedHeight - screenHeight) / 2;
-
-    final squareSize = screenWidth;
-    final squareLeft = 0.0;
-    final squareTop = (screenHeight - squareSize) / 2;
-
-    final previewX = (squareLeft + dx) / scale;
-    final previewY = (squareTop + dy) / scale;
-    final previewCropSize = squareSize / scale;
-
-    final imageScaleX = image.width / previewWidth;
-    final imageScaleY = image.height / previewHeight;
-
-    final cropX = previewX * imageScaleX;
-    final cropY = previewY * imageScaleY;
-    final cropSize = previewCropSize * imageScaleX;
-
-    final square = img.copyCrop(
-      image,
-      x: cropX.round(),
-      y: cropY.round(),
-      width: cropSize.round(),
-      height: cropSize.round(),
-    );
-
-    final croppedFile =
-    File(file.path.replaceFirst('.jpg', '_square.jpg'));
-
-    await croppedFile.writeAsBytes(
-      img.encodeJpg(square, quality: 95),
-    );
-
-    return croppedFile;
-  }
 
 
   Future<void> _takePicture() async {
@@ -258,7 +199,7 @@ class _CameraPageState extends State<CameraPage> {
     _isTakingPicture = true;
 
     try {
-      await _controller.pausePreview();
+      await _controller.dispose();
 
       final XFile raw = await _controller.takePicture();
       final File cropped = await compute(_isolateCropTask, {
@@ -276,7 +217,7 @@ class _CameraPageState extends State<CameraPage> {
         ),
       );
 
-      await _controller.resumePreview();
+      await _initCamera();
     } catch (e) {
       debugPrint('Take picture error: $e');
     } finally {
@@ -343,7 +284,6 @@ class _CameraPageState extends State<CameraPage> {
     );
 
     if (confirm != true) return;
-
     await Navigator.push(
       context,
       MaterialPageRoute(
