@@ -5,8 +5,9 @@ import '../services/inference.dart';
 
 class BoundingBoxPainter extends CustomPainter {
   final List<DetectionResult> results;
+  final BuildContext context;
 
-  BoundingBoxPainter(this.results);
+  BoundingBoxPainter(this.results, this.context);
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -47,7 +48,7 @@ class BoundingBoxPainter extends CustomPainter {
           text: "${i + 1}",
           style: TextStyle(
             color: Colors.white,
-            fontSize: 14,
+            fontSize: Theme.of(context).textTheme.bodyMedium?.fontSize,
             fontWeight: FontWeight.bold,
           ),
         ),

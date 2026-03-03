@@ -7,8 +7,6 @@ import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart' as p;
 import '../generated/l10n.dart';
 import '../models/prediction_model.dart';
-import 'package:cloud_recognition/main.dart';
-
 import '../widgets/bounding_box_painter.dart';
 
 class PreviewPage extends StatelessWidget {
@@ -174,7 +172,7 @@ class PreviewPage extends StatelessWidget {
                           fit: BoxFit.cover,
                         ),
                         CustomPaint(
-                          painter: BoundingBoxPainter(results),
+                          painter: BoundingBoxPainter(results,context),
                         ),
                       ],
                     ),

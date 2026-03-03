@@ -1,7 +1,10 @@
+import 'dart:ui';
+
 import 'package:cloud_recognition/pages/setting_page.dart';
 import 'package:cloud_recognition/services/inference.dart';
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:tutorial_coach_mark/tutorial_coach_mark.dart';
 import '../generated/l10n.dart';
 import '../main.dart';
 import '../models/prediction_model.dart';
@@ -21,8 +24,159 @@ class _HomePageState extends State<HomePage> {
   Set<CloudType> selectedCloudTypes = {};
   bool sortLatest = true;
   String searchQuery = '';
-  // final GlobalKey _fabKey = GlobalKey();
-  // late TutorialCoachMark _tutorialCoachMark;
+  late TutorialCoachMark tutorialCoachMark;
+
+  GlobalKey captureButton = GlobalKey();
+  GlobalKey cardRegion = GlobalKey();
+  GlobalKey searchQueryField = GlobalKey();
+  GlobalKey filterButton = GlobalKey();
+  GlobalKey settingsButton = GlobalKey();
+
+  void showTutorial() {
+    tutorialCoachMark.show(context: context);
+  }
+
+  Future<void> createTutorial() async {
+    tutorialCoachMark = TutorialCoachMark(
+      targets: await _createTargets(),
+      colorShadow: Colors.indigo,
+      textSkip: "SKIP",
+      paddingFocus: 10,
+      opacityShadow: 0.5,
+      imageFilter: ImageFilter.blur(sigmaX: 8, sigmaY: 8),
+      onFinish: () {
+        print("finish");
+      },
+      onClickTarget: (target) {
+        print('onClickTarget: $target');
+      },
+      onClickTargetWithTapPosition: (target, tapDetails) {
+        print("target: $target");
+        print(
+            "clicked at position local: ${tapDetails.localPosition} - global: ${tapDetails.globalPosition}");
+      },
+      onClickOverlay: (target) {
+        print('onClickOverlay: $target');
+      },
+      onSkip: () {
+        print("skip");
+        return true;
+      },
+    );
+  }
+
+  Future<List<TargetFocus>> _createTargets() async {
+    List<TargetFocus> targets = [];
+    targets.add(
+      TargetFocus(
+        identify: "capture",
+        keyTarget: captureButton,
+        alignSkip: Alignment.topRight,
+        enableOverlayTab: true,
+        contents: [
+          TargetContent(
+            align: ContentAlign.top,
+            builder: (context, controller) {
+              return const Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  Text(
+                    "Infer your cloud image by access this",
+                    style: TextStyle(
+                      color: Colors.white,
+                    ),
+                  ),
+                ],
+              );
+            },
+          ),
+        ],
+      ),
+    );
+    targets.add(
+      TargetFocus(
+        identify: "filtering",
+        keyTarget: filterButton,
+        alignSkip: Alignment.topRight,
+        enableOverlayTab: true,
+        contents: [
+          TargetContent(
+            align: ContentAlign.top,
+            builder: (context, controller) {
+              return const Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  Text(
+                    "Filter your inference history by categorising cloud type and sort by time",
+                    style: TextStyle(
+                      color: Colors.white,
+                    ),
+                  ),
+                ],
+              );
+            },
+          ),
+        ],
+      ),
+    );
+    targets.add(
+      TargetFocus(
+        identify: "searchQuery",
+        keyTarget: searchQueryField,
+        alignSkip: Alignment.topRight,
+        enableOverlayTab: true,
+        contents: [
+          TargetContent(
+            align: ContentAlign.top,
+            builder: (context, controller) {
+              return const Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  Text(
+                    "Search your inference history by query the name",
+                    style: TextStyle(
+                      color: Colors.white,
+                    ),
+                  ),
+                ],
+              );
+            },
+          ),
+        ],
+      ),
+    );
+    targets.add(
+      TargetFocus(
+        identify: "settings",
+        keyTarget: settingsButton,
+        alignSkip: Alignment.topRight,
+        enableOverlayTab: true,
+        contents: [
+          TargetContent(
+            align: ContentAlign.bottom,
+            builder: (context, controller) {
+              return const Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  Text(
+                    "access settings for changing language or view app info",
+                    style: TextStyle(
+                      color: Colors.white,
+                    ),
+                  ),
+                ],
+              );
+            },
+          ),
+        ],
+      ),
+    );
+    return targets;
+  }
 
   void _filterModal() {
     showModalBottomSheet(
@@ -76,8 +230,12 @@ class _HomePageState extends State<HomePage> {
 
     return filtered;
   }
-
-
+  @override
+  void initState(){
+    createTutorial();
+    Future.delayed(Duration.zero, showTutorial);
+    super.initState();
+  }
   @override
   Widget build(BuildContext context) {
     final box = Hive.box<PredictionModel>('predictions');
@@ -101,6 +259,7 @@ class _HomePageState extends State<HomePage> {
               ),
               const Spacer(),
               IconButton(
+                key: settingsButton,
                 icon: Icon(
                   Icons.settings,
                   color: Colors.white,
@@ -124,6 +283,7 @@ class _HomePageState extends State<HomePage> {
                 width: w * 0.71,
                 height: h * 0.05,
                 child: SearchBar(
+                  key:searchQueryField,
                   hintText: S.of(context)!.search,
                   leading: Icon(Icons.search),
                   backgroundColor: WidgetStatePropertyAll(Colors.grey[200]),
@@ -152,6 +312,7 @@ class _HomePageState extends State<HomePage> {
               ),
               SizedBox(width: w * 0.02),
               IconButton(
+                key: filterButton,
                 onPressed: _filterModal,
                 icon: Icon(Icons.filter_list),
                 iconSize: w * 0.1,
@@ -196,6 +357,7 @@ class _HomePageState extends State<HomePage> {
       floatingActionButton: SizedBox(
         width: w * 0.2,
         height: w * 0.2,
+        key: captureButton,
         child: FloatingActionButton(
           onPressed: () {
             Navigator.push(

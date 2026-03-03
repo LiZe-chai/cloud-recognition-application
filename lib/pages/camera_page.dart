@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'dart:ui';
 
 import 'package:camera/camera.dart';
 import 'package:cloud_recognition/pages/inference_page.dart';
@@ -7,6 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:image/image.dart' as img;
 import 'package:permission_handler/permission_handler.dart';
+import 'package:tutorial_coach_mark/tutorial_coach_mark.dart';
 
 import '../generated/l10n.dart';
 import 'crop_page.dart';
@@ -112,6 +114,8 @@ Future<File>_isolateCropTask(Map<String, dynamic> params) async {
 class _CameraPageState extends State<CameraPage> {
   late CameraController _controller;
   late CameraDescription _currentCamera;
+  late TutorialCoachMark tutorialCoachMark;
+  GlobalKey captureTipsButton = GlobalKey();
 
   final ImagePicker _picker = ImagePicker();
 
@@ -128,9 +132,75 @@ class _CameraPageState extends State<CameraPage> {
 
   @override
   void initState() {
-    super.initState();
     _currentCamera = widget.cameras.first;
     _initCameraWithPermission();
+    createTutorial();
+    Future.delayed(Duration.zero, showTutorial);
+    super.initState();
+  }
+
+  void showTutorial() {
+    tutorialCoachMark.show(context: context);
+  }
+
+  Future<void> createTutorial() async {
+    tutorialCoachMark = TutorialCoachMark(
+      targets: await _createTargets(),
+      colorShadow: Colors.indigo,
+      textSkip: "SKIP",
+      paddingFocus: 10,
+      opacityShadow: 0.5,
+      imageFilter: ImageFilter.blur(sigmaX: 8, sigmaY: 8),
+      onFinish: () {
+        print("finish");
+      },
+      onClickTarget: (target) {
+        print('onClickTarget: $target');
+      },
+      onClickTargetWithTapPosition: (target, tapDetails) {
+        print("target: $target");
+        print(
+            "clicked at position local: ${tapDetails.localPosition} - global: ${tapDetails.globalPosition}");
+      },
+      onClickOverlay: (target) {
+        print('onClickOverlay: $target');
+      },
+      onSkip: () {
+        print("skip");
+        return true;
+      },
+    );
+  }
+  Future<List<TargetFocus>> _createTargets() async {
+    List<TargetFocus> targets = [];
+    targets.add(
+      TargetFocus(
+        identify: "capture",
+        keyTarget: captureTipsButton,
+        alignSkip: Alignment.topRight,
+        enableOverlayTab: true,
+        contents: [
+          TargetContent(
+            align: ContentAlign.top,
+            builder: (context, controller) {
+              return const Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  Text(
+                    "Tips for a practical example to capture a good cloud image for better inference result",
+                    style: TextStyle(
+                      color: Colors.white,
+                    ),
+                  ),
+                ],
+              );
+            },
+          ),
+        ],
+      ),
+    );
+    return targets;
   }
 
   Future<void> _initCameraWithPermission() async {
@@ -458,6 +528,7 @@ class _CameraPageState extends State<CameraPage> {
                     ),
                     const Spacer(),
                     IconButton(
+                      key: captureTipsButton,
                       icon: const Icon(Icons.info_outline,
                           color: Colors.white),
                       onPressed: () {
