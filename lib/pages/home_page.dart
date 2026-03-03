@@ -4,6 +4,7 @@ import 'package:cloud_recognition/pages/setting_page.dart';
 import 'package:cloud_recognition/services/inference.dart';
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:tutorial_coach_mark/tutorial_coach_mark.dart';
 import '../generated/l10n.dart';
 import '../main.dart';
@@ -25,47 +26,73 @@ class _HomePageState extends State<HomePage> {
   bool sortLatest = true;
   String searchQuery = '';
   late TutorialCoachMark tutorialCoachMark;
+  bool _tutorialInitialized = false;
 
   GlobalKey captureButton = GlobalKey();
-  GlobalKey cardRegion = GlobalKey();
   GlobalKey searchQueryField = GlobalKey();
   GlobalKey filterButton = GlobalKey();
   GlobalKey settingsButton = GlobalKey();
+  GlobalKey inferenceHistoryRegion = GlobalKey();
 
   void showTutorial() {
     tutorialCoachMark.show(context: context);
   }
+  Future<void> _checkFirstTime() async {
+    final prefs = await SharedPreferences.getInstance();
+    bool isFirstTime = prefs.getBool('is_first_time') ?? true;
 
-  Future<void> createTutorial() async {
+    if (isFirstTime) {
+      Future.delayed(Duration.zero, showTutorial);
+      await prefs.setBool('is_first_time', false);
+    }
+  }
+
+  void createTutorial() {
     tutorialCoachMark = TutorialCoachMark(
-      targets: await _createTargets(),
+      targets: _createTargets(),
       colorShadow: Colors.indigo,
-      textSkip: "SKIP",
+      textSkip: S.of(context)!.tutorialSkip,
       paddingFocus: 10,
       opacityShadow: 0.5,
       imageFilter: ImageFilter.blur(sigmaX: 8, sigmaY: 8),
       onFinish: () {
-        print("finish");
-      },
-      onClickTarget: (target) {
-        print('onClickTarget: $target');
-      },
-      onClickTargetWithTapPosition: (target, tapDetails) {
-        print("target: $target");
-        print(
-            "clicked at position local: ${tapDetails.localPosition} - global: ${tapDetails.globalPosition}");
-      },
-      onClickOverlay: (target) {
-        print('onClickOverlay: $target');
+        print("Tutorial Finished");
       },
       onSkip: () {
-        print("skip");
+        print("Tutorial Skipped");
         return true;
       },
     );
   }
+  Widget _buildContent({
+    required String title,
+    required String description,
+  }) {
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          title,
+          style: const TextStyle(
+            color: Colors.white,
+            fontSize: 18,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        const SizedBox(height: 8),
+        Text(
+          description,
+          style: const TextStyle(
+            color: Colors.white,
+            fontSize: 14,
+          ),
+        ),
+      ],
+    );
+  }
 
-  Future<List<TargetFocus>> _createTargets() async {
+  List<TargetFocus> _createTargets() {
     List<TargetFocus> targets = [];
     targets.add(
       TargetFocus(
@@ -77,26 +104,20 @@ class _HomePageState extends State<HomePage> {
           TargetContent(
             align: ContentAlign.top,
             builder: (context, controller) {
-              return const Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: <Widget>[
-                  Text(
-                    "Infer your cloud image by access this",
-                    style: TextStyle(
-                      color: Colors.white,
-                    ),
-                  ),
-                ],
+              return _buildContent(
+                title: S.of(context)!.tutorialCaptureTitle,
+                description:
+                S.of(context)!.tutorialCaptureDesc,
               );
             },
           ),
         ],
       ),
     );
+
     targets.add(
       TargetFocus(
-        identify: "filtering",
+        identify: "filter",
         keyTarget: filterButton,
         alignSkip: Alignment.topRight,
         enableOverlayTab: true,
@@ -104,26 +125,20 @@ class _HomePageState extends State<HomePage> {
           TargetContent(
             align: ContentAlign.top,
             builder: (context, controller) {
-              return const Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: <Widget>[
-                  Text(
-                    "Filter your inference history by categorising cloud type and sort by time",
-                    style: TextStyle(
-                      color: Colors.white,
-                    ),
-                  ),
-                ],
+              return _buildContent(
+                title: S.of(context)!.tutorialFilterTitle,
+                description:
+                S.of(context)!.tutorialFilterDesc,
               );
             },
           ),
         ],
       ),
     );
+
     targets.add(
       TargetFocus(
-        identify: "searchQuery",
+        identify: "search",
         keyTarget: searchQueryField,
         alignSkip: Alignment.topRight,
         enableOverlayTab: true,
@@ -131,23 +146,17 @@ class _HomePageState extends State<HomePage> {
           TargetContent(
             align: ContentAlign.top,
             builder: (context, controller) {
-              return const Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: <Widget>[
-                  Text(
-                    "Search your inference history by query the name",
-                    style: TextStyle(
-                      color: Colors.white,
-                    ),
-                  ),
-                ],
+              return _buildContent(
+                title: S.of(context)!.tutorialSearchTitle,
+                description:
+                S.of(context)!.tutorialSearchDesc,
               );
             },
           ),
         ],
       ),
     );
+
     targets.add(
       TargetFocus(
         identify: "settings",
@@ -158,23 +167,38 @@ class _HomePageState extends State<HomePage> {
           TargetContent(
             align: ContentAlign.bottom,
             builder: (context, controller) {
-              return const Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: <Widget>[
-                  Text(
-                    "access settings for changing language or view app info",
-                    style: TextStyle(
-                      color: Colors.white,
-                    ),
-                  ),
-                ],
+              return _buildContent(
+                title: S.of(context)!.tutorialSettingsTitle,
+                description:
+                S.of(context)!.tutorialSettingsDesc,
               );
             },
           ),
         ],
       ),
     );
+
+    targets.add(
+      TargetFocus(
+        identify: "history",
+        keyTarget: inferenceHistoryRegion,
+        alignSkip: Alignment.topRight,
+        enableOverlayTab: true,
+        contents: [
+          TargetContent(
+            align: ContentAlign.top,
+            builder: (context, controller) {
+              return _buildContent(
+                title: S.of(context)!.tutorialHistoryTitle,
+                description:
+                S.of(context)!.tutorialHistoryDesc,
+              );
+            },
+          ),
+        ],
+      ),
+    );
+
     return targets;
   }
 
@@ -231,10 +255,19 @@ class _HomePageState extends State<HomePage> {
     return filtered;
   }
   @override
-  void initState(){
-    createTutorial();
-    Future.delayed(Duration.zero, showTutorial);
+  void initState() {
     super.initState();
+    _checkFirstTime();
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+
+    if (!_tutorialInitialized) {
+      _tutorialInitialized = true;
+      createTutorial();
+    }
   }
   @override
   Widget build(BuildContext context) {

@@ -12,9 +12,11 @@ import '../widgets/bounding_box_painter.dart';
 class PreviewPage extends StatelessWidget {
   final List<DetectionResult> results;
   final String tempImagePath;
+  final int imageWidth;
+  final int imageHeight;
 
   const PreviewPage(
-      {super.key, required this.tempImagePath, required this.results});
+      {super.key, required this.tempImagePath, required this.results, required this.imageWidth, required this.imageHeight});
 
   Future<bool?> showSaveAsDialog(BuildContext context) async {
     final controller = TextEditingController();
@@ -96,6 +98,8 @@ class PreviewPage extends StatelessWidget {
                         imagePath: savedImagePath,
                         name: name,
                         date: DateTime.now(),
+                        imageWidth: imageWidth,
+                        imageHeight: imageHeight,
                         detections: hiveDetections,
                       );
 
@@ -141,6 +145,8 @@ class PreviewPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final h = MediaQuery.of(context).size.height;
+    final w = MediaQuery.of(context).size.width;
     return Scaffold(
       backgroundColor: Colors.black,
       body:
@@ -159,22 +165,36 @@ class PreviewPage extends StatelessWidget {
                     color: Colors.white,
                   ),
                 ),
-                AspectRatio(
-                  aspectRatio: 1.0,
-                  child: Container(
-                    width: double.infinity,
-                    color: Colors.grey[900],
-                    child: Stack(
-                      fit: StackFit.expand,
-                      children: [
-                        Image.file(
-                          File(tempImagePath),
-                          fit: BoxFit.cover,
-                        ),
-                        CustomPaint(
-                          painter: BoundingBoxPainter(results,context),
-                        ),
-                      ],
+                Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: AspectRatio(
+                    aspectRatio: 1.0,
+                    child: Container(
+                      color: Colors.grey[900],
+                      child: LayoutBuilder(
+                        builder: (context, constraints) {
+                          return Stack(
+                            alignment: Alignment.center,
+                            children: [
+                              Image.file(
+                                File(tempImagePath),
+                                fit: BoxFit.contain,
+                              ),
+                              CustomPaint(
+                                size: Size(
+                                  constraints.maxWidth,
+                                  constraints.maxHeight,
+                                ),
+                                painter: BoundingBoxPainter(
+                                  results,
+                                  imageWidth,
+                                  imageHeight,
+                                ),
+                              ),
+                            ],
+                          );
+                        },
+                      ),
                     ),
                   ),
                 ),
@@ -321,7 +341,7 @@ class PreviewPage extends StatelessWidget {
             right: 0,
             bottom: 0,
             child: Container(
-              height: 72,
+              height: h*0.09 ,
               color: const Color(0xFF2E2E2E),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,

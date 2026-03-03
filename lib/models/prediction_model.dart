@@ -13,14 +13,22 @@ class PredictionModel extends HiveObject {
   @HiveField(2)
   DateTime date;
 
-  // Replaced single type/confidence with a list of detections
   @HiveField(3)
+  int imageWidth;
+
+  @HiveField(4)
+  int imageHeight;
+
+  // Replaced single type/confidence with a list of detections
+  @HiveField(5)
   List<CloudDetection> detections;
 
   PredictionModel({
     this.imagePath = '',
     this.name = '',
     DateTime? date,
+    this.imageWidth=0,
+    this.imageHeight=0,
     this.detections = const [], // Default to an empty list
   }) : date = date ?? DateTime.now();
 }
@@ -52,4 +60,18 @@ class CloudDetection extends HiveObject {
     required this.width,
     required this.height,
   });
+  DetectionResult toDetectionResult() {
+    return DetectionResult(
+      box: {
+        "xMin": xMin.toInt(),
+        "yMin": yMin.toInt(),
+        "width": width.toInt(),
+        "height": height.toInt(),
+      },
+      classification: InferenceResult(
+        type: cloudType,
+        confidence: confidence,
+      ),
+    );
+  }
 }

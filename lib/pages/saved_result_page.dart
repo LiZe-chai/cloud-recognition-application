@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import '../generated/l10n.dart';
 import '../main.dart';
 import '../models/prediction_model.dart';
+import '../widgets/bounding_box_painter.dart';
 import 'camera_page.dart';
 
 class SavedResultPage extends StatelessWidget {
@@ -20,162 +21,184 @@ class SavedResultPage extends StatelessWidget {
         child:
           Stack(
           children: [
-            SingleChildScrollView(
+            SafeArea(
+              bottom: false,
               child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  AspectRatio(
-                    aspectRatio: 1.0,
-                    child: Container(
-                      width: double.infinity,
-                      color: Colors.grey[900],
-                      child: Image.file(
-                        File(result.imagePath),
-                        fit: BoxFit.cover,
+                  Align(
+                    alignment: Alignment.topLeft,
+                    child: IconButton(
+                      icon: const Icon(Icons.arrow_back),
+                      onPressed: () => Navigator.pop(context),
+                      color: Colors.white,
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.all(16),
+                    child: AspectRatio(
+                      aspectRatio: 1.0,
+                      child: Container(
+                        color: Colors.grey[900],
+                        child: LayoutBuilder(
+                          builder: (context, constraints) {
+                            return Stack(
+                              alignment: Alignment.center,
+                              children: [
+                                Image.file(
+                                  File(result.imagePath),
+                                  fit: BoxFit.contain,
+                                ),
+                                CustomPaint(
+                                  size: Size(
+                                    constraints.maxWidth,
+                                    constraints.maxHeight,
+                                  ),
+                                  painter: BoundingBoxPainter(
+                                    result.detections.map((d) => d.toDetectionResult()).toList(),
+                                    result.imageWidth,
+                                    result.imageHeight,
+                                  ),
+                                ),
+                              ],
+                            );
+                          },
+                        ),
                       ),
                     ),
                   ),
-
-                  const SizedBox(height: 24),
-
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 24),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          '${S.of(context)!.predictionResult} (${result
-                              .detections.length})',
-                          style: TextStyle(
-                            fontSize: Theme.of(context).textTheme.bodyLarge?.fontSize,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.white,
+                  Expanded(
+                    child: SingleChildScrollView(
+                      padding: const EdgeInsets.symmetric(horizontal: 24),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const SizedBox(height: 24),
+                          Text(
+                            '${S.of(context)!.predictionResult} (${result.detections.length})',
+                            style: TextStyle(
+                              fontSize:
+                              Theme.of(context).textTheme.bodyLarge?.fontSize,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.white,
+                            ),
                           ),
-                        ),
-                        const SizedBox(height: 12),
-                        Container(
-                          decoration: BoxDecoration(
-                            color: Colors.grey[800],
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          child: Column(
-                            children: result.detections
-                                .asMap()
-                                .entries
-                                .map<Widget>((entry) {
-                              int index = entry.key;
-                              var detection = entry.value;
-                              final cloudColor = detection.cloudType.color;
-                              bool isLast = index ==
-                                  result.detections.length - 1;
-                              return Column(
-                                children: [
-                                  Padding(
-                                    padding: const EdgeInsets.all(16.0),
-                                    child: Column(
-                                      children: [
-                                        Row(
-                                          children: [
-                                            Container(
-                                              width: 26,
-                                              height: 26,
-                                              decoration: BoxDecoration(
-                                                color: cloudColor.withOpacity(
-                                                    0.2),
-                                                shape: BoxShape.circle,
-                                              ),
-                                              alignment: Alignment.center,
-                                              child: Text(
-                                                '${index + 1}',
-                                                style: TextStyle(
-                                                  color: cloudColor,
-                                                  fontWeight: FontWeight.bold,
-                                                  fontSize: Theme.of(context).textTheme.bodyMedium?.fontSize,
-                                                ),
-                                              ),
-                                            ),
-                                            const SizedBox(width: 12),
-                                            Text(
-                                              detection.cloudType.label(
-                                                  context),
-                                              style: TextStyle(
-                                                color: Colors.white,
-                                                fontSize: Theme.of(context).textTheme.bodyMedium?.fontSize,
-                                                fontWeight: FontWeight.w500,
-                                              ),
-                                            ),
-                                            const Spacer(),
-                                            Text(
-                                              '${(detection.confidence)
-                                                  .toStringAsFixed(0)}%',
-                                              style: TextStyle(
-                                                color: Colors.white,
-                                                fontSize: Theme.of(context).textTheme.bodyMedium?.fontSize,
-                                                fontWeight: FontWeight.bold,
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                        const SizedBox(height: 12),
-                                        Stack(
-                                          children: [
-                                            Container(
-                                              height: 6,
-                                              width: double.infinity,
-                                              decoration: BoxDecoration(
-                                                color: Colors.black26,
-                                                borderRadius: BorderRadius
-                                                    .circular(3),
-                                              ),
-                                            ),
-                                            FractionallySizedBox(
-                                              widthFactor: detection.confidence
-                                                  .clamp(0.0, 1.0),
-                                              child: Container(
-                                                height: 6,
+                          const SizedBox(height: 12),
+                          Container(
+                            decoration: BoxDecoration(
+                              color: Colors.grey[800],
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            child: Column(
+                              children:
+                              result.detections.asMap().entries.map<Widget>((entry) {
+                                int index = entry.key;
+                                final detection = entry.value;
+                                final cloudColor =
+                                    detection.cloudType.color;
+                                bool isLast = index == result.detections.length - 1;
+
+                                return Column(
+                                  children: [
+                                    Padding(
+                                      padding: const EdgeInsets.all(16.0),
+                                      child: Column(
+                                        children: [
+                                          Row(
+                                            children: [
+                                              Container(
+                                                width: 26,
+                                                height: 26,
                                                 decoration: BoxDecoration(
-                                                  color: cloudColor,
-                                                  borderRadius: BorderRadius
-                                                      .circular(3),
-                                                  boxShadow: [
-                                                    BoxShadow(
-                                                      color: cloudColor
-                                                          .withOpacity(0.3),
-                                                      blurRadius: 4,
-                                                      offset: const Offset(
-                                                          0, 2),
-                                                    ),
-                                                  ],
+                                                  color:
+                                                  cloudColor.withOpacity(0.2),
+                                                  shape: BoxShape.circle,
+                                                ),
+                                                alignment: Alignment.center,
+                                                child: Text(
+                                                  '${index + 1}',
+                                                  style: TextStyle(
+                                                    color: cloudColor,
+                                                    fontWeight: FontWeight.bold,
+                                                    fontSize: Theme.of(context)
+                                                        .textTheme
+                                                        .bodyMedium
+                                                        ?.fontSize,
+                                                  ),
                                                 ),
                                               ),
-                                            ),
-                                          ],
-                                        ),
-                                      ],
+                                              const SizedBox(width: 12),
+                                              Text(
+                                                detection.cloudType
+                                                    .label(context),
+                                                style: TextStyle(
+                                                  color: Colors.white,
+                                                  fontSize: Theme.of(context)
+                                                      .textTheme
+                                                      .bodyMedium
+                                                      ?.fontSize,
+                                                  fontWeight: FontWeight.w500,
+                                                ),
+                                              ),
+                                              const Spacer(),
+                                              Text(
+                                                '${(detection.confidence).toStringAsFixed(0)}%',
+                                                style: TextStyle(
+                                                  color: Colors.white,
+                                                  fontSize: Theme.of(context)
+                                                      .textTheme
+                                                      .bodyMedium
+                                                      ?.fontSize,
+                                                  fontWeight: FontWeight.bold,
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                          const SizedBox(height: 12),
+                                          Stack(
+                                            children: [
+                                              Container(
+                                                height: 6,
+                                                width: double.infinity,
+                                                decoration: BoxDecoration(
+                                                  color: Colors.black26,
+                                                  borderRadius:
+                                                  BorderRadius.circular(3),
+                                                ),
+                                              ),
+                                              FractionallySizedBox(
+                                                widthFactor: detection.confidence.clamp(0.0, 1.0),
+                                                child: Container(
+                                                  height: 6,
+                                                  decoration: BoxDecoration(
+                                                    color: cloudColor,
+                                                    borderRadius:
+                                                    BorderRadius.circular(3),
+                                                  ),
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ],
+                                      ),
                                     ),
-                                  ),
-                                  if (!isLast)
-                                    Divider(
-                                      height: 1,
-                                      thickness: 1,
-                                      color: Colors.white.withOpacity(0.05),
-                                      indent: 16,
-                                      endIndent: 16,
-                                    ),
-                                ],
-                              );
-                            }).toList(),
+                                    if (!isLast)
+                                      Divider(
+                                        height: 1,
+                                        thickness: 1,
+                                        color: Colors.white.withOpacity(0.05),
+                                        indent: 16,
+                                        endIndent: 16,
+                                      ),
+                                  ],
+                                );
+                              }).toList(),
+                            ),
                           ),
-                        ),
-                        const SizedBox(height: 20),
-                        _buildSimpleInfoTile(S.of(context)!.name, result.name, context),
-                        _buildSimpleInfoTile(S.of(context)!.date,
-                            '${result.date.year}-${result.date.month}-${result
-                                .date.day}', context),
-                        const SizedBox(height: 100),
-                      ],
+                          const SizedBox(height: 120),
+                        ],
+                      ),
                     ),
-                  )
+                  ),
                 ],
               ),
             ),

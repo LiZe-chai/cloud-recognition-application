@@ -16,7 +16,8 @@ class CloudTypeClassifier {
       CloudType.cumulus,
       CloudType.nimbostratus,
       CloudType.stratocumulus,
-      CloudType.stratus];
+      CloudType.stratus,
+      CloudType.contrail];
 
   Future<void> loadModel() async {
     try {

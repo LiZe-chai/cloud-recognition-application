@@ -1,8 +1,5 @@
 import 'dart:io';
-import 'dart:math';
-
 import 'package:cloud_recognition/pages/preview_page.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:image/image.dart' as img;
 import '../generated/l10n.dart';
@@ -12,7 +9,8 @@ import '/services/inference.dart';
 
 class InferencePage extends StatefulWidget {
   final String tempImagePath;
-  const InferencePage({super.key,required this.tempImagePath});
+
+  const InferencePage({super.key, required this.tempImagePath});
 
   @override
   State<InferencePage> createState() => _InferencePageState();
@@ -33,82 +31,60 @@ class _InferencePageState extends State<InferencePage> {
   Future<void> _runInference() async {
     final file = File(widget.tempImagePath);
     final bytes = await file.readAsBytes();
-    final inputImage = await _decodeImage(bytes);
+    final image = img.decodeImage(bytes)!;
+    final imageWidth = image.width;
+    final imageHeight = image.height;
 
+    final mask = await detector.predict(image);
+    final boxes = await CloudPostProcessor.processMask(mask!, 512, 512);
 
-    final mask = await detector.predict(inputImage!);
-    final boxes = await CloudPostProcessor.processMask(mask!, 512, 512,);
     List<DetectionResult> results = [];
+
     for (var box in boxes) {
-      final map = Map<String, dynamic>.from(box);
-
-      int x = map['x'];
-      int y = map['y'];
-      int w = map['w'];
-      int h = map['h'];
-
-      double scaleX = inputImage.width / 512;
-      double scaleY = inputImage.height / 512;
-
-      int realX = (x * scaleX).toInt();
-      int realY = (y * scaleY).toInt();
-      int realW = (w * scaleX).toInt();
-      int realH = (h * scaleY).toInt();
-
-      realX = max(0, realX);
-      realY = max(0, realY);
-      realW = min(inputImage.width - realX, realW);
-      realH = min(inputImage.height - realY, realH);
+      final x = box['x'];
+      final y = box['y'];
+      final w = box['w'];
+      final h = box['h'];
 
       final cropped = img.copyCrop(
-        inputImage,
-        x: realX,
-        y: realY,
-        width: realW,
-        height: realH,
+        image,
+        x: x,
+        y: y,
+        width: w,
+        height: h,
       );
-      final classification = await InferCloud(classifier,cropped!);
+
+      final classification =
+      InferCloud(classifier, cropped!);
+
       results.add(
         DetectionResult(
-          box: map.cast<String, int>(),
+          box: {
+            "x": x,
+            "y": y,
+            "w": w,
+            "h": h,
+          },
           classification: classification,
         ),
       );
     }
 
-    if (results.isEmpty) {
-      if (!mounted) return;
-      showDialog(
-        context: context,
-        builder: (context) => AlertDialog(
-          title: const Text("No Cloud Detected"),
-          content: const Text(
-            "Couldn't detect any clouds in this image.\n\n"
-                "Try capturing more sky area or ensure the clouds are clearly visible.",
-          ),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.pop(context);
-                Navigator.pop(context);
-              },
-              child: const Text("Try Again"),
-            ),
-          ],
-        ),
-      );
-      return;
-    }
+    if (!mounted) return;
+
     Navigator.pushReplacement(
       context,
       MaterialPageRoute(
         builder: (_) => PreviewPage(
           tempImagePath: widget.tempImagePath,
           results: results,
+          imageWidth: imageWidth,
+          imageHeight: imageHeight,
         ),
       ),
     );
   }
+
 
   @override
   Widget build(BuildContext context) {
@@ -142,11 +118,3 @@ class _InferencePageState extends State<InferencePage> {
     );
   }
 }
-Future<img.Image?> _decodeImage(Uint8List bytes) {
-  return compute(_decode, bytes);
-}
-
-img.Image? _decode(Uint8List bytes) {
-  return img.decodeImage(bytes);
-}
-

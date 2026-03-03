@@ -3,14 +3,34 @@ import 'package:flutter/material.dart';
 
 import '../services/inference.dart';
 
+import 'dart:math';
+
 class BoundingBoxPainter extends CustomPainter {
   final List<DetectionResult> results;
-  final BuildContext context;
+  final int imageWidth;
+  final int imageHeight;
 
-  BoundingBoxPainter(this.results, this.context);
+  BoundingBoxPainter(
+      this.results,
+      this.imageWidth,
+      this.imageHeight,
+      );
 
   @override
   void paint(Canvas canvas, Size size) {
+    if (imageWidth == 0 || imageHeight == 0) return;
+
+    final scale = min(
+      size.width / imageWidth,
+      size.height / imageHeight,
+    );
+
+    final displayWidth = imageWidth * scale;
+    final displayHeight = imageHeight * scale;
+
+    final dx = (size.width - displayWidth) / 2;
+    final dy = (size.height - displayHeight) / 2;
+
     for (int i = 0; i < results.length; i++) {
       final detection = results[i];
       final box = detection.box;
@@ -23,18 +43,16 @@ class BoundingBoxPainter extends CustomPainter {
         ..style = PaintingStyle.stroke;
 
       final rect = Rect.fromLTWH(
-        box["x"]!.toDouble(),
-        box["y"]!.toDouble(),
-        box["width"]!.toDouble(),
-        box["height"]!.toDouble(),
+        dx + box["x"]! * scale,
+        dy + box["y"]! * scale,
+        box["w"]! * scale,
+        box["h"]! * scale,
       );
 
       canvas.drawRect(rect, paint);
 
-      final circlePaint = Paint()
-        ..color = cloudColor;
-
-      final circleRadius = 14.0;
+      final circlePaint = Paint()..color = cloudColor;
+      const circleRadius = 14.0;
 
       final circleCenter = Offset(
         rect.left + circleRadius,
@@ -46,9 +64,9 @@ class BoundingBoxPainter extends CustomPainter {
       final textPainter = TextPainter(
         text: TextSpan(
           text: "${i + 1}",
-          style: TextStyle(
+          style: const TextStyle(
             color: Colors.white,
-            fontSize: Theme.of(context).textTheme.bodyMedium?.fontSize,
+            fontSize: 14,
             fontWeight: FontWeight.bold,
           ),
         ),
