@@ -106,7 +106,7 @@ class SavedResultPage extends StatelessWidget {
                                             ),
                                             const Spacer(),
                                             Text(
-                                              '${(detection.confidence * 100)
+                                              '${(detection.confidence)
                                                   .toStringAsFixed(0)}%',
                                               style: TextStyle(
                                                 color: Colors.white,

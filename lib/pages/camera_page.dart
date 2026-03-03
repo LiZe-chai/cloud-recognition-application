@@ -199,8 +199,6 @@ class _CameraPageState extends State<CameraPage> {
     _isTakingPicture = true;
 
     try {
-      await _controller.dispose();
-
       final XFile raw = await _controller.takePicture();
       final File cropped = await compute(_isolateCropTask, {
         'path': raw.path,
@@ -210,6 +208,7 @@ class _CameraPageState extends State<CameraPage> {
       });
 
       if (!mounted) return;
+      await _controller.dispose();
       await Navigator.push(
         context,
         MaterialPageRoute(

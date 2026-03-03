@@ -16,7 +16,7 @@ void main() async{
   WidgetsBinding widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
   FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
   await Hive.initFlutter();
-  Hive.registerAdapter(PredictionModelAdapter()); //
+  Hive.registerAdapter(PredictionModelAdapter());
   final box = await Hive.openBox<PredictionModel>('predictions');
   cameras = await availableCameras();
   await ModelManager.instance.init();

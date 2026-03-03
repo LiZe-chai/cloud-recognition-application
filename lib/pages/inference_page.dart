@@ -2,7 +2,7 @@ import 'dart:io';
 import 'dart:math';
 
 import 'package:cloud_recognition/pages/preview_page.dart';
-import 'package:cloud_recognition/services/cloud_type_classifier.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:image/image.dart' as img;
 import '../generated/l10n.dart';
@@ -33,7 +33,7 @@ class _InferencePageState extends State<InferencePage> {
   Future<void> _runInference() async {
     final file = File(widget.tempImagePath);
     final bytes = await file.readAsBytes();
-    final inputImage = img.decodeImage(bytes);
+    final inputImage = await _decodeImage(bytes);
 
 
     final mask = await detector.predict(inputImage!);
@@ -142,3 +142,11 @@ class _InferencePageState extends State<InferencePage> {
     );
   }
 }
+Future<img.Image?> _decodeImage(Uint8List bytes) {
+  return compute(_decode, bytes);
+}
+
+img.Image? _decode(Uint8List bytes) {
+  return img.decodeImage(bytes);
+}
+
