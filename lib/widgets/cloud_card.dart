@@ -17,62 +17,85 @@ class CloudCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final h = MediaQuery.of(context).size.height;
-    final w = MediaQuery.of(context).size.width;
-
     return Card(
       elevation: 4,
       margin: const EdgeInsets.symmetric(vertical: 12),
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(16),
-      ),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       child: InkWell(
         borderRadius: BorderRadius.circular(16),
-        onTap: onPressed ?? () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (_) => SavedResultPage(result: result),
-            ),
-          );
-        },
+        onTap: onPressed ?? () => Navigator.push(
+          context,
+          MaterialPageRoute(builder: (_) => SavedResultPage(result: result)),
+        ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Image
             ClipRRect(
-              borderRadius: const BorderRadius.vertical(
-                top: Radius.circular(16),
-              ),
+              borderRadius: const BorderRadius.vertical(top: Radius.circular(16)),
               child: Image.file(
                 File(result.imagePath),
                 width: double.infinity,
-                  fit: BoxFit.fitWidth,
+                fit: BoxFit.fitWidth,
               ),
             ),
 
-            // Text section
             Padding(
               padding: const EdgeInsets.all(12),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
-                    result.name,
-                    style: const TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                    ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        result.name,
+                        style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                      ),
+                      Text(
+                        '${result.date.year}-${result.date.month}-${result.date.day}',
+                        style: TextStyle(fontSize: 12, color: Colors.grey.shade600),
+                      ),
+                    ],
                   ),
 
-                  SizedBox(height: h * 0.01),
+                  const SizedBox(height: 12),
 
-                  Text(
-                    '${result.date.year}-${result.date.month}-${result.date.day} · ${result.cloudType.label(context)} · ${(result.confidence).toStringAsFixed(0)}%',
-                    style: TextStyle(
-                      fontSize: 14,
-                      color: Colors.grey.shade800,
-                    ),
+                  Wrap(
+                    spacing: 8.0,
+                    runSpacing: 4.0,
+                    children: result.detections.map((detection) {
+                      final themeColor = detection.cloudType.color;
+                      final borderColor = detection.cloudType.borderColor;
+                      return Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                        decoration: BoxDecoration(
+                          color: themeColor,
+                          borderRadius: BorderRadius.circular(8),
+                          border: Border.all(color: borderColor, width: 1.2),
+                        ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Text(
+                              detection.cloudType.label(context),
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontWeight: FontWeight.w600,
+                                fontSize: 13,
+                              ),
+                            ),
+                            const VerticalDivider(width: 10),
+                            Text(
+                              '${(detection.confidence).toStringAsFixed(0)}%',
+                              style: TextStyle(
+                                color: themeColor,
+                                fontSize: 13,
+                              ),
+                            ),
+                          ],
+                        ),
+                      );
+                    }).toList(),
                   ),
                 ],
               ),

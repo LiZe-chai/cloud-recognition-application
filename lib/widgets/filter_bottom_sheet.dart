@@ -52,7 +52,9 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
               const SizedBox(width: 24),
               Text(
                 S.of(context)!.filter,
-                style: TextStyle(fontSize: Theme.of(context).textTheme.titleMedium?.fontSize, fontWeight: FontWeight.bold),
+                style: TextStyle(
+                    fontSize: Theme.of(context).textTheme.titleMedium?.fontSize,
+                    fontWeight: FontWeight.bold),
               ),
               IconButton(
                 icon: const Icon(Icons.close),
@@ -60,14 +62,20 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
               ),
             ],
           ),
+
           const SizedBox(height: 12),
           Text(S.of(context)!.specificCloudType,
-              style: TextStyle(fontWeight: FontWeight.w600,fontSize: Theme.of(context).textTheme.bodyLarge?.fontSize)),
+              style: TextStyle(
+                  fontWeight: FontWeight.w600,
+                  fontSize: Theme.of(context).textTheme.bodyLarge?.fontSize)),
           SizedBox(height: 10),
           ...cloudTypes.map(
-                (type) => CheckboxListTile(
+            (type) => CheckboxListTile(
               dense: true,
-              title: Text(type.label(context),style: TextStyle(fontSize: Theme.of(context).textTheme.bodyMedium?.fontSize)),
+              title: Text(type.label(context),
+                  style: TextStyle(
+                      fontSize:
+                          Theme.of(context).textTheme.bodyMedium?.fontSize)),
               value: selectedTypes.contains(type),
               onChanged: (checked) {
                 setState(() {
@@ -82,29 +90,44 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
             ),
           ),
 
-          const SizedBox(height: 10),
+          const SizedBox(height: 12),
           Text(S.of(context)!.sortByTime,
-              style: TextStyle(fontWeight: FontWeight.w600,fontSize: Theme.of(context).textTheme.bodyLarge?.fontSize,)),
+              style: TextStyle(
+                fontWeight: FontWeight.w600,
+                fontSize: Theme.of(context).textTheme.bodyLarge?.fontSize,
+              )),
           SizedBox(height: 10),
 
           DropdownButtonFormField<bool>(
             initialValue: latest,
             items: [
-              DropdownMenuItem(value: true, child: Text(S.of(context)!.latest,style: TextStyle(fontSize: Theme.of(context).textTheme.bodyMedium?.fontSize))),
-              DropdownMenuItem(value: false, child: Text(S.of(context)!.oldest,style: TextStyle(fontSize: Theme.of(context).textTheme.bodyMedium?.fontSize))),
+              DropdownMenuItem(
+                  value: true,
+                  child: Text(S.of(context)!.latest,
+                      style: TextStyle(
+                          fontSize: Theme.of(context)
+                              .textTheme
+                              .bodyMedium
+                              ?.fontSize))),
+              DropdownMenuItem(
+                  value: false,
+                  child: Text(S.of(context)!.oldest,
+                      style: TextStyle(
+                          fontSize: Theme.of(context)
+                              .textTheme
+                              .bodyMedium
+                              ?.fontSize))),
             ],
             onChanged: (v) {
-              setState(() {
-                latest = v!;
-              });
+              setState(() => latest = v!);
               widget.onApply(selectedTypes, latest);
             },
-
             decoration: const InputDecoration(
               border: OutlineInputBorder(),
             ),
           ),
 
+          const SizedBox(height: 20),
         ],
       ),
     );

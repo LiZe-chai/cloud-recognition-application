@@ -1,5 +1,6 @@
 import 'package:camera/camera.dart';
 import 'package:cloud_recognition/pages/home_page.dart';
+import 'package:cloud_recognition/services/model_manager.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
@@ -15,12 +16,11 @@ void main() async{
   WidgetsBinding widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
   FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
   await Hive.initFlutter();
-  Hive.registerAdapter(PredictionModelAdapter()); //
+  Hive.registerAdapter(PredictionModelAdapter());
   final box = await Hive.openBox<PredictionModel>('predictions');
   cameras = await availableCameras();
+  await ModelManager.instance.init();
   await box.clear();
-
-
   runApp(const MyApp());
 }
 

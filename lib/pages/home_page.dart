@@ -21,6 +21,8 @@ class _HomePageState extends State<HomePage> {
   Set<CloudType> selectedCloudTypes = {};
   bool sortLatest = true;
   String searchQuery = '';
+  // final GlobalKey _fabKey = GlobalKey();
+  // late TutorialCoachMark _tutorialCoachMark;
 
   void _filterModal() {
     showModalBottomSheet(
@@ -50,14 +52,19 @@ class _HomePageState extends State<HomePage> {
     var filtered = [...list];
 
     if (selectedCloudTypes.isNotEmpty) {
-      filtered = filtered
-          .where((e) => selectedCloudTypes.contains(e.cloudType))
-          .toList();
-    }
-    if (searchQuery.isNotEmpty) {
       filtered = filtered.where((e) {
-        return e.cloudType.name.toLowerCase().contains(searchQuery)
-            || e.name.toLowerCase().contains(searchQuery);
+        return e.detections.any((d) => selectedCloudTypes.contains(d.cloudType));
+      }).toList();
+    }
+
+    if (searchQuery.isNotEmpty) {
+      final query = searchQuery.toLowerCase();
+      filtered = filtered.where((e) {
+        bool nameMatch = e.name.toLowerCase().contains(query);
+        bool typeMatch = e.detections.any((d) =>
+            d.cloudType.name.toLowerCase().contains(query));
+
+        return nameMatch || typeMatch;
       }).toList();
     }
 
