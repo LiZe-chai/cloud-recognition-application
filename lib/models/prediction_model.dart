@@ -63,10 +63,10 @@ class CloudDetection extends HiveObject {
   DetectionResult toDetectionResult() {
     return DetectionResult(
       box: {
-        "xMin": xMin.toInt(),
-        "yMin": yMin.toInt(),
-        "width": width.toInt(),
-        "height": height.toInt(),
+        "x": xMin.toInt(),
+        "y": yMin.toInt(),
+        "w": width.toInt(),
+        "h": height.toInt(),
       },
       classification: InferenceResult(
         type: cloudType,

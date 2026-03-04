@@ -93,7 +93,7 @@ class MainActivity: FlutterActivity() {
         for (i in 1 until numLabels) {
 
             val area = stats.get(i, Imgproc.CC_STAT_AREA)[0]
-            val minArea = width * height * 0.3
+            val minArea = width * height * 0.1
 
             if (area < minArea) continue
 
