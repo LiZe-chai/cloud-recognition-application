@@ -189,6 +189,10 @@ class SavedResultPage extends StatelessWidget {
                                         indent: 16,
                                         endIndent: 16,
                                       ),
+                                    const SizedBox(height: 20),
+                                    _buildSimpleInfoTile(S.of(context)!.name, result.name, context),
+                                    _buildSimpleInfoTile(S.of(context)!.date, '${result.date.year}-${result.date.month}-${result.date.day}', context),
+                                    const SizedBox(height: 100),
                                   ],
                                 );
                               }).toList(),

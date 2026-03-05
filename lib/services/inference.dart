@@ -50,6 +50,7 @@ InferenceResult InferCloud(CloudTypeClassifier classifier, img.Image imageInput)
 
 
 extension CloudTypeX on CloudType {
+
   String label(BuildContext context) {
     final s = S.of(context)!;
 
@@ -67,9 +68,7 @@ extension CloudTypeX on CloudType {
       CloudType.contrail: s.cloudTypeContrail
     }[this]!;
   }
-}
 
-extension CloudTypeTheme on CloudType {
   Color get color {
     switch (this) {
       case CloudType.cirrus:
@@ -98,6 +97,48 @@ extension CloudTypeTheme on CloudType {
   }
 
   Color get borderColor => Colors.black.withOpacity(0.5);
+
+  String description(BuildContext context) {
+    final s = S.of(context)!;
+
+    return {
+      CloudType.cirrus: s.cloudDescCirrus,
+      CloudType.cirrostratus: s.cloudDescCirrostratus,
+      CloudType.cirrocumulus: s.cloudDescCirrocumulus,
+      CloudType.altostratus: s.cloudDescAltostratus,
+      CloudType.altocumulus: s.cloudDescAltocumulus,
+      CloudType.stratus: s.cloudDescStratus,
+      CloudType.stratocumulus: s.cloudDescStratocumulus,
+      CloudType.nimbostratus: s.cloudDescNimbostratus,
+      CloudType.cumulus: s.cloudDescCumulus,
+      CloudType.cumulonimbus: s.cloudDescCumulonimbus,
+      CloudType.contrail: s.cloudDescContrail
+    }[this]!;
+  }
+  String get imageAsset {
+    switch (this) {
+      case CloudType.cirrus:
+        return "assets/cirrus.jpg";
+      case CloudType.cirrostratus:
+        return "assets/cirrostratus.jpg";
+      case CloudType.cirrocumulus:
+        return "assets/cirrocumulus.jpg";
+      case CloudType.altostratus:
+        return "assets/altostratus.jpg";
+      case CloudType.altocumulus:
+        return "assets/altocumulus.jpg";
+      case CloudType.stratus:
+        return "assets/stratus.jpg";
+      case CloudType.stratocumulus:
+        return "assets/stratocumulus.jpg";
+      case CloudType.nimbostratus:
+        return "assets/nimbostratus.jpg";
+      case CloudType.cumulus:
+        return "assets/cumulus.jpg";
+      case CloudType.cumulonimbus:
+        return "assets/cumulonimbus.jpg";
+      case CloudType.contrail:
+        return "assets/contrail.jpg";
+    }
+  }
 }
-
-

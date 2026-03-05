@@ -431,7 +431,7 @@ class _CameraPageState extends State<CameraPage> {
                   const SizedBox(height: 20),
                   ClipRRect(
                     child: Image.asset(
-                      'assets/Ac-N004.jpg',
+                      'assets/captureExample.jpg',
                       height: 300,
                       width: 300,
                       fit: BoxFit.cover,

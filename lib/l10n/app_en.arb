@@ -81,5 +81,16 @@
   "tutorialSettingsDesc": "Access settings to change the language or view application information.",
   "tutorialHistoryTitle": "Inference History",
   "tutorialHistoryDesc": "Your previous cloud detection results will appear in this section.",
-  "tutorialSkip": "SKIP"
+  "tutorialSkip": "SKIP",
+  "cloudDescCirrus":"Cirrus clouds are a type of high-level cloud. They are thin and transparent, appearing white and shiny in a clear sky. Their fibrous shape often resembles a horse's tail.",
+  "cloudDescCirrostratus":"Cirrostratus clouds are high-level clouds with a thin and fibrous structure. They allow sunlight or moonlight to pass through, often producing a distinct halo around the sun or moon.",
+  "cloudDescCirrocumulus":"Cirrocumulus clouds belong to high-level clouds. They appear white and shiny, forming thin scale-like patterns that are often arranged in rows or groups.",
+  "cloudDescAltostratus":"Altostratus clouds belong to middle-level clouds. They have a thick cloud layer that often covers the sky. Sunlight can pass through them but usually without producing a halo.",
+  "cloudDescAltocumulus":"Altocumulus clouds are middle-level clouds that usually appear as small clouds with distinct outlines.",
+  "cloudDescStratus":"Stratus clouds are low-level clouds that often cover a large area of the sky in a uniform layer.",
+  "cloudDescStratocumulus":"Stratocumulus clouds are low-level clouds with fist-sized cloud masses loosely distributed in clusters.",
+  "cloudDescNimbostratus":"Nimbostratus clouds are thick low-level clouds that cover the sky and usually produce continuous rain.",
+  "cloudDescCumulus":"Cumulus clouds are low-level clouds with moderate vertical development and rounded tops.",
+  "cloudDescCumulonimbus":"Cumulonimbus clouds have strong vertical development and usually produce thunderstorms.",
+  "cloudDescContrail":"Contrails are clouds produced by aircraft, appearing as visible trails in the sky."
 }
