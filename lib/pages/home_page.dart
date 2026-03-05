@@ -68,7 +68,8 @@ class _HomePageState extends State<HomePage> {
     required String title,
     required String description,
   }) {
-    return Column(
+    return SafeArea(
+        child: Column(
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -89,6 +90,7 @@ class _HomePageState extends State<HomePage> {
           ),
         ),
       ],
+    )
     );
   }
 
@@ -123,7 +125,7 @@ class _HomePageState extends State<HomePage> {
         enableOverlayTab: true,
         contents: [
           TargetContent(
-            align: ContentAlign.top,
+            align: ContentAlign.left,
             builder: (context, controller) {
               return _buildContent(
                 title: S.of(context)!.tutorialFilterTitle,
@@ -144,7 +146,7 @@ class _HomePageState extends State<HomePage> {
         enableOverlayTab: true,
         contents: [
           TargetContent(
-            align: ContentAlign.top,
+            align: ContentAlign.bottom,
             builder: (context, controller) {
               return _buildContent(
                 title: S.of(context)!.tutorialSearchTitle,
@@ -198,7 +200,6 @@ class _HomePageState extends State<HomePage> {
         ],
       ),
     );
-
     return targets;
   }
 
@@ -355,6 +356,7 @@ class _HomePageState extends State<HomePage> {
           ),
           Expanded(
             child: ValueListenableBuilder(
+              key: inferenceHistoryRegion,
               valueListenable: box.listenable(),
               builder: (context, Box<PredictionModel> box, _) {
                 if (box.isEmpty) {
