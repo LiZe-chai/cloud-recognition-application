@@ -13,6 +13,81 @@ class SavedResultPage extends StatelessWidget {
 
   const SavedResultPage({super.key, required this.result});
 
+  void _showCloudInfo(BuildContext context, CloudType type) {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: const Color(0xFF1E1E1E),
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (context) {
+        return SafeArea(
+          child: Stack(
+            children: [
+              Padding(
+                padding: const EdgeInsets.all(20),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      type.label(context),
+                      style: TextStyle(
+                        fontSize:
+                        Theme.of(context).textTheme.titleLarge?.fontSize,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                    ClipRRect(
+                      borderRadius: BorderRadius.circular(12),
+                      child: Image.asset(
+                        type.imageAsset,
+                        height: 180,
+                        width: double.infinity,
+                        fit: BoxFit.cover,
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                    Text(
+                      "Example Image",
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontSize:
+                        Theme.of(context).textTheme.bodySmall?.fontSize,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white54,
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                    Text(
+                      type.description(context),
+                      textAlign: TextAlign.justify,
+                      style: TextStyle(
+                        fontSize:
+                        Theme.of(context).textTheme.bodyLarge?.fontSize,
+                        color: Colors.white,
+                      ),
+                    ),
+                    const SizedBox(height: 50),
+                  ],
+                ),
+              ),
+              Positioned(
+                  right: 10,
+                  top: 10,
+                  child: InkWell(
+                    onTap: () => Navigator.pop(context),
+                    child: Icon(Icons.close, size: 30, color: Colors.white),
+                  )),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -127,17 +202,36 @@ class SavedResultPage extends StatelessWidget {
                                                 ),
                                               ),
                                               const SizedBox(width: 12),
-                                              Text(
-                                                detection.cloudType
-                                                    .label(context),
-                                                style: TextStyle(
-                                                  color: Colors.white,
-                                                  fontSize: Theme.of(context)
-                                                      .textTheme
-                                                      .bodyMedium
-                                                      ?.fontSize,
-                                                  fontWeight: FontWeight.w500,
-                                                ),
+                                              Row(
+                                                mainAxisSize: MainAxisSize.min,
+                                                children: [
+                                                  Text(
+                                                    detection.cloudType.label(context),
+                                                    style: TextStyle(
+                                                      color: Colors.white,
+                                                      fontSize:
+                                                      Theme.of(context)
+                                                          .textTheme
+                                                          .bodyMedium
+                                                          ?.fontSize,
+                                                      fontWeight:
+                                                      FontWeight.w500,
+                                                    ),
+                                                  ),
+                                                  const SizedBox(width: 6),
+                                                  GestureDetector(
+                                                    onTap: () {
+                                                      _showCloudInfo(
+                                                          context,
+                                                          detection.cloudType);
+                                                    },
+                                                    child: Icon(
+                                                      Icons.info_outline,
+                                                      size: 20,
+                                                      color: Colors.white,
+                                                    ),
+                                                  ),
+                                                ],
                                               ),
                                               const Spacer(),
                                               Text(
@@ -189,15 +283,14 @@ class SavedResultPage extends StatelessWidget {
                                         indent: 16,
                                         endIndent: 16,
                                       ),
-                                    const SizedBox(height: 20),
-                                    _buildSimpleInfoTile(S.of(context)!.name, result.name, context),
-                                    _buildSimpleInfoTile(S.of(context)!.date, '${result.date.year}-${result.date.month}-${result.date.day}', context),
-                                    const SizedBox(height: 100),
                                   ],
                                 );
                               }).toList(),
                             ),
                           ),
+                          const SizedBox(height: 20),
+                          _buildSimpleInfoTile(S.of(context)!.name, result.name, context),
+                          _buildSimpleInfoTile(S.of(context)!.date, '${result.date.year}-${result.date.month}-${result.date.day}', context),
                           const SizedBox(height: 120),
                         ],
                       ),
@@ -272,10 +365,10 @@ class SavedResultPage extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(label,
-              style: TextStyle(color: Colors.white54, fontSize: Theme.of(context).textTheme.bodyMedium?.fontSize)),
+              style: TextStyle(color: Colors.white54, fontSize: Theme.of(context).textTheme.bodyLarge?.fontSize)),
           const SizedBox(height: 4),
           Text(value, style: TextStyle(
-              color: Colors.white, fontSize: Theme.of(context).textTheme.bodyMedium?.fontSize, fontWeight: FontWeight.bold)),
+              color: Colors.white, fontSize: Theme.of(context).textTheme.bodyLarge?.fontSize, fontWeight: FontWeight.bold)),
           const Divider(color: Colors.white12),
         ],
       ),
