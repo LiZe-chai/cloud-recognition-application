@@ -56,7 +56,7 @@ class MainActivity: FlutterActivity() {
         mask: FloatArray,
         width: Int,
         height: Int
-    ): List<Map<String, Int>> {
+    ): List<List<Map<String, Int>>> {
 
         val mat = Mat(height, width, CvType.CV_32F)
         mat.put(0, 0, mask)
@@ -65,51 +65,38 @@ class MainActivity: FlutterActivity() {
         Imgproc.threshold(mat, binary, 0.5, 1.0, Imgproc.THRESH_BINARY)
         binary.convertTo(binary, CvType.CV_8U, 255.0)
 
-        val kernel = Imgproc.getStructuringElement(
-            Imgproc.MORPH_RECT,
-            Size(5.0, 5.0)
+        val contours = mutableListOf<MatOfPoint>()
+        val hierarchy = Mat()
+
+        Imgproc.findContours(
+            binary,
+            contours,
+            hierarchy,
+            Imgproc.RETR_EXTERNAL,
+            Imgproc.CHAIN_APPROX_SIMPLE
         )
 
-        Imgproc.morphologyEx(
-            binary,
-            binary,
-            Imgproc.MORPH_CLOSE,
-            kernel
-        )
+        val result = mutableListOf<List<Map<String, Int>>>()
 
-        val labels = Mat()
-        val stats = Mat()
-        val centroids = Mat()
+        for (contour in contours) {
 
-        val numLabels = Imgproc.connectedComponentsWithStats(
-            binary,
-            labels,
-            stats,
-            centroids
-        )
-
-        val boxes = mutableListOf<Map<String, Int>>()
-
-        for (i in 1 until numLabels) {
-
-            val area = stats.get(i, Imgproc.CC_STAT_AREA)[0]
-            val minArea = width * height * 0.1
+            val area = Imgproc.contourArea(contour)
+            val minArea = width * height * 0.01
 
             if (area < minArea) continue
 
-            val x = stats.get(i, Imgproc.CC_STAT_LEFT)[0].toInt()
-            val y = stats.get(i, Imgproc.CC_STAT_TOP)[0].toInt()
-            val w = stats.get(i, Imgproc.CC_STAT_WIDTH)[0].toInt()
-            val h = stats.get(i, Imgproc.CC_STAT_HEIGHT)[0].toInt()
+            val points = contour.toArray()
 
-            boxes.add(mapOf(
-                "x" to x,
-                "y" to y,
-                "w" to w,
-                "h" to h
-            ))
+            val contourPoints = points.map {
+                mapOf(
+                    "x" to it.x.toInt(),
+                    "y" to it.y.toInt()
+                )
+            }
+
+            result.add(contourPoints)
         }
 
-        return boxes
+        return result
     }
 }

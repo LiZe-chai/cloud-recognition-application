@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import '../generated/l10n.dart';
 import '../main.dart';
 import '../models/prediction_model.dart';
-import '../widgets/bounding_box_painter.dart';
+import '../widgets/contour_painter.dart';
 import 'camera_page.dart';
 
 class SavedResultPage extends StatelessWidget {
@@ -90,6 +90,7 @@ class SavedResultPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final top3 = getTop3(result.probabilities);
     return Scaffold(
       backgroundColor: Colors.black,
       body: SafeArea(
@@ -128,8 +129,8 @@ class SavedResultPage extends StatelessWidget {
                                     constraints.maxWidth,
                                     constraints.maxHeight,
                                   ),
-                                  painter: BoundingBoxPainter(
-                                    result.detections.map((d) => d.toDetectionResult()).toList(),
+                                  painter: ContourPainter(
+                                    result.contours,
                                     result.imageWidth,
                                     result.imageHeight,
                                   ),
@@ -149,7 +150,7 @@ class SavedResultPage extends StatelessWidget {
                         children: [
                           const SizedBox(height: 24),
                           Text(
-                            '${S.of(context)!.predictionResult} (${result.detections.length})',
+                            S.of(context)!.predictionResult,
                             style: TextStyle(
                               fontSize:
                               Theme.of(context).textTheme.bodyLarge?.fontSize,
@@ -165,12 +166,11 @@ class SavedResultPage extends StatelessWidget {
                             ),
                             child: Column(
                               children:
-                              result.detections.asMap().entries.map<Widget>((entry) {
+                              top3.asMap().entries.map<Widget>((entry) {
                                 int index = entry.key;
                                 final detection = entry.value;
-                                final cloudColor =
-                                    detection.cloudType.color;
-                                bool isLast = index == result.detections.length - 1;
+                                final cloudColor = detection['classification'].type.color;
+                                bool isLast = index == result.probabilities.length - 1;
 
                                 return Column(
                                   children: [
@@ -184,8 +184,8 @@ class SavedResultPage extends StatelessWidget {
                                                 width: 26,
                                                 height: 26,
                                                 decoration: BoxDecoration(
-                                                  color:
-                                                  cloudColor.withOpacity(0.2),
+                                                  color: cloudColor
+                                                      .withOpacity(0.2),
                                                   shape: BoxShape.circle,
                                                 ),
                                                 alignment: Alignment.center,
@@ -206,7 +206,8 @@ class SavedResultPage extends StatelessWidget {
                                                 mainAxisSize: MainAxisSize.min,
                                                 children: [
                                                   Text(
-                                                    detection.cloudType.label(context),
+                                                    detection['classification']
+                                                        .label(context),
                                                     style: TextStyle(
                                                       color: Colors.white,
                                                       fontSize:
@@ -223,7 +224,7 @@ class SavedResultPage extends StatelessWidget {
                                                     onTap: () {
                                                       _showCloudInfo(
                                                           context,
-                                                          detection.cloudType);
+                                                          detection['classification']);
                                                     },
                                                     child: Icon(
                                                       Icons.info_outline,
@@ -235,7 +236,7 @@ class SavedResultPage extends StatelessWidget {
                                               ),
                                               const Spacer(),
                                               Text(
-                                                '${(detection.confidence).toStringAsFixed(0)}%',
+                                                '${(detection['confidence']).toStringAsFixed(0)}%',
                                                 style: TextStyle(
                                                   color: Colors.white,
                                                   fontSize: Theme.of(context)
@@ -260,13 +261,15 @@ class SavedResultPage extends StatelessWidget {
                                                 ),
                                               ),
                                               FractionallySizedBox(
-                                                widthFactor: detection.confidence.clamp(0.0, 1.0),
+                                                widthFactor: detection['confidence']
+                                                    .clamp(0.0, 1.0),
                                                 child: Container(
                                                   height: 6,
                                                   decoration: BoxDecoration(
                                                     color: cloudColor,
                                                     borderRadius:
-                                                    BorderRadius.circular(3),
+                                                    BorderRadius.circular(
+                                                        3),
                                                   ),
                                                 ),
                                               ),

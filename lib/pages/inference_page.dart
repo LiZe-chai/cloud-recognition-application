@@ -32,43 +32,18 @@ class _InferencePageState extends State<InferencePage> {
     final file = File(widget.tempImagePath);
     final bytes = await file.readAsBytes();
     final image = img.decodeImage(bytes)!;
+
     final imageWidth = image.width;
     final imageHeight = image.height;
-
     final mask = await detector.predict(image);
-    final boxes = await CloudPostProcessor.processMask(mask!, 512, 512);
+    final rawContours = await CloudPostProcessor.processMask(mask!, 512, 512);
+    final contours = (rawContours as List)
+        .map((contour) => (contour as List)
+        .map((p) => Map<String, int>.from(p))
+        .toList())
+        .toList();
 
-    List<DetectionResult> results = [];
-
-    for (var box in boxes) {
-      final x = box['x'];
-      final y = box['y'];
-      final w = box['w'];
-      final h = box['h'];
-
-      final cropped = img.copyCrop(
-        image,
-        x: x,
-        y: y,
-        width: w,
-        height: h,
-      );
-
-      final classification =
-      InferCloud(classifier, cropped!);
-
-      results.add(
-        DetectionResult(
-          box: {
-            "x": x,
-            "y": y,
-            "w": w,
-            "h": h,
-          },
-          classification: classification,
-        ),
-      );
-    }
+    final prob = classifier.predict(image);
 
     if (!mounted) return;
 
@@ -77,7 +52,8 @@ class _InferencePageState extends State<InferencePage> {
       MaterialPageRoute(
         builder: (_) => PreviewPage(
           tempImagePath: widget.tempImagePath,
-          results: results,
+          contours: contours,              // cloud regions
+          results: prob!,      // 11 class prediction
           imageWidth: imageWidth,
           imageHeight: imageHeight,
         ),

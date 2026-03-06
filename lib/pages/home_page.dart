@@ -228,22 +228,42 @@ class _HomePageState extends State<HomePage> {
     );
   }
   List<PredictionModel> _applyFilter(List<PredictionModel> list) {
+
     var filtered = [...list];
 
     if (selectedCloudTypes.isNotEmpty) {
+
       filtered = filtered.where((e) {
-        return e.detections.any((d) => selectedCloudTypes.contains(d.cloudType));
+
+        final top3 = getTop3(e.probabilities);
+
+        return top3.any(
+              (type) => selectedCloudTypes.contains(type),
+        );
+
       }).toList();
     }
 
     if (searchQuery.isNotEmpty) {
-      final query = searchQuery.toLowerCase();
-      filtered = filtered.where((e) {
-        bool nameMatch = e.name.toLowerCase().contains(query);
-        bool typeMatch = e.detections.any((d) =>
-            d.cloudType.name.toLowerCase().contains(query));
 
-        return nameMatch || typeMatch;
+      final query = searchQuery.toLowerCase();
+
+      filtered = filtered.where((e) {
+
+        bool nameMatch =
+        e.name.toLowerCase().contains(query);
+
+        final top3 = getTop3(e.probabilities);
+
+        bool typeMatch = top3.any(
+              (t) => t['type'].label.toLowerCase().contains(query),
+        );
+
+        bool dateMatch =
+        e.date.toString().toLowerCase().contains(query);
+
+        return nameMatch || typeMatch || dateMatch;
+
       }).toList();
     }
 

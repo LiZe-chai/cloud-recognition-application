@@ -1,16 +1,17 @@
 import 'dart:io';
 
 import 'package:cloud_recognition/services/inference.dart';
+import 'package:cloud_recognition/widgets/contour_painter.dart';
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/adapters.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart' as p;
 import '../generated/l10n.dart';
 import '../models/prediction_model.dart';
-import '../widgets/bounding_box_painter.dart';
 
 class PreviewPage extends StatelessWidget {
-  final List<DetectionResult> results;
+  final List<List<Map<String, int>>> contours;
+  final List<double> results;
   final String tempImagePath;
   final int imageWidth;
   final int imageHeight;
@@ -18,9 +19,10 @@ class PreviewPage extends StatelessWidget {
   const PreviewPage(
       {super.key,
       required this.tempImagePath,
-      required this.results,
       required this.imageWidth,
-      required this.imageHeight});
+      required this.imageHeight,
+      required this.contours,
+      required this.results});
 
   Future<bool?> showSaveAsDialog(BuildContext context) async {
     final controller = TextEditingController();
@@ -79,37 +81,28 @@ class PreviewPage extends StatelessWidget {
                   width: double.infinity,
                   height: 44,
                   child: ElevatedButton(
-                    onPressed: () async {
-                      final name = controller.text.trim();
-                      if (name.isEmpty) return;
-                      final savedImagePath =
-                          await saveImageToAppDir(File(tempImagePath));
-                      final hiveDetections = results.map((r) {
-                        final box = r.box;
-                        final cls = r.classification;
+                      onPressed: () async {
 
-                        return CloudDetection(
-                          cloudType: cls.type,
-                          confidence: cls.confidence,
-                          xMin: box['x']!.toDouble(),
-                          yMin: box['y']!.toDouble(),
-                          width: box['w']!.toDouble(),
-                          height: box['h']!.toDouble(),
+                        final name = controller.text.trim();
+                        if (name.isEmpty) return;
+
+                        final savedImagePath =
+                        await saveImageToAppDir(File(tempImagePath));
+
+                        final prediction = PredictionModel(
+                          imagePath: savedImagePath,
+                          name: name,
+                          date: DateTime.now(),
+                          imageWidth: imageWidth,
+                          imageHeight: imageHeight,
+                          contours: contours,
+                          probabilities: results,
                         );
-                      }).toList();
 
-                      final prediction = PredictionModel(
-                        imagePath: savedImagePath,
-                        name: name,
-                        date: DateTime.now(),
-                        imageWidth: imageWidth,
-                        imageHeight: imageHeight,
-                        detections: hiveDetections,
-                      );
+                        box.add(prediction);
 
-                      box.add(prediction);
-                      Navigator.pop(dialogContext, true);
-                    },
+                        Navigator.pop(dialogContext, true);
+                      },
                     style: ElevatedButton.styleFrom(
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(12),
@@ -173,7 +166,7 @@ class PreviewPage extends StatelessWidget {
                       textAlign: TextAlign.center,
                       style: TextStyle(
                         fontSize:
-                        Theme.of(context).textTheme.bodySmall?.fontSize,
+                            Theme.of(context).textTheme.bodySmall?.fontSize,
                         fontWeight: FontWeight.bold,
                         color: Colors.white54,
                       ),
@@ -184,7 +177,7 @@ class PreviewPage extends StatelessWidget {
                       textAlign: TextAlign.justify,
                       style: TextStyle(
                         fontSize:
-                        Theme.of(context).textTheme.bodyLarge?.fontSize,
+                            Theme.of(context).textTheme.bodyLarge?.fontSize,
                         color: Colors.white,
                       ),
                     ),
@@ -226,6 +219,7 @@ class PreviewPage extends StatelessWidget {
   Widget build(BuildContext context) {
     final h = MediaQuery.of(context).size.height;
     final w = MediaQuery.of(context).size.width;
+    final top3 = getTop3(results);
     return Scaffold(
       backgroundColor: Colors.black,
       body: SafeArea(
@@ -263,8 +257,8 @@ class PreviewPage extends StatelessWidget {
                                     constraints.maxWidth,
                                     constraints.maxHeight,
                                   ),
-                                  painter: BoundingBoxPainter(
-                                    results,
+                                  painter: ContourPainter(
+                                    contours,
                                     imageWidth,
                                     imageHeight,
                                   ),
@@ -284,7 +278,7 @@ class PreviewPage extends StatelessWidget {
                         children: [
                           const SizedBox(height: 24),
                           Text(
-                            '${S.of(context)!.predictionResult} (${results.length})',
+                            S.of(context)!.predictionResult,
                             style: TextStyle(
                               fontSize: Theme.of(context)
                                   .textTheme
@@ -302,11 +296,10 @@ class PreviewPage extends StatelessWidget {
                             ),
                             child: Column(
                               children:
-                                  results.asMap().entries.map<Widget>((entry) {
+                                  top3.asMap().entries.map<Widget>((entry) {
                                 int index = entry.key;
                                 final detection = entry.value;
-                                final cloudColor =
-                                    detection.classification.type.color;
+                                final cloudColor = detection['classification'].type.color;
                                 bool isLast = index == results.length - 1;
 
                                 return Column(
@@ -343,8 +336,7 @@ class PreviewPage extends StatelessWidget {
                                                 mainAxisSize: MainAxisSize.min,
                                                 children: [
                                                   Text(
-                                                    detection
-                                                        .classification.type
+                                              detection['classification']
                                                         .label(context),
                                                     style: TextStyle(
                                                       color: Colors.white,
@@ -362,9 +354,7 @@ class PreviewPage extends StatelessWidget {
                                                     onTap: () {
                                                       _showCloudInfo(
                                                           context,
-                                                          detection
-                                                              .classification
-                                                              .type);
+                                                          detection['classification']);
                                                     },
                                                     child: Icon(
                                                       Icons.info_outline,
@@ -376,7 +366,7 @@ class PreviewPage extends StatelessWidget {
                                               ),
                                               const Spacer(),
                                               Text(
-                                                '${(detection.classification.confidence).toStringAsFixed(0)}%',
+                                                '${(detection['confidence']).toStringAsFixed(0)}%',
                                                 style: TextStyle(
                                                   color: Colors.white,
                                                   fontSize: Theme.of(context)
@@ -401,8 +391,7 @@ class PreviewPage extends StatelessWidget {
                                                 ),
                                               ),
                                               FractionallySizedBox(
-                                                widthFactor: detection
-                                                    .classification.confidence
+                                                widthFactor: detection['confidence']
                                                     .clamp(0.0, 1.0),
                                                 child: Container(
                                                   height: 6,

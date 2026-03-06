@@ -17,6 +17,8 @@ class CloudCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final top3 = getTop3(result.probabilities);
+
     return Card(
       elevation: 4,
       margin: const EdgeInsets.symmetric(vertical: 12),
@@ -63,9 +65,14 @@ class CloudCard extends StatelessWidget {
                   Wrap(
                     spacing: 8.0,
                     runSpacing: 4.0,
-                    children: result.detections.map((detection) {
-                      final themeColor = detection.cloudType.color;
-                      final borderColor = detection.cloudType.borderColor;
+                    children: top3.map((item) {
+
+                      final CloudType cloudType = item["type"];
+                      final double confidence = item["confidence"];
+
+                      final themeColor = cloudType.color;
+                      final borderColor = cloudType.borderColor;
+
                       return Container(
                         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
                         decoration: BoxDecoration(
@@ -76,25 +83,30 @@ class CloudCard extends StatelessWidget {
                         child: Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
+
                             Text(
-                              detection.cloudType.label(context),
-                              style: TextStyle(
+                              cloudType.label(context),
+                              style: const TextStyle(
                                 color: Colors.white,
                                 fontWeight: FontWeight.w600,
                                 fontSize: 13,
                               ),
                             ),
+
                             const VerticalDivider(width: 10),
+
                             Text(
-                              '${(detection.confidence).toStringAsFixed(0)}%',
+                              '${(confidence * 100).toStringAsFixed(0)}%',
                               style: TextStyle(
                                 color: themeColor,
                                 fontSize: 13,
                               ),
                             ),
+
                           ],
                         ),
                       );
+
                     }).toList(),
                   ),
                 ],

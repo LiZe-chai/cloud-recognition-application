@@ -38,17 +38,6 @@ class DetectionResult {
   });
 }
 
-
-InferenceResult InferCloud(CloudTypeClassifier classifier, img.Image imageInput) {
-  final result = classifier.predict(imageInput);
-
-  return InferenceResult(
-    type: result!.$1,
-    confidence: result.$2,
-  );
-}
-
-
 extension CloudTypeX on CloudType {
 
   String label(BuildContext context) {
@@ -141,4 +130,34 @@ extension CloudTypeX on CloudType {
         return "assets/contrail.jpg";
     }
   }
+}
+final List<CloudType> _cloudTypes
+= [CloudType.altocumulus,
+  CloudType.altostratus,
+  CloudType.cumulonimbus,
+  CloudType.cirrocumulus,
+  CloudType.cirrus,
+  CloudType.cirrostratus,
+  CloudType.cumulus,
+  CloudType.nimbostratus,
+  CloudType.stratocumulus,
+  CloudType.stratus,
+  CloudType.contrail];
+
+List<Map<String, dynamic>> getTop3(
+    List<double> probs,
+    ) {
+  List<Map<String, dynamic>> results = [];
+
+  for (int i = 0; i < probs.length; i++) {
+    results.add({
+      "type": _cloudTypes[i],
+      "confidence": probs[i],
+    });
+  }
+
+  results.sort((a, b) =>
+      (b["confidence"] as double).compareTo(a["confidence"] as double));
+
+  return results.take(3).toList();
 }

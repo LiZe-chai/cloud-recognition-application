@@ -6,29 +6,17 @@ import 'inference.dart';
 
 class CloudTypeClassifier {
   late Interpreter _interpreter;
-  final List<CloudType> _cloudTypes
-    = [CloudType.altocumulus,
-      CloudType.altostratus,
-      CloudType.cumulonimbus,
-      CloudType.cirrocumulus,
-      CloudType.cirrus,
-      CloudType.cirrostratus,
-      CloudType.cumulus,
-      CloudType.nimbostratus,
-      CloudType.stratocumulus,
-      CloudType.stratus,
-      CloudType.contrail];
 
   Future<void> loadModel() async {
     try {
-      _interpreter = await Interpreter.fromAsset('assets/TL_mobilenetv2_cloud_classification.tflite');
+      _interpreter = await Interpreter.fromAsset('assets/TL_mobilenetv2_cloud_classification——multilabel.tflite');
       print('Model loaded successfully');
     } catch (e) {
       print('Failed to load model: $e');
     }
   }
 
-  (CloudType, double)? predict(img.Image imageInput) {
+  List<double>? predict(img.Image imageInput) {
     img.Image resizedImage = img.copyResize(imageInput, width: 224, height: 224);
     var input = imageToByteListFloat32(resizedImage, 224);
 
@@ -36,25 +24,9 @@ class CloudTypeClassifier {
 
     _interpreter.run(input, output);
 
-    print("Probabilities: $output");
+    print("Probabilities: ${output[0]}");
 
-    double maxProb = -1;
-    int predIndex = -1;
-    for (int i = 0; i < 11; i++) {
-      if (output[0][i] > maxProb) {
-        maxProb = output[0][i];
-        predIndex = i;
-      }
-    }
-    if (predIndex != -1 && predIndex < _cloudTypes.length) {
-      CloudType type = _cloudTypes[predIndex];
-      double confidence = maxProb * 100;
-
-      return (type, confidence);
-    } else {
-      print("No valid category detected");
-      return null;
-    }
+    return output[0];
   }
 
   Uint8List imageToByteListFloat32(img.Image image, int inputSize) {
