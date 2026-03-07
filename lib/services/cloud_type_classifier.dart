@@ -9,7 +9,7 @@ class CloudTypeClassifier {
 
   Future<void> loadModel() async {
     try {
-      _interpreter = await Interpreter.fromAsset('assets/TL_mobilenetv2_cloud_classification——multilabel.tflite');
+      _interpreter = await Interpreter.fromAsset('assets/TL_mobilenetv2_cloud_classification_multilabel.tflite');
       print('Model loaded successfully');
     } catch (e) {
       print('Failed to load model: $e');

@@ -298,8 +298,9 @@ class PreviewPage extends StatelessWidget {
                               children:
                                   top3.asMap().entries.map<Widget>((entry) {
                                 int index = entry.key;
-                                final detection = entry.value;
-                                final cloudColor = detection['classification'].type.color;
+                                final detection = entry.value as Map<String, dynamic>;
+                                final CloudType type = detection['type'] as CloudType;
+                                final cloudColor = type.color;
                                 bool isLast = index == results.length - 1;
 
                                 return Column(
@@ -336,8 +337,7 @@ class PreviewPage extends StatelessWidget {
                                                 mainAxisSize: MainAxisSize.min,
                                                 children: [
                                                   Text(
-                                              detection['classification']
-                                                        .label(context),
+                                              type.label(context),
                                                     style: TextStyle(
                                                       color: Colors.white,
                                                       fontSize:
@@ -354,7 +354,7 @@ class PreviewPage extends StatelessWidget {
                                                     onTap: () {
                                                       _showCloudInfo(
                                                           context,
-                                                          detection['classification']);
+                                                          type);
                                                     },
                                                     child: Icon(
                                                       Icons.info_outline,

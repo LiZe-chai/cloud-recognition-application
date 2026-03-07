@@ -24,7 +24,9 @@ class _InferencePageState extends State<InferencePage> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      _runInference();
+      Future.delayed(Duration.zero, () {
+        _runInference();
+      });
     });
   }
 
