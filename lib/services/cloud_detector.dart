@@ -4,19 +4,24 @@ import 'package:image/image.dart' as img;
 import 'package:flutter/services.dart';
 
 class CloudDetector {
-  Interpreter? _interpreter;
+  late Interpreter? _interpreter;
   bool _isInitialized = false;
 
   Future<void> loadModel() async {
     if (_isInitialized) return;
 
     try {
-      _interpreter = await Interpreter.fromAsset(
+      final modelData = await rootBundle.load(
         'assets/TL_MACNN_cloud_detection.tflite',
       );
 
+      final bytes = modelData.buffer.asUint8List();
+
+      _interpreter = Interpreter.fromBuffer(bytes);
+
       _isInitialized = true;
-      print("TFLite model loaded successfully");
+
+      print("TFLite model loaded successfully from bytes");
     } catch (e) {
       print("Failed to load TFLite model: $e");
     }
@@ -87,6 +92,8 @@ class CloudDetector {
   void close() {
     _interpreter?.close();
   }
+
+  CloudDetector(this._interpreter, this._isInitialized);
 }
 class CloudPostProcessor {
   static const MethodChannel _channel = MethodChannel('cloud_opencv');
