@@ -1,15 +1,21 @@
 import 'dart:typed_data';
+import 'package:flutter/services.dart';
 import 'package:tflite_flutter/tflite_flutter.dart';
 import 'package:image/image.dart' as img;
 
-import 'inference.dart';
-
 class CloudTypeClassifier {
-  late Interpreter _interpreter;
+  late  Interpreter _interpreter;
 
   Future<void> loadModel() async {
     try {
-      _interpreter = await Interpreter.fromAsset('assets/TL_mobilenetv2_cloud_classification_multilabel.tflite');
+      final modelData = await rootBundle.load(
+        'assets/TL_mobilenetv2_cloud_classification_multilabel.tflite',
+      );
+
+      final bytes = modelData.buffer.asUint8List();
+
+      _interpreter = Interpreter.fromBuffer(bytes);
+
       print('Model loaded successfully');
     } catch (e) {
       print('Failed to load model: $e');
@@ -48,4 +54,6 @@ class CloudTypeClassifier {
   void close() {
     _interpreter.close();
   }
+
+  CloudTypeClassifier(this._interpreter);
 }
