@@ -245,7 +245,8 @@ class PreviewPage extends StatelessWidget {
                         color: Colors.grey[900],
                         child: LayoutBuilder(
                           builder: (context, constraints) {
-                            return Stack(
+                            return
+                              Stack(
                               alignment: Alignment.center,
                               children: [
                                 Image.file(
@@ -366,7 +367,7 @@ class PreviewPage extends StatelessWidget {
                                               ),
                                               const Spacer(),
                                               Text(
-                                                '${(detection['confidence']).toStringAsFixed(0)}%',
+                                                '${(detection['confidence']*100).toStringAsFixed(0)}%',
                                                 style: TextStyle(
                                                   color: Colors.white,
                                                   fontSize: Theme.of(context)

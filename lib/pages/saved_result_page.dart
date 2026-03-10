@@ -192,7 +192,7 @@ class SavedResultPage extends StatelessWidget {
                                                 child: Text(
                                                   '${index + 1}',
                                                   style: TextStyle(
-                                                    color: cloudColor,
+                                                    color: Colors.white,
                                                     fontWeight: FontWeight.bold,
                                                     fontSize: Theme.of(context)
                                                         .textTheme

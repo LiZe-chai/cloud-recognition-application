@@ -30,7 +30,7 @@ class ContourPainter extends CustomPainter {
     final dy = (size.height - displayHeight) / 2;
 
     final paint = Paint()
-      ..color = Colors.green
+      ..color = Colors.red
       ..strokeWidth = 3
       ..style = PaintingStyle.stroke;
 
@@ -42,12 +42,17 @@ class ContourPainter extends CustomPainter {
 
       final path = Path();
 
+      const maskSize = 512.0;
+
+      final scaleX = imageWidth / maskSize;
+      final scaleY = imageHeight / maskSize;
+
       for (int j = 0; j < contour.length; j++) {
 
         final p = contour[j];
 
-        final x = dx + p["x"]! * scale;
-        final y = dy + p["y"]! * scale;
+        final x = dx + p["x"]! * scaleX * scale;
+        final y = dy + p["y"]! * scaleY * scale;
 
         if (j == 0) {
           path.moveTo(x, y);
@@ -59,43 +64,6 @@ class ContourPainter extends CustomPainter {
       path.close();
 
       canvas.drawPath(path, paint);
-      final firstPoint = contour.first;
-
-      final cx = dx + firstPoint["x"]! * scale;
-      final cy = dy + firstPoint["y"]! * scale;
-
-      final circlePaint = Paint()
-        ..color = Colors.green;
-
-      const circleRadius = 14.0;
-
-      canvas.drawCircle(
-        Offset(cx, cy),
-        circleRadius,
-        circlePaint,
-      );
-
-      final textPainter = TextPainter(
-        text: TextSpan(
-          text: "${i + 1}",
-          style: const TextStyle(
-            color: Colors.white,
-            fontSize: 14,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-        textDirection: TextDirection.ltr,
-      );
-
-      textPainter.layout();
-
-      textPainter.paint(
-        canvas,
-        Offset(
-          cx - textPainter.width / 2,
-          cy - textPainter.height / 2,
-        ),
-      );
     }
   }
 
