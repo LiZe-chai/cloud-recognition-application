@@ -251,7 +251,9 @@ class PreviewPage extends StatelessWidget {
                               children: [
                                 Image.file(
                                   File(tempImagePath),
-                                  fit: BoxFit.contain,
+                                  width: constraints.maxWidth,
+                                  height: constraints.maxHeight,
+                                  fit: BoxFit.cover,
                                 ),
                                 CustomPaint(
                                   size: Size(

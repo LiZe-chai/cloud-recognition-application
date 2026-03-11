@@ -230,7 +230,6 @@ class _HomePageState extends State<HomePage> {
   List<PredictionModel> _applyFilter(List<PredictionModel> list) {
 
     var filtered = [...list];
-
     if (selectedCloudTypes.isNotEmpty) {
 
       filtered = filtered.where((e) {
@@ -238,12 +237,11 @@ class _HomePageState extends State<HomePage> {
         final top3 = getTop3(e.probabilities);
 
         return top3.any(
-              (type) => selectedCloudTypes.contains(type),
+              (t) => selectedCloudTypes.contains(t["type"]),
         );
 
       }).toList();
     }
-
     if (searchQuery.isNotEmpty) {
 
       final query = searchQuery.toLowerCase();
@@ -256,7 +254,10 @@ class _HomePageState extends State<HomePage> {
         final top3 = getTop3(e.probabilities);
 
         bool typeMatch = top3.any(
-              (t) => t['type'].label.toLowerCase().contains(query),
+              (t) => (t["type"] as CloudType)
+              .label(context)
+              .toLowerCase()
+              .contains(query),
         );
 
         bool dateMatch =
@@ -266,7 +267,6 @@ class _HomePageState extends State<HomePage> {
 
       }).toList();
     }
-
     filtered.sort((a, b) {
       return sortLatest
           ? b.date.compareTo(a.date)
@@ -296,6 +296,7 @@ class _HomePageState extends State<HomePage> {
     final h = MediaQuery.of(context).size.height;
     final w = MediaQuery.of(context).size.width;
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       backgroundColor: Colors.black,
       body: SafeArea(
           child: Padding(

@@ -169,7 +169,8 @@ class SavedResultPage extends StatelessWidget {
                               top3.asMap().entries.map<Widget>((entry) {
                                 int index = entry.key;
                                 final detection = entry.value;
-                                final cloudColor = detection['classification'].type.color;
+                                final CloudType type = detection['type'] as CloudType;
+                                final cloudColor = type.color;
                                 bool isLast = index == result.probabilities.length - 1;
 
                                 return Column(
@@ -206,8 +207,7 @@ class SavedResultPage extends StatelessWidget {
                                                 mainAxisSize: MainAxisSize.min,
                                                 children: [
                                                   Text(
-                                                    detection['classification']
-                                                        .label(context),
+                                                    type.label(context),
                                                     style: TextStyle(
                                                       color: Colors.white,
                                                       fontSize:
@@ -224,7 +224,7 @@ class SavedResultPage extends StatelessWidget {
                                                     onTap: () {
                                                       _showCloudInfo(
                                                           context,
-                                                          detection['classification']);
+                                                          type);
                                                     },
                                                     child: Icon(
                                                       Icons.info_outline,
@@ -236,7 +236,7 @@ class SavedResultPage extends StatelessWidget {
                                               ),
                                               const Spacer(),
                                               Text(
-                                                '${(detection['confidence']).toStringAsFixed(0)}%',
+                                                '${(detection['confidence']*100).toStringAsFixed(0)}%',
                                                 style: TextStyle(
                                                   color: Colors.white,
                                                   fontSize: Theme.of(context)
