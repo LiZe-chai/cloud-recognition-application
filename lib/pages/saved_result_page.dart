@@ -16,6 +16,7 @@ class SavedResultPage extends StatelessWidget {
   void _showCloudInfo(BuildContext context, CloudType type) {
     showModalBottomSheet(
       context: context,
+      isScrollControlled: true,
       backgroundColor: const Color(0xFF1E1E1E),
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
@@ -34,7 +35,7 @@ class SavedResultPage extends StatelessWidget {
                       type.label(context),
                       style: TextStyle(
                         fontSize:
-                        Theme.of(context).textTheme.titleLarge?.fontSize,
+                            Theme.of(context).textTheme.titleLarge?.fontSize,
                         fontWeight: FontWeight.bold,
                         color: Colors.white,
                       ),
@@ -55,7 +56,7 @@ class SavedResultPage extends StatelessWidget {
                       textAlign: TextAlign.center,
                       style: TextStyle(
                         fontSize:
-                        Theme.of(context).textTheme.bodySmall?.fontSize,
+                            Theme.of(context).textTheme.bodySmall?.fontSize,
                         fontWeight: FontWeight.bold,
                         color: Colors.white54,
                       ),
@@ -66,11 +67,10 @@ class SavedResultPage extends StatelessWidget {
                       textAlign: TextAlign.justify,
                       style: TextStyle(
                         fontSize:
-                        Theme.of(context).textTheme.bodyLarge?.fontSize,
+                            Theme.of(context).textTheme.bodyLarge?.fontSize,
                         color: Colors.white,
                       ),
                     ),
-                    const SizedBox(height: 50),
                   ],
                 ),
               ),
@@ -94,8 +94,7 @@ class SavedResultPage extends StatelessWidget {
     return Scaffold(
       backgroundColor: Colors.black,
       body: SafeArea(
-        child:
-          Stack(
+        child: Stack(
           children: [
             SafeArea(
               bottom: false,
@@ -152,8 +151,10 @@ class SavedResultPage extends StatelessWidget {
                           Text(
                             S.of(context)!.predictionResult,
                             style: TextStyle(
-                              fontSize:
-                              Theme.of(context).textTheme.bodyLarge?.fontSize,
+                              fontSize: Theme.of(context)
+                                  .textTheme
+                                  .bodyLarge
+                                  ?.fontSize,
                               fontWeight: FontWeight.bold,
                               color: Colors.white,
                             ),
@@ -166,12 +167,14 @@ class SavedResultPage extends StatelessWidget {
                             ),
                             child: Column(
                               children:
-                              top3.asMap().entries.map<Widget>((entry) {
+                                  top3.asMap().entries.map<Widget>((entry) {
                                 int index = entry.key;
                                 final detection = entry.value;
-                                final CloudType type = detection['type'] as CloudType;
+                                final CloudType type =
+                                    detection['type'] as CloudType;
                                 final cloudColor = type.color;
-                                bool isLast = index == result.probabilities.length - 1;
+                                bool isLast =
+                                    index == result.probabilities.length - 1;
 
                                 return Column(
                                   children: [
@@ -211,20 +214,19 @@ class SavedResultPage extends StatelessWidget {
                                                     style: TextStyle(
                                                       color: Colors.white,
                                                       fontSize:
-                                                      Theme.of(context)
-                                                          .textTheme
-                                                          .bodyMedium
-                                                          ?.fontSize,
+                                                          Theme.of(context)
+                                                              .textTheme
+                                                              .bodyMedium
+                                                              ?.fontSize,
                                                       fontWeight:
-                                                      FontWeight.w500,
+                                                          FontWeight.w500,
                                                     ),
                                                   ),
                                                   const SizedBox(width: 6),
                                                   GestureDetector(
                                                     onTap: () {
                                                       _showCloudInfo(
-                                                          context,
-                                                          type);
+                                                          context, type);
                                                     },
                                                     child: Icon(
                                                       Icons.info_outline,
@@ -236,7 +238,7 @@ class SavedResultPage extends StatelessWidget {
                                               ),
                                               const Spacer(),
                                               Text(
-                                                '${(detection['confidence']*100).toStringAsFixed(0)}%',
+                                                '${(detection['confidence'] * 100).toStringAsFixed(0)}%',
                                                 style: TextStyle(
                                                   color: Colors.white,
                                                   fontSize: Theme.of(context)
@@ -257,19 +259,20 @@ class SavedResultPage extends StatelessWidget {
                                                 decoration: BoxDecoration(
                                                   color: Colors.black26,
                                                   borderRadius:
-                                                  BorderRadius.circular(3),
+                                                      BorderRadius.circular(3),
                                                 ),
                                               ),
                                               FractionallySizedBox(
-                                                widthFactor: detection['confidence']
-                                                    .clamp(0.0, 1.0),
+                                                widthFactor:
+                                                    detection['confidence']
+                                                        .clamp(0.0, 1.0),
                                                 child: Container(
                                                   height: 6,
                                                   decoration: BoxDecoration(
                                                     color: cloudColor,
                                                     borderRadius:
-                                                    BorderRadius.circular(
-                                                        3),
+                                                        BorderRadius.circular(
+                                                            3),
                                                   ),
                                                 ),
                                               ),
@@ -292,8 +295,12 @@ class SavedResultPage extends StatelessWidget {
                             ),
                           ),
                           const SizedBox(height: 20),
-                          _buildSimpleInfoTile(S.of(context)!.name, result.name, context),
-                          _buildSimpleInfoTile(S.of(context)!.date, '${result.date.year}-${result.date.month}-${result.date.day}', context),
+                          _buildSimpleInfoTile(
+                              S.of(context)!.name, result.name, context),
+                          _buildSimpleInfoTile(
+                              S.of(context)!.date,
+                              '${result.date.year}-${result.date.month}-${result.date.day}',
+                              context),
                           const SizedBox(height: 120),
                         ],
                       ),
@@ -302,7 +309,6 @@ class SavedResultPage extends StatelessWidget {
                 ],
               ),
             ),
-
             Positioned(
               top: 0,
               left: 0,
@@ -313,7 +319,6 @@ class SavedResultPage extends StatelessWidget {
                 color: Colors.white,
               ),
             ),
-
             Positioned(
               left: 0,
               right: 0,
@@ -340,13 +345,18 @@ class SavedResultPage extends StatelessWidget {
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          const Icon(Icons.camera_alt, color: Colors.white,
-                              size: 28),
+                          const Icon(Icons.camera_alt,
+                              color: Colors.white, size: 28),
                           const SizedBox(height: 4),
                           Text(
                             S.of(context)!.newAction,
                             style: TextStyle(
-                                color: Colors.white, fontSize: Theme.of(context).textTheme.bodyMedium?.fontSize,),
+                              color: Colors.white,
+                              fontSize: Theme.of(context)
+                                  .textTheme
+                                  .bodyMedium
+                                  ?.fontSize,
+                            ),
                           ),
                         ],
                       ),
@@ -361,17 +371,23 @@ class SavedResultPage extends StatelessWidget {
     );
   }
 
-  Widget _buildSimpleInfoTile(String label, String value, BuildContext context) {
+  Widget _buildSimpleInfoTile(
+      String label, String value, BuildContext context) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 16),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(label,
-              style: TextStyle(color: Colors.white54, fontSize: Theme.of(context).textTheme.bodyLarge?.fontSize)),
+              style: TextStyle(
+                  color: Colors.white54,
+                  fontSize: Theme.of(context).textTheme.bodyLarge?.fontSize)),
           const SizedBox(height: 4),
-          Text(value, style: TextStyle(
-              color: Colors.white, fontSize: Theme.of(context).textTheme.bodyLarge?.fontSize, fontWeight: FontWeight.bold)),
+          Text(value,
+              style: TextStyle(
+                  color: Colors.white,
+                  fontSize: Theme.of(context).textTheme.bodyLarge?.fontSize,
+                  fontWeight: FontWeight.bold)),
           const Divider(color: Colors.white12),
         ],
       ),

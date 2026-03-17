@@ -127,6 +127,7 @@ class PreviewPage extends StatelessWidget {
   void _showCloudInfo(BuildContext context, CloudType type) {
     showModalBottomSheet(
       context: context,
+      isScrollControlled: true,
       backgroundColor: const Color(0xFF1E1E1E),
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
@@ -177,11 +178,10 @@ class PreviewPage extends StatelessWidget {
                       textAlign: TextAlign.justify,
                       style: TextStyle(
                         fontSize:
-                            Theme.of(context).textTheme.bodyLarge?.fontSize,
+                            Theme.of(context).textTheme.bodyMedium?.fontSize,
                         color: Colors.white,
                       ),
                     ),
-                    const SizedBox(height: 50),
                   ],
                 ),
               ),

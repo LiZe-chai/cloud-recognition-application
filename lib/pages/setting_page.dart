@@ -52,7 +52,6 @@ class SettingsPage extends StatelessWidget {
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-
                   Container(
                     width: 40,
                     height: 4,
