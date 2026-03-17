@@ -7,26 +7,6 @@ class CloudDetector {
   late Interpreter? _interpreter;
   bool _isInitialized = false;
 
-  Future<void> loadModel() async {
-    if (_isInitialized) return;
-
-    try {
-      final modelData = await rootBundle.load(
-        'assets/TL_MACNN_cloud_detection.tflite',
-      );
-
-      final bytes = modelData.buffer.asUint8List();
-
-      _interpreter = Interpreter.fromBuffer(bytes);
-
-      _isInitialized = true;
-
-      print("TFLite model loaded successfully from bytes");
-    } catch (e) {
-      print("Failed to load TFLite model: $e");
-    }
-  }
-
   Future<List<List<List<List<double>>>>?> predict(
       img.Image imageInput) async {
 

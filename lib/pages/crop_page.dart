@@ -6,6 +6,8 @@ import 'package:crop_your_image/crop_your_image.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart' as p;
 
+import '../generated/l10n.dart';
+
 class CropPage extends StatefulWidget {
   final String imagePath;
 
@@ -53,9 +55,9 @@ class _CropPageState extends State<CropPage> {
           color: Colors.white,
         ),
         backgroundColor: Colors.black,
-        title: const Text(
-          'Crop Image',
-          style: TextStyle(color: Colors.white),
+        title: Text(
+          S.of(context)!.cropImage,
+          style: const TextStyle(color: Colors.white),
         ),
         actions: [
           IconButton(

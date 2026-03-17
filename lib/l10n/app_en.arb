@@ -92,5 +92,6 @@
   "cloudDescNimbostratus":"Nimbostratus clouds are thick low-level clouds that cover the sky and usually produce continuous rain.",
   "cloudDescCumulus":"Cumulus clouds are low-level clouds with moderate vertical development and rounded tops.",
   "cloudDescCumulonimbus":"Cumulonimbus clouds have strong vertical development and usually produce thunderstorms.",
-  "cloudDescContrail":"Contrails are clouds produced by aircraft, appearing as visible trails in the sky."
+  "cloudDescContrail":"Contrails are clouds produced by aircraft, appearing as visible trails in the sky.",
+  "cropImage":"Crop Image"
 }
