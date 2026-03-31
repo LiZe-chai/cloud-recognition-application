@@ -1,4 +1,4 @@
-package com.example.cloud_recognition
+package app.lize.cloud_recognition
 
 import android.os.Bundle
 import android.util.Log
