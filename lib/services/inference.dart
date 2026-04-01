@@ -161,3 +161,20 @@ List<Map<String, dynamic>> getTop3(
 
   return results.take(3).toList();
 }
+List<Map<String, dynamic>> sortResults(
+    List<double> probs,
+    ) {
+  List<Map<String, dynamic>> results = [];
+
+  for (int i = 0; i < probs.length; i++) {
+    results.add({
+      "type": _cloudTypes[i],
+      "confidence": probs[i],
+    });
+  }
+
+  results.sort((a, b) =>
+      (b["confidence"] as double).compareTo(a["confidence"] as double));
+
+  return results;
+}

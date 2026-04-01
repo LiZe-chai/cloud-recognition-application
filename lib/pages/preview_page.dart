@@ -9,20 +9,28 @@ import 'package:path/path.dart' as p;
 import '../generated/l10n.dart';
 import '../models/prediction_model.dart';
 
-class PreviewPage extends StatelessWidget {
+class PreviewPage extends StatefulWidget {
   final List<List<Map<String, int>>> contours;
   final List<double> results;
   final String tempImagePath;
   final int imageWidth;
   final int imageHeight;
 
-  const PreviewPage(
-      {super.key,
-      required this.tempImagePath,
-      required this.imageWidth,
-      required this.imageHeight,
-      required this.contours,
-      required this.results});
+  const PreviewPage({
+    super.key,
+    required this.tempImagePath,
+    required this.imageWidth,
+    required this.imageHeight,
+    required this.contours,
+    required this.results,
+  });
+
+  @override
+  State<PreviewPage> createState() => _PreviewPageState();
+}
+
+class _PreviewPageState extends State<PreviewPage> {
+  bool _showAllResults = false;
 
   Future<bool?> showSaveAsDialog(BuildContext context) async {
     final controller = TextEditingController();
@@ -81,28 +89,27 @@ class PreviewPage extends StatelessWidget {
                   width: double.infinity,
                   height: 44,
                   child: ElevatedButton(
-                      onPressed: () async {
+                    onPressed: () async {
+                      final name = controller.text.trim();
+                      if (name.isEmpty) return;
 
-                        final name = controller.text.trim();
-                        if (name.isEmpty) return;
+                      final savedImagePath =
+                          await saveImageToAppDir(File(widget.tempImagePath));
 
-                        final savedImagePath =
-                        await saveImageToAppDir(File(tempImagePath));
+                      final prediction = PredictionModel(
+                        imagePath: savedImagePath,
+                        name: name,
+                        date: DateTime.now(),
+                        imageWidth: widget.imageWidth,
+                        imageHeight: widget.imageHeight,
+                        contours: widget.contours,
+                        probabilities: widget.results,
+                      );
 
-                        final prediction = PredictionModel(
-                          imagePath: savedImagePath,
-                          name: name,
-                          date: DateTime.now(),
-                          imageWidth: imageWidth,
-                          imageHeight: imageHeight,
-                          contours: contours,
-                          probabilities: results,
-                        );
+                      box.add(prediction);
 
-                        box.add(prediction);
-
-                        Navigator.pop(dialogContext, true);
-                      },
+                      Navigator.pop(dialogContext, true);
+                    },
                     style: ElevatedButton.styleFrom(
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(12),
@@ -219,7 +226,10 @@ class PreviewPage extends StatelessWidget {
   Widget build(BuildContext context) {
     final h = MediaQuery.of(context).size.height;
     final w = MediaQuery.of(context).size.width;
-    final top3 = getTop3(results);
+    final sorted_results = sortResults(widget.results);
+    final displayedResults =
+        _showAllResults ? sorted_results : sorted_results.take(3).toList();
+
     return Scaffold(
       backgroundColor: Colors.black,
       body: SafeArea(
@@ -245,12 +255,11 @@ class PreviewPage extends StatelessWidget {
                         color: Colors.grey[900],
                         child: LayoutBuilder(
                           builder: (context, constraints) {
-                            return
-                              Stack(
+                            return Stack(
                               alignment: Alignment.center,
                               children: [
                                 Image.file(
-                                  File(tempImagePath),
+                                  File(widget.tempImagePath),
                                   width: constraints.maxWidth,
                                   height: constraints.maxHeight,
                                   fit: BoxFit.cover,
@@ -261,9 +270,9 @@ class PreviewPage extends StatelessWidget {
                                     constraints.maxHeight,
                                   ),
                                   painter: ContourPainter(
-                                    contours,
-                                    imageWidth,
-                                    imageHeight,
+                                    widget.contours,
+                                    widget.imageWidth,
+                                    widget.imageHeight,
                                   ),
                                 ),
                               ],
@@ -298,130 +307,139 @@ class PreviewPage extends StatelessWidget {
                               borderRadius: BorderRadius.circular(12),
                             ),
                             child: Column(
-                              children:
-                                  top3.asMap().entries.map<Widget>((entry) {
-                                int index = entry.key;
-                                final detection = entry.value as Map<String, dynamic>;
-                                final CloudType type = detection['type'] as CloudType;
-                                final cloudColor = type.color;
-                                bool isLast = index == results.length - 1;
+                              children: [
+                                ...displayedResults
+                                    .asMap()
+                                    .entries
+                                    .map<Widget>((entry) {
+                                  int index = entry.key;
+                                  final detection = entry.value as Map<String, dynamic>;
+                                  final CloudType type = detection['type'] as CloudType;
+                                  final cloudColor = type.color;
+                                  bool isLast = index == displayedResults.length - 1;
 
-                                return Column(
-                                  children: [
-                                    Padding(
-                                      padding: const EdgeInsets.all(16.0),
-                                      child: Column(
-                                        children: [
-                                          Row(
-                                            children: [
-                                              Container(
-                                                width: 26,
-                                                height: 26,
-                                                decoration: BoxDecoration(
-                                                  color: cloudColor
-                                                      .withOpacity(0.2),
-                                                  shape: BoxShape.circle,
+                                  return Column(
+                                    children: [
+                                      Padding(
+                                        padding: const EdgeInsets.all(16.0),
+                                        child: Column(
+                                          children: [
+                                            Row(
+                                              children: [
+                                                Container(
+                                                  width: 26,
+                                                  height: 26,
+                                                  decoration: BoxDecoration(
+                                                    color: cloudColor.withOpacity(0.2),
+                                                    shape: BoxShape.circle,
+                                                  ),
+                                                  alignment: Alignment.center,
+                                                  child: Text(
+                                                    '${index + 1}',
+                                                    style: TextStyle(
+                                                      color: cloudColor,
+                                                      fontWeight: FontWeight.bold,
+                                                      fontSize: Theme.of(context)
+                                                          .textTheme
+                                                          .bodyMedium
+                                                          ?.fontSize,
+                                                    ),
+                                                  ),
                                                 ),
-                                                alignment: Alignment.center,
-                                                child: Text(
-                                                  '${index + 1}',
+                                                const SizedBox(width: 12),
+                                                Row(
+                                                  mainAxisSize: MainAxisSize.min,
+                                                  children: [
+                                                    Text(
+                                                      type.label(context),
+                                                      style: TextStyle(
+                                                        color: Colors.white,
+                                                        fontSize: Theme.of(context)
+                                                            .textTheme
+                                                            .bodyMedium
+                                                            ?.fontSize,
+                                                        fontWeight: FontWeight.w500,
+                                                      ),
+                                                    ),
+                                                    const SizedBox(width: 6),
+                                                    GestureDetector(
+                                                      onTap: () {
+                                                        _showCloudInfo(context, type);
+                                                      },
+                                                      child: const Icon(
+                                                        Icons.info_outline,
+                                                        size: 20,
+                                                        color: Colors.white,
+                                                      ),
+                                                    ),
+                                                  ],
+                                                ),
+                                                const Spacer(),
+                                                Text(
+                                                  '${(detection['confidence'] * 100).toStringAsFixed(0)}%',
                                                   style: TextStyle(
-                                                    color: cloudColor,
-                                                    fontWeight: FontWeight.bold,
+                                                    color: Colors.white,
                                                     fontSize: Theme.of(context)
                                                         .textTheme
                                                         .bodyMedium
                                                         ?.fontSize,
+                                                    fontWeight: FontWeight.bold,
                                                   ),
                                                 ),
-                                              ),
-                                              const SizedBox(width: 12),
-                                              Row(
-                                                mainAxisSize: MainAxisSize.min,
-                                                children: [
-                                                  Text(
-                                              type.label(context),
-                                                    style: TextStyle(
-                                                      color: Colors.white,
-                                                      fontSize:
-                                                          Theme.of(context)
-                                                              .textTheme
-                                                              .bodyMedium
-                                                              ?.fontSize,
-                                                      fontWeight:
-                                                          FontWeight.w500,
-                                                    ),
-                                                  ),
-                                                  const SizedBox(width: 6),
-                                                  GestureDetector(
-                                                    onTap: () {
-                                                      _showCloudInfo(
-                                                          context,
-                                                          type);
-                                                    },
-                                                    child: Icon(
-                                                      Icons.info_outline,
-                                                      size: 20,
-                                                      color: Colors.white,
-                                                    ),
-                                                  ),
-                                                ],
-                                              ),
-                                              const Spacer(),
-                                              Text(
-                                                '${(detection['confidence']*100).toStringAsFixed(0)}%',
-                                                style: TextStyle(
-                                                  color: Colors.white,
-                                                  fontSize: Theme.of(context)
-                                                      .textTheme
-                                                      .bodyMedium
-                                                      ?.fontSize,
-                                                  fontWeight: FontWeight.bold,
-                                                ),
-                                              ),
-                                            ],
-                                          ),
-                                          const SizedBox(height: 12),
-                                          Stack(
-                                            children: [
-                                              Container(
-                                                height: 6,
-                                                width: double.infinity,
-                                                decoration: BoxDecoration(
-                                                  color: Colors.black26,
-                                                  borderRadius:
-                                                      BorderRadius.circular(3),
-                                                ),
-                                              ),
-                                              FractionallySizedBox(
-                                                widthFactor: detection['confidence']
-                                                    .clamp(0.0, 1.0),
-                                                child: Container(
+                                              ],
+                                            ),
+                                            const SizedBox(height: 12),
+                                            Stack(
+                                              children: [
+                                                Container(
                                                   height: 6,
+                                                  width: double.infinity,
                                                   decoration: BoxDecoration(
-                                                    color: cloudColor,
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                            3),
+                                                    color: Colors.black26,
+                                                    borderRadius: BorderRadius.circular(3),
                                                   ),
                                                 ),
-                                              ),
-                                            ],
-                                          ),
-                                        ],
+                                                FractionallySizedBox(
+                                                  widthFactor:
+                                                  (detection['confidence'] as double).clamp(0.0, 1.0),
+                                                  child: Container(
+                                                    height: 6,
+                                                    decoration: BoxDecoration(
+                                                      color: cloudColor,
+                                                      borderRadius: BorderRadius.circular(3),
+                                                    ),
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                          ],
+                                        ),
                                       ),
+                                      if (!isLast)
+                                        Divider(
+                                          height: 1,
+                                          thickness: 1,
+                                          color: Colors.white.withOpacity(0.05),
+                                          indent: 16,
+                                          endIndent: 16,
+                                        ),
+                                    ],
+                                  );
+                                }).toList(),
+
+                                if (sorted_results.length > 3)
+                                  TextButton(
+                                    onPressed: () {
+                                      setState(() {
+                                        _showAllResults = !_showAllResults;
+                                      });
+                                    },
+                                    child: Text(
+                                      _showAllResults ? 'Show less' : 'Show more',
+                                      style: const TextStyle(color: Colors.white),
                                     ),
-                                    if (!isLast)
-                                      Divider(
-                                        height: 1,
-                                        thickness: 1,
-                                        color: Colors.white.withOpacity(0.05),
-                                        indent: 16,
-                                        endIndent: 16,
-                                      ),
-                                  ],
-                                );
-                              }).toList(),
+                                  ),
+                              ],
                             ),
                           ),
                           const SizedBox(height: 120),

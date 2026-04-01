@@ -8,10 +8,20 @@ import '../models/prediction_model.dart';
 import '../widgets/contour_painter.dart';
 import 'camera_page.dart';
 
-class SavedResultPage extends StatelessWidget {
+class SavedResultPage extends StatefulWidget {
   final PredictionModel result;
 
-  const SavedResultPage({super.key, required this.result});
+  const SavedResultPage({
+    super.key,
+    required this.result,
+  });
+
+  @override
+  State<SavedResultPage> createState() => _SavedResultPageState();
+}
+
+class _SavedResultPageState extends State<SavedResultPage> {
+  bool _showAllResults = false;
 
   void _showCloudInfo(BuildContext context, CloudType type) {
     showModalBottomSheet(
@@ -90,7 +100,9 @@ class SavedResultPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final top3 = getTop3(result.probabilities);
+    final sorted_results = sortResults(widget.result.probabilities);
+    final displayedResults =
+    _showAllResults ? sorted_results : sorted_results.take(3).toList();
     return Scaffold(
       backgroundColor: Colors.black,
       body: SafeArea(
@@ -120,7 +132,7 @@ class SavedResultPage extends StatelessWidget {
                               alignment: Alignment.center,
                               children: [
                                 Image.file(
-                                  File(result.imagePath),
+                                  File(widget.result.imagePath),
                                   fit: BoxFit.contain,
                                 ),
                                 CustomPaint(
@@ -129,9 +141,9 @@ class SavedResultPage extends StatelessWidget {
                                     constraints.maxHeight,
                                   ),
                                   painter: ContourPainter(
-                                    result.contours,
-                                    result.imageWidth,
-                                    result.imageHeight,
+                                    widget.result.contours,
+                                    widget.result.imageWidth,
+                                    widget.result.imageHeight,
                                   ),
                                 ),
                               ],
@@ -167,14 +179,14 @@ class SavedResultPage extends StatelessWidget {
                             ),
                             child: Column(
                               children:
-                                  top3.asMap().entries.map<Widget>((entry) {
+                                  [...displayedResults.asMap().entries.map<Widget>((entry) {
                                 int index = entry.key;
                                 final detection = entry.value;
                                 final CloudType type =
                                     detection['type'] as CloudType;
                                 final cloudColor = type.color;
                                 bool isLast =
-                                    index == result.probabilities.length - 1;
+                                    index == widget.result.probabilities.length - 1;
 
                                 return Column(
                                   children: [
@@ -292,14 +304,27 @@ class SavedResultPage extends StatelessWidget {
                                   ],
                                 );
                               }).toList(),
+                                    if (sorted_results.length > 3)
+                                      TextButton(
+                                        onPressed: () {
+                                          setState(() {
+                                            _showAllResults = !_showAllResults;
+                                          });
+                                        },
+                                        child: Text(
+                                          _showAllResults ? 'Show less' : 'Show more',
+                                          style: const TextStyle(color: Colors.white),
+                                        ),
+                                      ),
+                                  ],
                             ),
                           ),
                           const SizedBox(height: 20),
                           _buildSimpleInfoTile(
-                              S.of(context)!.name, result.name, context),
+                              S.of(context)!.name, widget.result.name, context),
                           _buildSimpleInfoTile(
                               S.of(context)!.date,
-                              '${result.date.year}-${result.date.month}-${result.date.day}',
+                              '${widget.result.date.year}-${widget.result.date.month}-${widget.result.date.day}',
                               context),
                           const SizedBox(height: 120),
                         ],
