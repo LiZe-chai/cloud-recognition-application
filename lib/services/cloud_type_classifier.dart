@@ -6,7 +6,6 @@ import 'package:image/image.dart' as img;
 class CloudTypeClassifier {
   late  Interpreter _interpreter;
 
-
   List<double>? predict(img.Image imageInput) {
     img.Image resizedImage = img.copyResize(imageInput, width: 224, height: 224);
     var input = imageToByteListFloat32(resizedImage, 224);
