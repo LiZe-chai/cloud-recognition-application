@@ -435,7 +435,9 @@ class _PreviewPageState extends State<PreviewPage> {
                                       });
                                     },
                                     child: Text(
-                                      _showAllResults ? 'Show less' : 'Show more',
+                                      _showAllResults
+                                          ? S.of(context)!.showLess
+                                          : S.of(context)!.showMore,
                                       style: const TextStyle(color: Colors.white),
                                     ),
                                   ),

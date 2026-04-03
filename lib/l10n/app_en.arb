@@ -27,7 +27,6 @@
   "name": "Name",
   "date": "Date",
   "saveSuccessful": "Save successful",
-  "acceptAndContinue": "Accept & Continue",
   "noCloudPredictions": "No cloud predictions yet",
   "noResultMatchesFilter": "No result matches filter",
   "captureTipsTitle": "Capture Tips",
@@ -93,5 +92,7 @@
   "cloudDescCumulus":"Cumulus clouds are low-level clouds with moderate vertical development and rounded tops.",
   "cloudDescCumulonimbus":"Cumulonimbus clouds have strong vertical development and usually produce thunderstorms.",
   "cloudDescContrail":"Contrails are clouds produced by aircraft, appearing as visible trails in the sky.",
-  "cropImage":"Crop Image"
+  "cropImage":"Crop Image",
+  "showLess": "Show less",
+  "showMore": "Show more"
 }
