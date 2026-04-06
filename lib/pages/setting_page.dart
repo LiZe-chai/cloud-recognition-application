@@ -1,3 +1,5 @@
+import 'package:cloud_recognition/pages/privacy_policy_page.dart';
+import 'package:cloud_recognition/pages/term_of_service_page.dart';
 import 'package:cloud_recognition/pages/welcome_page.dart';
 import 'package:flutter/material.dart';
 
@@ -124,14 +126,13 @@ class _SettingPageState extends State<SettingsPage>{
                       borderRadius: BorderRadius.circular(12),
                       border: Border.all(color: Colors.blueAccent.withOpacity(0.3)),
                     ),
-                    child: Expanded(
-                      child:ListView.separated(
-                        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
-                        itemCount: clauses.length,
-                        separatorBuilder: (_, __) => const SizedBox(height: 24),
-                        itemBuilder: (context, index) {
-                          return ClauseItem(clause: clauses[index]);
-                        },
+                    child:  Text(
+                      S.of(context)!.appDescription,
+                      textAlign: TextAlign.justify,
+                      style: TextStyle(
+                        fontSize: Theme.of(context).textTheme.bodyMedium?.fontSize,
+                        color: Colors.white,
+                        height: 1.5,
                       ),
                     ),
                     ),
@@ -149,89 +150,6 @@ class _SettingPageState extends State<SettingsPage>{
             ),
           ],
         ),
-        );
-      },
-    );
-  }
-  void _showTermOfService(BuildContext context) {
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      enableDrag: false,
-      backgroundColor: Colors.transparent,
-      builder: (BuildContext context) {
-        return SafeArea(
-          child: Stack(
-            children: [
-              Container(
-                decoration: const BoxDecoration(
-                  color: Color(0xFF1E1E1E),
-                  borderRadius: BorderRadius.vertical(top: Radius.circular(25)),
-                ),
-                padding: const EdgeInsets.fromLTRB(24, 12, 24, 24),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Container(
-                      width: 40,
-                      height: 4,
-                      decoration: BoxDecoration(
-                        color: Colors.grey[600],
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                    ),
-                    const SizedBox(height: 20),
-
-                    Text(
-                      S.of(context)!.termOfService,
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: Theme.of(context).textTheme.titleLarge?.fontSize,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    const SizedBox(height: 8),
-                    Text(
-                      S.of(context)!.lastUpdatedDate("20/11/2025"),
-                      style: TextStyle(color: Colors.grey[400], fontSize: Theme.of(context).textTheme.bodySmall?.fontSize),
-                    ),
-
-                    const SizedBox(height: 24),
-                    const Divider(color: Colors.white10),
-                    const SizedBox(height: 20),
-
-                    Container(
-                      width: double.infinity,
-                      padding: const EdgeInsets.all(20),
-                      decoration: BoxDecoration(
-                        color: Colors.blueAccent.withOpacity(0.1),
-                        borderRadius: BorderRadius.circular(12),
-                        border: Border.all(color: Colors.blueAccent.withOpacity(0.3)),
-                      ),
-                      child: Text(
-                        S.of(context)!.appDescription,
-                        textAlign: TextAlign.justify,
-                        style: TextStyle(
-                          fontSize: Theme.of(context).textTheme.bodyMedium?.fontSize,
-                          color: Colors.white,
-                          height: 1.5,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-
-              Positioned(
-                  right: 10,
-                  top: 10,
-                  child: InkWell(
-                    onTap: () => Navigator.pop(context),
-                    child: Icon(Icons.close, size:30,color: Colors.white),
-                  )
-              ),
-            ],
-          ),
         );
       },
     );
@@ -317,13 +235,27 @@ class _SettingPageState extends State<SettingsPage>{
               _SettingsTile(
                 icon: Icons.gavel,
                 title: S.of(context)!.termOfService,
-                onTap: () => _showTermOfService(context),
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => const TermsOfServicePage(),
+                    ),
+                  );
+                },
               ),
               SizedBox(height: h * 0.01),
               _SettingsTile(
                 icon: Icons.policy,
                 title: S.of(context)!.privacyPolicy,
-                onTap: () => _showAppInfoModal(context),
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => const PrivacyPolicyPage(),
+                    ),
+                  );
+                },
               ),
               SizedBox(height: h * 0.02),
               Text(

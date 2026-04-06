@@ -14,28 +14,7 @@ class WelcomePage extends StatefulWidget {
 class _WelcomePageState extends State<WelcomePage> {
   bool _isChecked= false;
 
-  late final List<Clause> clauses = [
-    Clause(
-      title: S.of(context)!.terms_clause1_title,
-      body:S.of(context)!.terms_clause1_body,
-    ),
-    Clause(
-      title: S.of(context)!.terms_clause2_title,
-      body:S.of(context)!.terms_clause2_body,
-    ),
-    Clause(
-      title: S.of(context)!.terms_clause3_title,
-      body:S.of(context)!.terms_clause3_body,
-    ),
-    Clause(
-      title: S.of(context)!.terms_clause4_title,
-      body:S.of(context)!.terms_clause4_body,
-    ),
-    Clause(
-      title: S.of(context)!.terms_clause5_title,
-      body:S.of(context)!.terms_clause5_body,
-    ),
-  ];
+
   @override
   void initState() {
     super.initState();
@@ -48,7 +27,7 @@ class _WelcomePageState extends State<WelcomePage> {
   }
 
 
-  void showTermsModal(BuildContext context, double height,double width) {
+  void showTermsModal(BuildContext context, double height,double width, List<Clause> clauses) {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -165,6 +144,28 @@ class _WelcomePageState extends State<WelcomePage> {
   Widget build(BuildContext context) {
     final h = MediaQuery.of(context).size.height;
     final w = MediaQuery.of(context).size.width;
+    final clauses = [
+      Clause(
+        title: S.of(context)!.terms_clause1_title,
+        body: S.of(context)!.terms_clause1_body,
+      ),
+      Clause(
+        title: S.of(context)!.terms_clause2_title,
+        body: S.of(context)!.terms_clause2_body,
+      ),
+      Clause(
+        title: S.of(context)!.terms_clause3_title,
+        body: S.of(context)!.terms_clause3_body,
+      ),
+      Clause(
+        title: S.of(context)!.terms_clause4_title,
+        body: S.of(context)!.terms_clause4_body,
+      ),
+      Clause(
+        title: S.of(context)!.terms_clause5_title,
+        body: S.of(context)!.terms_clause5_body,
+      ),
+    ];
     return Scaffold(
       backgroundColor: Colors.black,
       appBar: AppBar(
@@ -260,7 +261,7 @@ class _WelcomePageState extends State<WelcomePage> {
                                   style: const TextStyle(color: Colors.white, fontSize: 13),
                                 ),
                                 GestureDetector(
-                                  onTap: () => showTermsModal(context, h, w),
+                                  onTap: () => showTermsModal(context, h, w, clauses),
                                   child: Text(
                                     S.of(context)!.tAndC,
                                     style: const TextStyle(

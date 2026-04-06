@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:cloud_recognition/services/inference.dart';
 import 'package:cloud_recognition/widgets/contour_painter.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:hive_flutter/adapters.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart' as p;
@@ -40,92 +41,151 @@ class _PreviewPageState extends State<PreviewPage> {
       context: context,
       barrierDismissible: true,
       builder: (dialogContext) {
-        return Dialog(
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(16),
-          ),
-          child: Padding(
-            padding: const EdgeInsets.all(20),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        String? errorText;
+
+        return StatefulBuilder(
+          builder: (context, setState) {
+            return Dialog(
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(16),
+              ),
+              child: Padding(
+                padding: const EdgeInsets.all(20),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          S.of(dialogContext)!.saveAs,
+                          style: TextStyle(
+                            fontSize:
+                            Theme.of(context).textTheme.bodyLarge?.fontSize,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        IconButton(
+                          icon: const Icon(Icons.close),
+                          onPressed: () => Navigator.pop(dialogContext, false),
+                        ),
+                      ],
+                    ),
+
+                    const SizedBox(height: 12),
+
                     Text(
-                      S.of(dialogContext)!.saveAs,
+                      S.of(dialogContext)!.fileName,
                       style: TextStyle(
                         fontSize:
-                            Theme.of(context).textTheme.bodyLarge?.fontSize,
-                        fontWeight: FontWeight.bold,
+                        Theme.of(context).textTheme.bodyMedium?.fontSize,
                       ),
                     ),
-                    IconButton(
-                      icon: const Icon(Icons.close),
-                      onPressed: () => Navigator.pop(dialogContext, false),
+
+                    const SizedBox(height: 10),
+
+                    TextField(
+                      controller: controller,
+                      inputFormatters: [
+                        LengthLimitingTextInputFormatter(25),
+                      ],
+                      onChanged: (value) {
+                        final name = value.trim();
+
+                        if (name.isEmpty || name.replaceAll(" ", "").isEmpty) {
+                          setState(() =>
+                          errorText = S.of(dialogContext)!.errorEmptyName);
+
+                        } else if (name.length > 20) {
+                          setState(() =>
+                          errorText = S.of(dialogContext)!.errorTooLong);
+
+                        } else if (box.values.any((e) => e.name == name)) {
+                          setState(() =>
+                          errorText = S.of(dialogContext)!.errorDuplicateName);
+
+                        } else {
+                          setState(() => errorText = null);
+                        }
+                      },
+                      decoration: InputDecoration(
+                        hintText: S.of(dialogContext)!.enterFileName,
+                        errorText: errorText,
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                      ),
+                    ),
+
+                    const SizedBox(height: 20),
+
+                    SizedBox(
+                      width: double.infinity,
+                      height: 44,
+                      child: ElevatedButton(
+                        onPressed: () async {
+                          final name = controller.text.trim();
+
+                          if (name.isEmpty ||
+                              name.replaceAll(" ", "").isEmpty) {
+                            setState(() =>
+                            errorText = S.of(dialogContext)!.errorEmptyName);
+                            return;
+                          }
+                          if (name.length > 20) {
+                            setState(() =>
+                            errorText = S.of(dialogContext)!.errorTooLong);
+                            return;
+                          }
+
+                          if (box.values.any((e) => e.name == name)) {
+                            setState(() => errorText =
+                                S.of(dialogContext)!.errorDuplicateName);
+                            return;
+                          }
+
+                          final savedImagePath =
+                          await saveImageToAppDir(
+                              File(widget.tempImagePath));
+
+                          final prediction = PredictionModel(
+                            imagePath: savedImagePath,
+                            name: name,
+                            date: DateTime.now(),
+                            imageWidth: widget.imageWidth,
+                            imageHeight: widget.imageHeight,
+                            contours: widget.contours,
+                            probabilities: widget.results,
+                          );
+
+                          box.add(prediction);
+
+                          Navigator.pop(dialogContext, true);
+                        },
+                        style: ElevatedButton.styleFrom(
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          backgroundColor: Colors.black,
+                        ),
+                        child: Text(
+                          S.of(dialogContext)!.saveAction,
+                          style: TextStyle(
+                            fontSize: Theme.of(context)
+                                .textTheme
+                                .bodyLarge
+                                ?.fontSize,
+                            color: Colors.white,
+                          ),
+                        ),
+                      ),
                     ),
                   ],
                 ),
-                const SizedBox(height: 12),
-                Text(
-                  S.of(dialogContext)!.fileName,
-                  style: TextStyle(
-                      fontSize:
-                          Theme.of(context).textTheme.bodyMedium?.fontSize),
-                ),
-                const SizedBox(height: 10),
-                TextField(
-                  controller: controller,
-                  decoration: InputDecoration(
-                    hintText: S.of(dialogContext)!.enterFileName,
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 20),
-                SizedBox(
-                  width: double.infinity,
-                  height: 44,
-                  child: ElevatedButton(
-                    onPressed: () async {
-                      final name = controller.text.trim();
-                      if (name.isEmpty) return;
-
-                      final savedImagePath =
-                          await saveImageToAppDir(File(widget.tempImagePath));
-
-                      final prediction = PredictionModel(
-                        imagePath: savedImagePath,
-                        name: name,
-                        date: DateTime.now(),
-                        imageWidth: widget.imageWidth,
-                        imageHeight: widget.imageHeight,
-                        contours: widget.contours,
-                        probabilities: widget.results,
-                      );
-
-                      box.add(prediction);
-
-                      Navigator.pop(dialogContext, true);
-                    },
-                    style: ElevatedButton.styleFrom(
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      backgroundColor: Colors.black,
-                    ),
-                    child: Text(S.of(dialogContext)!.saveAction,
-                        style: TextStyle(
-                            fontSize:
-                                Theme.of(context).textTheme.bodyLarge?.fontSize,
-                            color: Colors.white)),
-                  ),
-                ),
-              ],
-            ),
-          ),
+              ),
+            );
+          },
         );
       },
     );

@@ -22,15 +22,23 @@ class CameraPage extends StatefulWidget {
   State<CameraPage> createState() => _CameraPageState();
 }
 
-Future<File>_isolateCropTask(Map<String, dynamic> params) async {
+Future<File> _isolateCropTask(Map<String, dynamic> params) async {
   final String path = params['path'];
-  final double previewWidth = params['previewWidth'];
-  final double previewHeight = params['previewHeight'];
+  final double previewLeft = params['previewLeft'];
+  final double previewTop = params['previewTop'];
+  final double previewWidthOnScreen = params['previewWidthOnScreen'];
+  final double previewHeightOnScreen = params['previewHeightOnScreen'];
+  final double cropLeft = params['cropLeft'];
+  final double cropTop = params['cropTop'];
+  final double cropWidth = params['cropWidth'];
+  final double cropHeight = params['cropHeight'];
   final double zoom = params['zoom'];
 
   final bytes = File(path).readAsBytesSync();
   img.Image? image = img.decodeImage(bytes);
-  if (image == null) throw Exception("Could not decode image");
+  if (image == null) {
+    throw Exception("Could not decode image");
+  }
 
   image = img.bakeOrientation(image);
 
@@ -41,67 +49,63 @@ Future<File>_isolateCropTask(Map<String, dynamic> params) async {
     final double zoomedWidth = imageWidth / zoom;
     final double zoomedHeight = imageHeight / zoom;
 
-    final int zoomX = ((imageWidth - zoomedWidth) / 2).toInt();
-    final int zoomY = ((imageHeight - zoomedHeight) / 2).toInt();
+    final int zoomX = ((imageWidth - zoomedWidth) / 2).round();
+    final int zoomY = ((imageHeight - zoomedHeight) / 2).round();
 
     image = img.copyCrop(
       image,
       x: zoomX,
       y: zoomY,
-      width: zoomedWidth.toInt(),
-      height: zoomedHeight.toInt(),
+      width: zoomedWidth.round(),
+      height: zoomedHeight.round(),
     );
 
     imageWidth = image.width.toDouble();
     imageHeight = image.height.toDouble();
   }
 
-  double previewAspect = previewWidth / previewHeight;
-  double imageAspect = imageWidth / imageHeight;
+  final double previewAspect = previewWidthOnScreen / previewHeightOnScreen;
+  final double imageAspect = imageWidth / imageHeight;
 
-  double scale;
   double displayedWidth;
   double displayedHeight;
 
   if (imageAspect > previewAspect) {
-    scale = previewHeight / imageHeight;
-    displayedWidth = imageWidth * scale;
-    displayedHeight = previewHeight;
+    displayedHeight = previewHeightOnScreen;
+    displayedWidth = displayedHeight * imageAspect;
   } else {
-    scale = previewWidth / imageWidth;
-    displayedWidth = previewWidth;
-    displayedHeight = imageHeight * scale;
+    displayedWidth = previewWidthOnScreen;
+    displayedHeight = displayedWidth / imageAspect;
   }
 
-  double offsetX = (displayedWidth - previewWidth) / 2;
-  double offsetY = (displayedHeight - previewHeight) / 2;
+  final double overflowX = (displayedWidth - previewWidthOnScreen) / 2;
+  final double overflowY = (displayedHeight - previewHeightOnScreen) / 2;
 
-  double cropScreenSize = previewWidth;
-  double cropScreenX = 0;
-  double cropScreenY = (previewHeight - previewWidth) / 2;
+  final double cropXInPreview = cropLeft - previewLeft;
+  final double cropYInPreview = cropTop - previewTop;
 
-  final double ratioX = imageWidth / previewWidth;
-  final double ratioY = imageHeight / previewHeight;
+  final double cropXInDisplayed = cropXInPreview + overflowX;
+  final double cropYInDisplayed = cropYInPreview + overflowY;
 
-  int cropX = ((cropScreenX + offsetX) * ratioX).round();
-  int cropY = ((cropScreenY + offsetY) * ratioY).round();
-  int cropSize = (cropScreenSize * ratioX).round();
+  final double scaleX = imageWidth / displayedWidth;
+  final double scaleY = imageHeight / displayedHeight;
+
+  int cropX = (cropXInDisplayed * scaleX).round();
+  int cropY = (cropYInDisplayed * scaleY).round();
+  int cropW = (cropWidth * scaleX).round();
+  int cropH = (cropHeight * scaleY).round();
 
   if (cropX < 0) cropX = 0;
   if (cropY < 0) cropY = 0;
-  if (cropX + cropSize > image.width) {
-    cropSize = image.width - cropX;
-  }
-  if (cropY + cropSize > image.height) {
-    cropSize = image.height - cropY;
-  }
+  if (cropX + cropW > image.width) cropW = image.width - cropX;
+  if (cropY + cropH > image.height) cropH = image.height - cropY;
 
-  img.Image cropped = img.copyCrop(
+  final cropped = img.copyCrop(
     image,
     x: cropX,
     y: cropY,
-    width: cropSize,
-    height: cropSize,
+    width: cropW,
+    height: cropH,
   );
 
   final String croppedPath = path.replaceFirst('.jpg', '_cropped.jpg');
@@ -116,6 +120,7 @@ class _CameraPageState extends State<CameraPage> {
   late CameraDescription _currentCamera;
   late TutorialCoachMark tutorialCoachMark;
   GlobalKey captureTipsButton = GlobalKey();
+  GlobalKey _cropOverlayKey = GlobalKey();
 
   final ImagePicker _picker = ImagePicker();
 
@@ -270,14 +275,47 @@ class _CameraPageState extends State<CameraPage> {
 
     try {
       final XFile raw = await _controller.takePicture();
+
+      final previewSize = _controller.value.previewSize!;
+      final screenSize = MediaQuery.of(context).size;
+
+      final double screenAspect = screenSize.width / screenSize.height;
+      final double previewAspect = previewSize.height / previewSize.width;
+
+      double previewWidthOnScreen;
+      double previewHeightOnScreen;
+
+      if (previewAspect > screenAspect) {
+        previewHeightOnScreen = screenSize.height;
+        previewWidthOnScreen = previewHeightOnScreen * previewAspect;
+      } else {
+        previewWidthOnScreen = screenSize.width;
+        previewHeightOnScreen = previewWidthOnScreen / previewAspect;
+      }
+
+      final double previewLeft = (screenSize.width - previewWidthOnScreen) / 2;
+      final double previewTop = (screenSize.height - previewHeightOnScreen) / 2;
+
+      final renderBox =
+      _cropOverlayKey.currentContext!.findRenderObject() as RenderBox;
+      final overlayOffset = renderBox.localToGlobal(Offset.zero);
+      final overlaySize = renderBox.size;
+
       final File cropped = await compute(_isolateCropTask, {
         'path': raw.path,
-        'previewWidth': _controller.value.previewSize!.height,
-        'previewHeight': _controller.value.previewSize!.width,
+        'previewLeft': previewLeft,
+        'previewTop': previewTop,
+        'previewWidthOnScreen': previewWidthOnScreen,
+        'previewHeightOnScreen': previewHeightOnScreen,
+        'cropLeft': overlayOffset.dx,
+        'cropTop': overlayOffset.dy,
+        'cropWidth': overlaySize.width,
+        'cropHeight': overlaySize.height,
         'zoom': _currentZoom,
       });
 
       if (!mounted) return;
+
       await _controller.dispose();
       await Navigator.push(
         context,
@@ -499,14 +537,9 @@ class _CameraPageState extends State<CameraPage> {
               Center(
                 child: IgnorePointer(
                   child: Container(
-                    width: MediaQuery
-                        .of(context)
-                        .size
-                        .width,
-                    height: MediaQuery
-                        .of(context)
-                        .size
-                        .width,
+                    key: _cropOverlayKey,
+                    width: MediaQuery.of(context).size.width,
+                    height: MediaQuery.of(context).size.width,
                     decoration: BoxDecoration(
                       border: Border.all(color: Colors.white, width: 3),
                     ),

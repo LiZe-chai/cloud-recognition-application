@@ -93,6 +93,27 @@
   "cloudDescContrail": "航迹云是由飞机产生的云，在天空中呈现为明显的轨迹。",
   "cropImage": "裁剪图像",
   "showLess": "收起",
-  "showMore": "查看更多"
+  "showMore": "查看更多",
+  "exampleImage": "示例图片",
+  "legal": "法律",
+  "privacyPolicy": "隐私政策",
+  "effectiveDate": "生效日期：{date}",
+  "privacy_clause1_title": "1. 简介",
+  "privacy_clause1_body": "Cloud Vision（“我们”）尊重您的隐私。本隐私政策说明，我们的应用不会收集、存储或共享用户的任何个人数据。",
+  "privacy_clause2_title": "2. 我们收集的信息",
+  "privacy_clause2_body": "Cloud Vision 不会收集任何个人信息。应用程序的所有处理均在您的设备本地完成，不会有任何数据传输到服务器或第三方。",
+  "privacy_clause3_title": "3. 信息的使用",
+  "privacy_clause3_body": "由于我们不收集任何数据，因此不存在使用、共享或处理这些信息的情况。所有数据均保留在您的设备中。",
+  "privacy_clause4_title": "4. 第三方服务",
+  "privacy_clause4_body": "Cloud Vision 不使用任何第三方分析工具、数据库或外部服务。",
+  "privacy_clause5_title": "5. 数据安全",
+  "privacy_clause5_body": "所有处理均在您的设备本地完成，以确保您的数据保持私密和安全。",
+  "privacy_clause6_title": "6. 政策变更",
+  "privacy_clause6_body": "我们可能会不时更新本隐私政策。任何更改都会在本页面反映，并更新生效日期。",
+  "privacy_clause7_title": "7. 联系我们",
+  "privacy_clause7_body": "如果您对本隐私政策有任何疑问，请通过以下邮箱联系我们：cloudvisionfyp@gmail.com",
+  "errorEmptyName": "文件名不能为空",
+  "errorDuplicateName": "文件名已存在",
+  "errorTooLong": "文件名不能超过20个字符"
 }
 
