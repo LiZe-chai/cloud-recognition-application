@@ -228,15 +228,13 @@ class _HomePageState extends State<HomePage> {
     );
   }
   List<PredictionModel> _applyFilter(List<PredictionModel> list) {
-
     var filtered = [...list];
     if (selectedCloudTypes.isNotEmpty) {
-
       filtered = filtered.where((e) {
+        final sorted_results = sortResults(e.probabilities);
+        final top = sorted_results.take(1).toList();
 
-        final top3 = getTop3(e.probabilities);
-
-        return top3.any(
+        return top.any(
               (t) => selectedCloudTypes.contains(t["type"]),
         );
 
@@ -250,18 +248,17 @@ class _HomePageState extends State<HomePage> {
 
         bool nameMatch =
         e.name.toLowerCase().contains(query);
+        final sorted_results = sortResults(e.probabilities);
+        final top = sorted_results.take(1).toList();
 
-        final top3 = getTop3(e.probabilities);
-
-        bool typeMatch = top3.any(
+        bool typeMatch = top.any(
               (t) => (t["type"] as CloudType)
               .label(context)
               .toLowerCase()
               .contains(query),
         );
 
-        bool dateMatch =
-        e.date.toString().toLowerCase().contains(query);
+        bool dateMatch = e.date.toString().toLowerCase().contains(query);
 
         return nameMatch || typeMatch || dateMatch;
 

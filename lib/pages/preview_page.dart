@@ -170,7 +170,7 @@ class _PreviewPageState extends State<PreviewPage> {
                     ),
                     const SizedBox(height: 12),
                     Text(
-                      "Example Image",
+                      S.of(context)!.exampleImage,
                       textAlign: TextAlign.center,
                       style: TextStyle(
                         fontSize:
@@ -228,7 +228,7 @@ class _PreviewPageState extends State<PreviewPage> {
     final w = MediaQuery.of(context).size.width;
     final sorted_results = sortResults(widget.results);
     final displayedResults =
-        _showAllResults ? sorted_results : sorted_results.take(3).toList();
+        _showAllResults ? sorted_results : sorted_results.take(1).toList();
 
     return Scaffold(
       backgroundColor: Colors.black,
@@ -337,7 +337,7 @@ class _PreviewPageState extends State<PreviewPage> {
                                                   child: Text(
                                                     '${index + 1}',
                                                     style: TextStyle(
-                                                      color: cloudColor,
+                                                      color: Colors.white,
                                                       fontWeight: FontWeight.bold,
                                                       fontSize: Theme.of(context)
                                                           .textTheme
@@ -427,7 +427,7 @@ class _PreviewPageState extends State<PreviewPage> {
                                   );
                                 }).toList(),
 
-                                if (sorted_results.length > 3)
+                                if (sorted_results.length > 1)
                                   TextButton(
                                     onPressed: () {
                                       setState(() {

@@ -94,5 +94,8 @@
   "cloudDescContrail":"Contrails are clouds produced by aircraft, appearing as visible trails in the sky.",
   "cropImage":"Crop Image",
   "showLess": "Show less",
-  "showMore": "Show more"
+  "showMore": "Show more",
+  "exampleImage" : "Example Image",
+  "legal":"Legal",
+  "privacyPolicy":"Privacy Policy"
 }

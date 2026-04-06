@@ -17,7 +17,8 @@ class CloudCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final top3 = getTop3(result.probabilities);
+    final sorted_results = sortResults(result.probabilities);
+    final top = sorted_results.take(1).toList();
 
     return Card(
       elevation: 4,
@@ -65,7 +66,7 @@ class CloudCard extends StatelessWidget {
                   Wrap(
                     spacing: 8.0,
                     runSpacing: 4.0,
-                    children: top3.map((item) {
+                    children: top.map((item) {
 
                       final CloudType cloudType = item["type"];
                       final double confidence = item["confidence"];

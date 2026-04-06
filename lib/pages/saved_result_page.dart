@@ -62,7 +62,7 @@ class _SavedResultPageState extends State<SavedResultPage> {
                     ),
                     const SizedBox(height: 12),
                     Text(
-                      "Example Image",
+                      S.of(context)!.exampleImage,
                       textAlign: TextAlign.center,
                       style: TextStyle(
                         fontSize:
@@ -102,7 +102,7 @@ class _SavedResultPageState extends State<SavedResultPage> {
   Widget build(BuildContext context) {
     final sorted_results = sortResults(widget.result.probabilities);
     final displayedResults =
-    _showAllResults ? sorted_results : sorted_results.take(3).toList();
+    _showAllResults ? sorted_results : sorted_results.take(1).toList();
     return Scaffold(
       backgroundColor: Colors.black,
       body: SafeArea(
@@ -304,7 +304,7 @@ class _SavedResultPageState extends State<SavedResultPage> {
                                   ],
                                 );
                               }).toList(),
-                                    if (sorted_results.length > 3)
+                                    if (sorted_results.length > 1)
                                       TextButton(
                                         onPressed: () {
                                           setState(() {
@@ -312,7 +312,9 @@ class _SavedResultPageState extends State<SavedResultPage> {
                                           });
                                         },
                                         child: Text(
-                                          _showAllResults ? 'Show less' : 'Show more',
+                                          _showAllResults
+                                              ? S.of(context)!.showLess
+                                              : S.of(context)!.showMore,
                                           style: const TextStyle(color: Colors.white),
                                         ),
                                       ),
