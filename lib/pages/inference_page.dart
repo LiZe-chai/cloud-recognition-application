@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'dart:typed_data';
+import 'package:asset_delivery/asset_delivery.dart';
 import 'package:cloud_recognition/pages/preview_page.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -33,11 +34,32 @@ class _InferencePageState extends State<InferencePage> {
     await _runInference();
   }
   Future<void> initModels() async {
-    final detectorData = await rootBundle.load('assets/TL_MACNN_cloud_detection.tflite');
-    final classifierData = await rootBundle.load('assets/TL_mobilenetv2_cloud_classification_multilabel.tflite');
+    try {
+      String? detectorPath = await AssetDelivery.getAssetPackPath(
+        assetPackName: 'TFmodels',
+        count: 1,
+        namingPattern: 'TL_MACNN_cloud_detection',
+        fileExtension: 'tflite',
+      );
 
-    detectorModelBytes = detectorData.buffer.asUint8List();
-    classifierModelBytes = classifierData.buffer.asUint8List();
+      String? classifierPath = await AssetDelivery.getAssetPackPath(
+        assetPackName: 'TFmodels',
+        count: 1,
+        namingPattern: 'TL_mobilenetv2_cloud_classification_multilabel',
+        fileExtension: 'tflite',
+      );
+
+      if (detectorPath != null && classifierPath != null) {
+        detectorModelBytes = await File(detectorPath).readAsBytes();
+        classifierModelBytes = await File(classifierPath).readAsBytes();
+
+        print("Models loaded successfully from Asset Pack!");
+      } else {
+        print("Error: Could not find model paths in the asset pack.");
+      }
+    } catch (e) {
+      print("Error loading models: $e");
+    }
   }
 
   Future<void> _runInference() async {
