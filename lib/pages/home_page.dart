@@ -188,7 +188,10 @@ class _HomePageState extends State<HomePage> {
         enableOverlayTab: true,
         contents: [
           TargetContent(
-            align: ContentAlign.top,
+            align: ContentAlign.custom,
+            customPosition: CustomTargetContentPosition(
+              bottom: 50,
+            ),
             builder: (context, controller) {
               return _buildContent(
                 title: S.of(context)!.tutorialHistoryTitle,
@@ -201,6 +204,11 @@ class _HomePageState extends State<HomePage> {
       ),
     );
     return targets;
+  }
+  void _closeTutorial() {
+    if (_tutorialInitialized && tutorialCoachMark.isShowing) {
+      tutorialCoachMark.finish();
+    }
   }
 
   void _filterModal() {
@@ -277,6 +285,11 @@ class _HomePageState extends State<HomePage> {
     super.initState();
     _checkFirstTime();
   }
+  @override
+  void dispose() {
+    _closeTutorial();
+    super.dispose();
+  }
 
   @override
   void didChangeDependencies() {
@@ -318,6 +331,7 @@ class _HomePageState extends State<HomePage> {
                   size: w * 0.08,
                 ),
                 onPressed: () {
+                  _closeTutorial();
                   Navigator.push(
                     context,
                     MaterialPageRoute(
@@ -413,6 +427,7 @@ class _HomePageState extends State<HomePage> {
         key: captureButton,
         child: FloatingActionButton(
           onPressed: () {
+            _closeTutorial();
             Navigator.push(
               context,
               MaterialPageRoute(

@@ -24,6 +24,7 @@ class _InferencePageState extends State<InferencePage> {
   late Uint8List detectorModelBytes;
   late Uint8List classifierModelBytes;
 
+
   @override
   void initState() {
     super.initState();
@@ -33,32 +34,92 @@ class _InferencePageState extends State<InferencePage> {
     await initModels();
     await _runInference();
   }
-  Future<void> initModels() async {
+  Future<bool> initModels({bool useLocalAssets = true}) async {
     try {
-      String? detectorPath = await AssetDelivery.getAssetPackPath(
-        assetPackName: 'TFmodels',
-        count: 1,
-        namingPattern: 'TL_MACNN_cloud_detection',
-        fileExtension: 'tflite',
-      );
+      const detectorName = 'TL_MACNN_cloud_detection.tflite';
+      const classifierName = 'TL_mobilenetv2_cloud_classification_multilabel.tflite';
 
-      String? classifierPath = await AssetDelivery.getAssetPackPath(
-        assetPackName: 'TFmodels',
-        count: 1,
-        namingPattern: 'TL_mobilenetv2_cloud_classification_multilabel',
-        fileExtension: 'tflite',
-      );
+      Uint8List detectorBytes;
+      Uint8List classifierBytes;
 
-      if (detectorPath != null && classifierPath != null) {
-        detectorModelBytes = await File(detectorPath).readAsBytes();
-        classifierModelBytes = await File(classifierPath).readAsBytes();
+      if (useLocalAssets) {
+        print('Loading models from LOCAL assets...');
 
-        print("Models loaded successfully from Asset Pack!");
+        final detectorData = await rootBundle.load('assets/$detectorName');
+        final classifierData = await rootBundle.load('assets/$classifierName');
+
+        detectorBytes = detectorData.buffer.asUint8List();
+        classifierBytes = classifierData.buffer.asUint8List();
       } else {
-        print("Error: Could not find model paths in the asset pack.");
+        print('Loading models from ASSET PACK...');
+
+        const assetPackName = 'TFmodels';
+
+        await AssetDelivery.fetch(assetPackName);
+
+        final detectorPath = await AssetDelivery.getAssetPackPath(
+          assetPackName: assetPackName,
+          count: 1,
+          namingPattern: 'TL_MACNN_cloud_detection',
+          fileExtension: 'tflite',
+        );
+
+        final classifierPath = await AssetDelivery.getAssetPackPath(
+          assetPackName: assetPackName,
+          count: 1,
+          namingPattern: 'TL_mobilenetv2_cloud_classification_multilabel',
+          fileExtension: 'tflite',
+        );
+        print('detectorPath: $detectorPath');
+        print('classifierPath: $classifierPath');
+
+        if (detectorPath == null || classifierPath == null) {
+          print('Could not find model paths in asset pack.');
+          return false;
+        }
+        final detectorFile = File(
+          '$detectorPath/TL_MACNN_cloud_detection.tflite',
+        );
+
+        final classifierFile = File(
+          '$classifierPath/TL_mobilenetv2_cloud_classification_multilabel.tflite',
+        );
+
+        print('detector FULL path: ${detectorFile.path}');
+        print('classifier FULL path: ${classifierFile.path}');
+        print('detector exists: ${await detectorFile.exists()}');
+        print('classifier exists: ${await classifierFile.exists()}');
+
+        if (!await detectorFile.exists() || !await classifierFile.exists()) {
+          print('Model file does not exist.');
+          return false;
+        }
+
+        detectorBytes = await detectorFile.readAsBytes();
+        classifierBytes = await classifierFile.readAsBytes();
+
+        print('detector bytes: ${detectorBytes.length}');
+        print('classifier bytes: ${classifierBytes.length}');
       }
-    } catch (e) {
-      print("Error loading models: $e");
+
+      detectorModelBytes = detectorBytes;
+      classifierModelBytes = classifierBytes;
+
+      print('detector bytes: ${detectorModelBytes.length}');
+      print('classifier bytes: ${classifierModelBytes.length}');
+
+      if (detectorModelBytes.isEmpty || classifierModelBytes.isEmpty) {
+        print('Model bytes are empty.');
+        return false;
+      }
+
+      print('Models loaded successfully');
+      return true;
+
+    } catch (e, st) {
+      print('Error loading models: $e');
+      print(st);
+      return false;
     }
   }
 
