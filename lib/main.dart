@@ -18,7 +18,6 @@ void main() async{
   Hive.registerAdapter(PredictionModelAdapter());
   final box = await Hive.openBox<PredictionModel>('predictions');
   cameras = await availableCameras();
-  await box.clear();
   runApp(const MyApp());
 }
 
