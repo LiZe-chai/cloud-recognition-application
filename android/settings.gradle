@@ -24,6 +24,5 @@ plugins {
 
 include ":app"
 include ':TFmodels'
-include ":models"
 include ':sdk'
 project(':sdk').projectDir = new File(rootDir, 'sdk')
