@@ -159,7 +159,8 @@ class _PreviewPageState extends State<PreviewPage> {
                             probabilities: widget.results,
                           );
 
-                          box.add(prediction);
+                          await box.add(prediction);
+                          await box.flush();
 
                           Navigator.pop(dialogContext, true);
                         },

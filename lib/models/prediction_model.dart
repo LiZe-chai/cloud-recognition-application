@@ -1,4 +1,3 @@
-import 'package:cloud_recognition/services/inference.dart';
 import 'package:hive/hive.dart';
 part 'prediction_model.g.dart';
 
