@@ -56,7 +56,7 @@ cd cloud-recognition-application
 ```
 
 2. **Download ML Model**
-   - Download the TensorFlow Lite model from: [Cloud Drive Link](https://sotonac-my.sharepoint.com/:f:/g/personal/lzc1e23_soton_ac_uk/IgD9Qtn9GTaYTpAYkqF5QW0tAf-9AKSG7_Oxkl6uLkWHomI?e=viEgm8)
+   - Download the TensorFlow Lite model from: [Models Folder](https://sotonac-my.sharepoint.com/:f:/g/personal/lzc1e23_soton_ac_uk/IgD9Qtn9GTaYTpAYkqF5QW0tAf-9AKSG7_Oxkl6uLkWHomI?e=viEgm8)
    - Place it in: `assets/models/cloud_classification_model.tflite`
 
 3. **Install dependencies**
