@@ -114,6 +114,12 @@
   "privacy_clause7_body": "如果您对本隐私政策有任何疑问，请通过以下邮箱联系我们：cloudvisionfyp@gmail.com",
   "errorEmptyName": "文件名不能为空",
   "errorDuplicateName": "文件名已存在",
-  "errorTooLong": "文件名不能超过20个字符"
+  "errorTooLong": "文件名不能超过20个字符",
+  "tutorialCaptureTipsTitle": "拍摄提示",
+  "tutorialCaptureTipsDesc": "在拍摄云图之前，请先阅读这些提示，以获得更好的预测效果。",
+  "tutorialGalleryTitle": "从相册上传",
+  "tutorialGalleryDesc": "从设备相册中选择已有的图像。",
+  "tutorialCaptureButtonTitle": "拍照",
+  "tutorialCaptureButtonDesc": "使用相机拍摄新的云图进行预测。"
 }
 

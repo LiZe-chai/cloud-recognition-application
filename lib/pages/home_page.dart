@@ -37,13 +37,13 @@ class _HomePageState extends State<HomePage> {
   void showTutorial() {
     tutorialCoachMark.show(context: context);
   }
-  Future<void> _checkFirstTime() async {
+  Future<void> _checkHomeTime() async {
     final prefs = await SharedPreferences.getInstance();
-    bool isFirstTime = prefs.getBool('is_first_time') ?? true;
+    bool isFirstTime = prefs.getBool('home_tutorial_first_time') ?? true;
 
     if (isFirstTime) {
       Future.delayed(Duration.zero, showTutorial);
-      await prefs.setBool('is_first_time', false);
+      await prefs.setBool('home_tutorial_first_time', false);
     }
   }
 
@@ -283,7 +283,7 @@ class _HomePageState extends State<HomePage> {
   @override
   void initState() {
     super.initState();
-    _checkFirstTime();
+    _checkHomeTime();
   }
   @override
   void dispose() {

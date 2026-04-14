@@ -8,6 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:image/image.dart' as img;
 import 'package:permission_handler/permission_handler.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:tutorial_coach_mark/tutorial_coach_mark.dart';
 
 import '../generated/l10n.dart';
@@ -120,6 +121,8 @@ class _CameraPageState extends State<CameraPage> {
   late CameraDescription _currentCamera;
   late TutorialCoachMark tutorialCoachMark;
   GlobalKey captureTipsButton = GlobalKey();
+  GlobalKey galleryButton = GlobalKey();
+  GlobalKey captureButton = GlobalKey();
   GlobalKey _cropOverlayKey = GlobalKey();
 
   final ImagePicker _picker = ImagePicker();
@@ -137,77 +140,135 @@ class _CameraPageState extends State<CameraPage> {
 
   @override
   void initState() {
+    super.initState();
     _currentCamera = widget.cameras.first;
     _initCameraWithPermission();
-    createTutorial();
-    Future.delayed(Duration.zero, showTutorial);
-    super.initState();
   }
+  Future<void> _checkCameraTutorial() async {
+    final prefs = await SharedPreferences.getInstance();
+    bool isFirstTime = prefs.getBool('camera_tutorial_first_time') ?? true;
 
+    if (isFirstTime) {
+      Future.delayed(Duration.zero, showTutorial);
+      await prefs.setBool('camera_tutorial_first_time', false);
+    }
+  }
   void showTutorial() {
     tutorialCoachMark.show(context: context);
   }
 
-  Future<void> createTutorial() async {
+  void createTutorial() {
     tutorialCoachMark = TutorialCoachMark(
-      targets: await _createTargets(),
+      targets: _createTargets(),
       colorShadow: Colors.indigo,
-      textSkip: "SKIP",
+      textSkip: S.of(context)!.tutorialSkip,
       paddingFocus: 10,
       opacityShadow: 0.5,
       imageFilter: ImageFilter.blur(sigmaX: 8, sigmaY: 8),
       onFinish: () {
-        print("finish");
-      },
-      onClickTarget: (target) {
-        print('onClickTarget: $target');
-      },
-      onClickTargetWithTapPosition: (target, tapDetails) {
-        print("target: $target");
-        print(
-            "clicked at position local: ${tapDetails.localPosition} - global: ${tapDetails.globalPosition}");
-      },
-      onClickOverlay: (target) {
-        print('onClickOverlay: $target');
+        print("Tutorial Finished");
       },
       onSkip: () {
-        print("skip");
+        print("Tutorial Skipped");
         return true;
       },
     );
   }
-  Future<List<TargetFocus>> _createTargets() async {
+
+  Widget _buildContent({
+    required String title,
+    required String description,
+  }) {
+    return SafeArea(
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            title,
+            style: const TextStyle(
+              color: Colors.white,
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            description,
+            style: const TextStyle(
+              color: Colors.white,
+              fontSize: 14,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  List<TargetFocus> _createTargets() {
     List<TargetFocus> targets = [];
     targets.add(
       TargetFocus(
         identify: "capture",
-        keyTarget: captureTipsButton,
+        keyTarget: captureButton,
         alignSkip: Alignment.topRight,
         enableOverlayTab: true,
         contents: [
           TargetContent(
             align: ContentAlign.top,
             builder: (context, controller) {
-              return const Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: <Widget>[
-                  Text(
-                    "Tips for a practical example to capture a good cloud image for better inference result",
-                    style: TextStyle(
-                      color: Colors.white,
-                    ),
-                  ),
-                ],
+              return _buildContent(
+                title: S.of(context)!.tutorialCaptureButtonTitle,
+                description: S.of(context)!.tutorialCaptureButtonDesc,
               );
             },
           ),
         ],
       ),
     );
+    targets.add(
+      TargetFocus(
+        identify: "gallery",
+        keyTarget: galleryButton,
+        alignSkip: Alignment.topRight,
+        enableOverlayTab: true,
+        contents: [
+          TargetContent(
+            align: ContentAlign.top,
+            builder: (context, controller) {
+              return _buildContent(
+                title: S.of(context)!.tutorialGalleryTitle,
+                description: S.of(context)!.tutorialGalleryDesc,
+              );
+            },
+          ),
+        ],
+      ),
+    );
+    targets.add(
+      TargetFocus(
+        identify: "capture_tips",
+        keyTarget: captureTipsButton,
+        alignSkip: Alignment.topRight,
+        enableOverlayTab: true,
+        contents: [
+          TargetContent(
+            align: ContentAlign.bottom,
+            builder: (context, controller) {
+              return _buildContent(
+                title: S.of(context)!.tutorialCaptureTipsTitle,
+                description: S.of(context)!.tutorialCaptureTipsDesc,
+              );
+            },
+          ),
+        ],
+      ),
+    );
+
+
+
     return targets;
   }
-
   Future<void> _initCameraWithPermission() async {
     final status = await Permission.camera.request();
 
@@ -238,8 +299,15 @@ class _CameraPageState extends State<CameraPage> {
     _maxZoom = await _controller.getMaxZoomLevel();
 
     if (!mounted) return;
+
     setState(() => _isInitialized = true);
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      createTutorial();
+      _checkCameraTutorial();
+    });
   }
+
 
   Future<void> _switchCamera() async {
     if (!_hasCameraPermission) return;
@@ -334,6 +402,7 @@ class _CameraPageState extends State<CameraPage> {
 
   @override
   void dispose() {
+    tutorialCoachMark.finish();
     _controller.dispose();
     super.dispose();
   }
@@ -583,11 +652,13 @@ class _CameraPageState extends State<CameraPage> {
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
                     IconButton(
+                      key: galleryButton,
                       icon: const Icon(Icons.image,
                           color: Colors.white, size: 28),
                       onPressed: _pickFromGallery,
                     ),
                     GestureDetector(
+                      key: captureButton,
                       onTap: _takePicture,
                       child: Container(
                         width: 72,

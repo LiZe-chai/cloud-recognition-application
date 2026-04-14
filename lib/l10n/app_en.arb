@@ -115,5 +115,11 @@
   "privacy_clause7_body": "If you have any questions about this Privacy Policy, please contact us at: cloudvisionfyp@gmail.com",
   "errorEmptyName": "File name cannot be empty",
   "errorDuplicateName": "File name already exists",
-  "errorTooLong": "File name must be 20 characters or less"
+  "errorTooLong": "File name must be 20 characters or less",
+  "tutorialCaptureTipsTitle": "Capture Tips",
+  "tutorialCaptureTipsDesc": "Read these tips before taking a cloud image for better prediction results.",
+  "tutorialGalleryTitle": "Upload from Gallery",
+  "tutorialGalleryDesc": "Select an existing image from your device gallery.",
+  "tutorialCaptureButtonTitle": "Take Photo",
+  "tutorialCaptureButtonDesc": "Use the camera to capture a new cloud image for prediction."
 }

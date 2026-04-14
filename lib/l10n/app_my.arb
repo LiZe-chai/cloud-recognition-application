@@ -114,5 +114,11 @@
   "privacy_clause7_body": "Jika anda mempunyai sebarang pertanyaan mengenai Dasar Privasi ini, sila hubungi kami melalui e-mel: cloudvisionfyp@gmail.com",
   "errorEmptyName": "Nama fail tidak boleh kosong",
   "errorDuplicateName": "Nama fail sudah wujud",
-  "errorTooLong": "Nama fail tidak boleh melebihi 20 aksara"
+  "errorTooLong": "Nama fail tidak boleh melebihi 20 aksara",
+  "tutorialCaptureTipsTitle": "Tip Pengambilan Gambar",
+  "tutorialCaptureTipsDesc": "Sila baca tip ini sebelum mengambil gambar awan untuk mendapatkan hasil ramalan yang lebih baik.",
+  "tutorialGalleryTitle": "Muat Naik dari Galeri",
+  "tutorialGalleryDesc": "Pilih imej sedia ada daripada galeri peranti anda.",
+  "tutorialCaptureButtonTitle": "Ambil Gambar",
+  "tutorialCaptureButtonDesc": "Gunakan kamera untuk mengambil gambar awan baharu bagi tujuan ramalan."
 }
