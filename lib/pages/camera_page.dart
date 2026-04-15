@@ -142,7 +142,17 @@ class _CameraPageState extends State<CameraPage> {
   void initState() {
     super.initState();
     _currentCamera = widget.cameras.first;
-    _initCameraWithPermission();
+    _initPage();
+  }
+  Future<void> _initPage() async {
+    await _initCameraWithPermission();
+
+    if (!mounted) return;
+
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      createTutorial();
+      await _checkCameraTutorial();
+    });
   }
   Future<void> _checkCameraTutorial() async {
     final prefs = await SharedPreferences.getInstance();
@@ -302,10 +312,6 @@ class _CameraPageState extends State<CameraPage> {
 
     setState(() => _isInitialized = true);
 
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      createTutorial();
-      _checkCameraTutorial();
-    });
   }
 
 
