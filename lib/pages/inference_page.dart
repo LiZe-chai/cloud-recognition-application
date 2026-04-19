@@ -36,8 +36,8 @@ class _InferencePageState extends State<InferencePage> {
   }
   Future<bool> initModels({bool useLocalAssets = true}) async {
     try {
-      const detectorName = 'TL_MACNN_cloud_detection.tflite';
-      const classifierName = 'TL_mobilenetv2_cloud_classification_multilabel.tflite';
+      const detectorName = 'TL_cloudsegnet.tflite';
+      const classifierName = 'TL_mobilenetv3_cloud_classification.tflite';
 
       Uint8List detectorBytes;
       Uint8List classifierBytes;
@@ -60,14 +60,14 @@ class _InferencePageState extends State<InferencePage> {
         final detectorPath = await AssetDelivery.getAssetPackPath(
           assetPackName: assetPackName,
           count: 1,
-          namingPattern: 'TL_MACNN_cloud_detection',
+          namingPattern: 'TL_cloudsegnet',
           fileExtension: 'tflite',
         );
 
         final classifierPath = await AssetDelivery.getAssetPackPath(
           assetPackName: assetPackName,
           count: 1,
-          namingPattern: 'TL_mobilenetv2_cloud_classification_multilabel',
+          namingPattern: 'TL_mobilenetv3_cloud_classification',
           fileExtension: 'tflite',
         );
         print('detectorPath: $detectorPath');
@@ -78,11 +78,11 @@ class _InferencePageState extends State<InferencePage> {
           return false;
         }
         final detectorFile = File(
-          '$detectorPath/TL_MACNN_cloud_detection.tflite',
+          '$detectorPath/TL_cloudsegnet.tflite',
         );
 
         final classifierFile = File(
-          '$classifierPath/TL_mobilenetv2_cloud_classification_multilabel.tflite',
+          '$classifierPath/TL_mobilenetv3_cloud_classification.tflite',
         );
 
         print('detector FULL path: ${detectorFile.path}');
@@ -134,14 +134,16 @@ class _InferencePageState extends State<InferencePage> {
     final result = await compute(runInference, params);
 
     final rawContours = await CloudPostProcessor.processMask(
-        result["mask"], 512, 512);
+      result["mask"],
+      result["width"],
+      result["height"],
+    );
 
     final contours = (rawContours as List)
         .map((contour) => (contour as List)
         .map((p) => Map<String, int>.from(p))
         .toList())
         .toList();
-
     if (!mounted) return;
 
     Navigator.pushReplacement(

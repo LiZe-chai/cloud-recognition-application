@@ -480,77 +480,90 @@ class _CameraPageState extends State<CameraPage> {
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
       builder: (context) {
-        return Container(
-          padding: const EdgeInsets.fromLTRB(20, 0, 20, 24),
-          decoration: const BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.vertical(
-              top: Radius.circular(24),
+        final maxHeight = MediaQuery.of(context).size.height * 0.9;
+
+        return SafeArea(
+          child: ConstrainedBox(
+            constraints: BoxConstraints(
+              maxHeight: maxHeight,
             ),
-          ),
-          child: SafeArea(
-            top: false,
-            child: SingleChildScrollView(
+            child: Container(
+              padding: const EdgeInsets.fromLTRB(20, 0, 20, 24),
+              decoration: const BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.vertical(
+                  top: Radius.circular(24),
+                ),
+              ),
               child: Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
+                mainAxisSize: MainAxisSize.min,
                 children: [
-                  Align(
-                    alignment: Alignment.topRight,
-                    child: IconButton(
-                      icon: const Icon(Icons.close),
-                      onPressed: () => Navigator.pop(context),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      IconButton(
+                        icon: const Icon(Icons.close),
+                        onPressed: () => Navigator.pop(context),
+                      ),
+                    ],
+                  ),
+                  Text(
+                    S.of(context)!.captureTipsTitle,
+                    style: TextStyle(
+                      fontSize: Theme.of(context).textTheme.titleLarge?.fontSize,
+                      fontWeight: FontWeight.bold,
                     ),
                   ),
-                  Center(
-                    child: Text(
-                      S.of(context)!.captureTipsTitle,
-                      style: TextStyle(
-                        fontSize:
-                        Theme
-                            .of(context)
-                            .textTheme
-                            .titleLarge
-                            ?.fontSize,
-                        fontWeight: FontWeight.bold,
+
+                  const SizedBox(height: 20),
+
+                  Expanded(
+                    child: SingleChildScrollView(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Text(
+                            '1. ${S.of(context)!.captureTip1}\n\n'
+                                '2. ${S.of(context)!.captureTip2}\n\n'
+                                '3. ${S.of(context)!.captureTip3}\n\n'
+                                '4. ${S.of(context)!.captureTip4}\n\n',
+                          ),
+
+                          const SizedBox(height: 30),
+
+                          Wrap(
+                            spacing: 16,
+                            runSpacing: 16,
+                            alignment: WrapAlignment.center,
+                            children: [
+                              buildTipImage(
+                                'assets/captureExample.jpg',
+                                true,
+                                S.of(context)!.tipGood,
+                              ),
+                              buildTipImage(
+                                'assets/poor_light_condition.jpg',
+                                false,
+                                S.of(context)!.tipBadLighting,
+                              ),
+                              buildTipImage(
+                                'assets/occlusion.jpg',
+                                false,
+                                S.of(context)!.tipOcclusion,
+                              ),
+                              buildTipImage(
+                                'assets/clear_sky.jpg',
+                                false,
+                                S.of(context)!.tipNotCloud,
+                              ),
+                            ],
+                          ),
+
+                          const SizedBox(height: 50),
+                        ],
                       ),
                     ),
                   ),
-                  const SizedBox(height: 30),
-                  Text(
-                    '1. ${S.of(context)!.captureTip1}\n\n'
-                        '2. ${S.of(context)!.captureTip2}\n\n'
-                        '3. ${S.of(context)!.captureTip3}\n\n',
-                    style: TextStyle(
-                        fontSize:
-                        Theme
-                            .of(context)
-                            .textTheme
-                            .bodyMedium
-                            ?.fontSize),
-                  ),
-                  const SizedBox(height: 30),
-                  Center(
-                    child: Text(
-                      S.of(context)!.correctCaptureExample,
-                      style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: Theme
-                              .of(context)
-                              .textTheme
-                              .titleMedium
-                              ?.fontSize),
-                    ),
-                  ),
-                  const SizedBox(height: 20),
-                  ClipRRect(
-                    child: Image.asset(
-                      'assets/captureExample.jpg',
-                      height: 300,
-                      width: 300,
-                      fit: BoxFit.cover,
-                    ),
-                  ),
-                  const SizedBox(height: 50),
                 ],
               ),
             ),
@@ -693,4 +706,38 @@ class _CameraPageState extends State<CameraPage> {
       ),
     );
   }
+}
+Widget buildTipImage(String path, bool isCorrect, String label) {
+  return Column(
+    children: [
+      Stack(
+        children: [
+          ClipRRect(
+            borderRadius: BorderRadius.circular(12),
+            child: Image.asset(
+              path,
+              width: 140,
+              height: 140,
+              fit: BoxFit.cover,
+            ),
+          ),
+          Positioned(
+            bottom: 0,
+            right: 0,
+            child: CircleAvatar(
+              radius: 16,
+              backgroundColor: isCorrect ? Colors.green : Colors.red,
+              child: Icon(
+                isCorrect ? Icons.check : Icons.close,
+                color: Colors.white,
+                size: 18,
+              ),
+            ),
+          ),
+        ],
+      ),
+      const SizedBox(height: 6),
+      Text(label, textAlign: TextAlign.center),
+    ],
+  );
 }

@@ -17,7 +17,7 @@ class CloudDetector {
 
     final input = imageToFloat32List(imageInput);
 
-    final inputShape = [1, 512, 512, 3];
+    final inputShape = [1, 300, 300, 3];
     final outputShape = _interpreter!.getOutputTensor(0).shape;
 
     final output = List.generate(
@@ -41,9 +41,9 @@ class CloudDetector {
 
   Float32List imageToFloat32List(img.Image image) {
     img.Image resized =
-    img.copyResize(image, width: 512, height: 512);
+    img.copyResize(image, width: 300, height: 300);
 
-    const int size = 512;
+    const int size = 300;
     final Float32List buffer =
     Float32List(size * size * 3);
 
@@ -83,8 +83,7 @@ class CloudPostProcessor {
       int width,
       int height) async {
 
-    final Float32List maskFlat =
-    _flattenMask(mask4D, width, height);
+    final Float32List maskFlat = _flattenMask(mask4D, width, height);
 
     final result = await _channel.invokeMethod('processMask', {
       "mask": maskFlat,
@@ -97,19 +96,25 @@ class CloudPostProcessor {
 
   static Float32List _flattenMask(
       List<List<List<List<double>>>> mask4D,
-      int width,
-      int height) {
-
-    final flat = Float32List(width * height);
+      int targetWidth,
+      int targetHeight) {
 
     final imageMask = mask4D[0];
+    final int srcHeight = imageMask.length;
+    final int srcWidth = imageMask[0].length;
+
+    final flat = Float32List(targetWidth * targetHeight);
 
     int index = 0;
 
-    for (int y = 0; y < height; y++) {
-      for (int x = 0; x < width; x++) {
-        flat[index++] =
-        imageMask[y][x][0] > 0.5 ? 1.0 : 0.0;
+    for (int y = 0; y < targetHeight; y++) {
+      for (int x = 0; x < targetWidth; x++) {
+        final int srcY =
+        (y * srcHeight / targetHeight).floor().clamp(0, srcHeight - 1);
+        final int srcX =
+        (x * srcWidth / targetWidth).floor().clamp(0, srcWidth - 1);
+
+        flat[index++] = imageMask[srcY][srcX][0] > 0.5 ? 1.0 : 0.0;
       }
     }
 
