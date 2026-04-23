@@ -81,9 +81,6 @@ class MainActivity: FlutterActivity() {
         for (contour in contours) {
 
             val area = Imgproc.contourArea(contour)
-            val minArea = width * height * 0.01
-
-            if (area < minArea) continue
 
             val points = contour.toArray()
 

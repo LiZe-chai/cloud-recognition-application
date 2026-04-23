@@ -33,6 +33,7 @@ class _HomePageState extends State<HomePage> {
   GlobalKey filterButton = GlobalKey();
   GlobalKey settingsButton = GlobalKey();
   GlobalKey inferenceHistoryRegion = GlobalKey();
+  final SearchController searchController = SearchController();
 
   void showTutorial() {
     tutorialCoachMark.show(context: context);
@@ -288,6 +289,7 @@ class _HomePageState extends State<HomePage> {
   @override
   void dispose() {
     _closeTutorial();
+    searchController.dispose();
     super.dispose();
   }
 
@@ -350,6 +352,7 @@ class _HomePageState extends State<HomePage> {
                 height: h * 0.05,
                 child: SearchBar(
                   key:searchQueryField,
+                  controller: searchController,
                   hintText: S.of(context)!.search,
                   leading: Icon(Icons.search),
                   backgroundColor: WidgetStatePropertyAll(Colors.grey[200]),
@@ -370,6 +373,7 @@ class _HomePageState extends State<HomePage> {
                       onPressed: () {
                         setState(() {
                           searchQuery = '';
+                          searchController.clear();
                         });
                       },
                     )
