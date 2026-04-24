@@ -62,7 +62,7 @@ class MainActivity: FlutterActivity() {
         mat.put(0, 0, mask)
 
         val binary = Mat()
-        Imgproc.threshold(mat, binary, 0.45, 1.0, Imgproc.THRESH_BINARY)
+        Imgproc.threshold(mat, binary, 0.5, 1.0, Imgproc.THRESH_BINARY)
         binary.convertTo(binary, CvType.CV_8U, 255.0)
 
         val contours = mutableListOf<MatOfPoint>()

@@ -47,9 +47,6 @@ class CloudDetector {
     final Float32List buffer =
     Float32List(size * size * 3);
 
-    const mean = [0.485, 0.456, 0.406];
-    const std = [0.229, 0.224, 0.225];
-
     int index = 0;
 
     for (int y = 0; y < size; y++) {
@@ -60,9 +57,9 @@ class CloudDetector {
         final g = pixel.g / 255.0;
         final b = pixel.b / 255.0;
 
-        buffer[index++] = (r - mean[0]) / std[0];
-        buffer[index++] = (g - mean[1]) / std[1];
-        buffer[index++] = (b - mean[2]) / std[2];
+        buffer[index++] = r;
+        buffer[index++] = g;
+        buffer[index++] = b;
       }
     }
 
